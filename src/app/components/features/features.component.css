@@ -1,0 +1,11 @@
+.features {
+    display: flex;
+    justify-content: space-around;
+    padding: 2rem;
+  }
+  .feature-card {
+    background: #f8f8f8;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
