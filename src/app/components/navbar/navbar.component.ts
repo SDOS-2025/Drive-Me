@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 interface NavLink {
   path: string;
@@ -8,6 +8,7 @@ interface NavLink {
 
 @Component({
   selector: 'app-navbar',
+  imports: [RouterLink],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
