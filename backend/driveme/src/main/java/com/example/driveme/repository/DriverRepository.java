@@ -1,6 +1,10 @@
 package com.example.driveme.repository;
 
-import com.example.driveme.model.User;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.driveme.model.Driver;
 
-public interface DriverRepository extends JpaRepository<User, Long> {}
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface DriverRepository extends JpaRepository<Driver, Long> {
+}
