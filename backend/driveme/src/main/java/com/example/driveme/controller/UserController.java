@@ -32,8 +32,8 @@ public class UserController {
 
     @PostMapping("/verify")
     public ResponseEntity<String> verifyUser(@RequestBody User user) {
-        boolean isValidUser = userRepository.findByFullName(user.getFull_name()).stream()
-            .anyMatch(u -> u.getPassword_hash().equals(user.getPassword_hash()));
+        boolean isValidUser = userRepository.findByFullName(user.getFullName()).stream()
+            .anyMatch(u -> u.getPasswordHash().equals(user.getPasswordHash()));
 
         if (isValidUser) {
             return ResponseEntity.ok("User Logged In");

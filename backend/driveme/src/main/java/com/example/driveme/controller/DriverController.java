@@ -19,4 +19,21 @@ public class DriverController {
     public List<Driver> getAllUsers() {
         return driverRepository.findAll();
     }
+
+    @PostMapping("/add")
+    public Driver addDriver(@RequestBody Driver driver) {
+        return driverRepository.save(driver);
+    }
+
+    @PostMapping("/verify")
+    public String verifyDriver(@RequestBody Driver driver) {
+        boolean isValidDriver = driverRepository.findAll().stream()
+            .anyMatch(d -> d.getPhone().equals(driver.getPhone()) && d.getPassword_hash().equals(driver.getPassword_hash()));
+
+        if (isValidDriver) {
+            return "Driver Logged In";
+        } else {
+            return "Invalid Credentials";
+        }
+    }
 }

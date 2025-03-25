@@ -1,50 +1,61 @@
 package com.example.driveme.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
 
 @Entity
-@Table(name = "users")  // Optional, but ensures correct table mapping
+@Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Ensure correct ID generation strategy
-    private Long user_id;
-    @Column(name = "full_name") // Map to correct column name in DB
-    private String fullName; 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long user_id;  // Renamed from user_id
+
+    @Column(name = "full_name")
+    private String fullName;
+
     private String email;
+
     private String phone;
-    private String car_number;
-    private String rc_book;
-    private String aadhar_card;
-    private String password_hash;
-    private String created_at;
 
-    public User() {
-    }
+    @Column(name = "aadhar_card")
+    private String aadharCard;
 
-    public User(String full_name, String email, String phone, String car_number, String rc_book, String aadhar_card, String password_hash) {
-        this.fullName = full_name;
+    @JsonIgnore
+    @Column(name = "password_hash")
+    private String passwordHash;
+
+    @Column(name = "created_at")
+    private String createdAt;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Vehicle> vehicles;
+
+    public User() {}
+
+    public User(String fullName, String email, String phone, String aadharCard, String passwordHash) {
+        this.fullName = fullName;
         this.email = email;
         this.phone = phone;
-        this.car_number = car_number;
-        this.rc_book = rc_book;
-        this.aadhar_card = aadhar_card;
-        this.password_hash = password_hash;
+        this.aadharCard = aadharCard;
+        this.passwordHash = passwordHash;
     }
 
-    public Long getUser_id() {
+    // 🔹 Getters and Setters
+    public Long getId() {
         return user_id;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setId(Long id) {
+        this.user_id = id;
     }
 
-    public String getFull_name() {
+    public String getFullName() {
         return fullName;
     }
 
-    public void setFull_name(String full_name) {
-        this.fullName = full_name;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {
@@ -63,54 +74,40 @@ public class User {
         this.phone = phone;
     }
 
-    public String getCar_number() {
-        return car_number;
+    public String getAadharCard() {
+        return aadharCard;
     }
 
-    public void setCar_number(String car_number) {
-        this.car_number = car_number;
+    public void setAadharCard(String aadharCard) {
+        this.aadharCard = aadharCard;
     }
 
-    public String getRc_book() {
-        return rc_book;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setRc_book(String rc_book) {
-        this.rc_book = rc_book;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
-    public String getAadhar_card() {
-        return aadhar_card;
+    public List<Vehicle> getVehicles() {
+        return vehicles;
     }
 
-    public void setAadhar_card(String aadhar_card) {
-        this.aadhar_card = aadhar_card;
+    public void setVehicles(List<Vehicle> vehicles) {
+        this.vehicles = vehicles;
     }
-
-    public String getPassword_hash() {
-        return password_hash;
-    }
-
-    public void setPassword_hash(String password_hash) {
-        this.password_hash = password_hash;
-    }
-
-    public String getCreated_at() {
-        return created_at;
-    }
-
+    
+    // 🔹 toString
     @Override
     public String toString() {
         return "User{" +
-                "user_id=" + user_id +
-                ", full_name='" + fullName + '\'' +
+                "id=" + user_id +
+                ", fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
-                ", car_number='" + car_number + '\'' +
-                ", rc_book='" + rc_book + '\'' +
-                ", aadhar_card='" + aadhar_card + '\'' +
-                ", password_hash='" + password_hash + '\'' +
-                ", created_at='" + created_at + '\'' +
+                ", aadharCard='" + aadharCard + '\'' +
+                ", createdAt=" + createdAt +
                 '}';
     }
 }
