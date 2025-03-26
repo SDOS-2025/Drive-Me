@@ -15,12 +15,28 @@ export class LoginComponent {
   user = { email: '', password: '', rememberMe: false };
 
   login() {
+    fetch('http://localhost:8080/users/verify', {
+      method: 'POST',
+      body: JSON.stringify(this.user),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
     console.log('Logging in with:', this.user);
     // Implement login logic here
   }
 
   signup() {
-    console.log('Signup logic here');
-    // Implement signup logic here
+    fetch('http://localhost:8080/users/add', {
+      method: 'POST',
+      body: JSON.stringify(this.user),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log('Signing up with:', this.user);
+    // Implement signup logic
   }
 }

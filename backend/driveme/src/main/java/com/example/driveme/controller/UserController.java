@@ -42,6 +42,16 @@ public class UserController {
         }
     }
 
+    @PostMapping("/{full_name}/add-vehicle")
+    public ResponseEntity<User> addVehicle(@PathVariable("full_name") String full_name, @RequestBody User user) {
+        return userRepository.findByFullName(full_name)
+            .map(u -> {
+                u.getVehicles().addAll(user.getVehicles());
+                return ResponseEntity.ok(userRepository.save(u));
+            })
+            .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping
     public List<User> getAllUsers() {
         return userRepository.findAll();
