@@ -10,8 +10,8 @@
     <div class="auth-forms">
       <div class="login-form">
         <h2>Sign in as Regular User</h2>
-        <input type="text" placeholder="Email or Username" [(ngModel)]="user.email" />
-        <input type="password" placeholder="Password" [(ngModel)]="user.password" />
+        <input type="text" placeholder="Email or Phone" [(ngModel)]="user.email_or_phone" />
+        <input type="password" placeholder="Password" [(ngModel)]="user.password_hash" />
         <div class="remember-forgot">
           <label><input type="checkbox" [(ngModel)]="user.rememberMe" name="rememberMe"/> Remember Me</label>
           <a href="#">Forgot Password?</a>
@@ -21,11 +21,11 @@
   
       <div class="signup-form">
         <h2>Sign up as Regular User</h2>
-        <input type="text" placeholder="Full Name" />
-        <input type="email" placeholder="Email" />
-        <input type="password" placeholder="Password" />
-        <input type="text" placeholder="Mobile Number" />
-        <input type="text" placeholder="Referral Code (Optional)" />
+        <input type="text" placeholder="Full Name" [(ngModel)]="user.full_name" />
+        <input type="email" placeholder="Email" [(ngModel)]="user.email" />
+        <input type="text" placeholder="Phone" [(ngModel)]="user.phone" />
+        <input type="text" placeholder="Aadhar Card Number" [(ngModel)]="user.aadhar_card" />
+        <input type="password" placeholder="Password" [(ngModel)]="user.password_hash" />
         <button class="btn-dark" (click)="signup()">Sign Up</button>
       </div>
     </div>

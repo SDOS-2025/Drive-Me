@@ -27,14 +27,28 @@ public class UserController {
 
     @PostMapping("/add")
     public User addUser(@RequestBody User user) {
+        // Printing user details for debugging
+
+        System.out.println("Adding user: " + user.getFullName() + ", " + user.getEmail() + ", " + user.getPhone() + ", " + user.getAadharCard() + ", " + user.getPasswordHash());
         return userRepository.save(user);
     }
 
     @PostMapping("/verify")
     public ResponseEntity<String> verifyUser(@RequestBody User user) {
-        boolean isValidUser = userRepository.findByFullName(user.getFullName()).stream()
-            .anyMatch(u -> u.getPasswordHash().equals(user.getPasswordHash()));
-
+        boolean isValidUser = false;
+    
+        // Check if email is provided and valid
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            isValidUser = userRepository.findByEmail(user.getEmail()).stream()
+                .anyMatch(u -> u.getPasswordHash().equals(user.getPasswordHash()));
+        }
+    
+        // If not valid by email, check by phone
+        if (!isValidUser && user.getPhone() != null && !user.getPhone().isEmpty()) {
+            isValidUser = userRepository.findByPhone(user.getPhone()).stream()
+                .anyMatch(u -> u.getPasswordHash().equals(user.getPasswordHash()));
+        }
+    
         if (isValidUser) {
             return ResponseEntity.ok("User Logged In");
         } else {

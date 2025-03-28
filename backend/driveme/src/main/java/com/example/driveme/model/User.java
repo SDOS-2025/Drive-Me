@@ -1,7 +1,6 @@
 package com.example.driveme.model;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 @Entity
@@ -21,7 +20,6 @@ public class User {
     @Column(name = "aadhar_card")
     private String aadharCard;
 
-    @JsonIgnore
     @Column(name = "password_hash")
     private String passwordHash;
 
