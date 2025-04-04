@@ -1,4 +1,4 @@
-package com.sdos.driveme;
+package com.example.driveme;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

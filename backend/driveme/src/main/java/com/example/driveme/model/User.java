@@ -1,4 +1,4 @@
-package com.sdos.driveme.model;
+package com.example.driveme.model;
 
 import jakarta.persistence.*;
 import java.util.List;

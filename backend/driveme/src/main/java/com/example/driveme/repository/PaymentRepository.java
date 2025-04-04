@@ -1,9 +1,9 @@
-package com.sdos.driveme.repository;
+package com.example.driveme.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.sdos.driveme.model.Payment;
+import com.example.driveme.model.Payment;
 
 
 @Repository
