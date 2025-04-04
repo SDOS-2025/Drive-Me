@@ -1,10 +1,10 @@
-package com.example.driveme.repository;
+package com.sdos.driveme.repository;
 
-import com.example.driveme.model.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.sdos.driveme.model.Payment;
+
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {

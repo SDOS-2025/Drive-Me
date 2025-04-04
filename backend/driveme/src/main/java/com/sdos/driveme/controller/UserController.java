@@ -1,11 +1,11 @@
-package com.example.driveme.controller;
-
-import com.example.driveme.model.User;
-import com.example.driveme.repository.UserRepository;
+package com.sdos.driveme.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.sdos.driveme.model.User;
+import com.sdos.driveme.repository.UserRepository;
 
 import java.util.List;
 

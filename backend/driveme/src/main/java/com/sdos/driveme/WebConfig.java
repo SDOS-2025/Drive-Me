@@ -1,4 +1,4 @@
-package com.example.driveme;
+package com.sdos.driveme;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

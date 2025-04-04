@@ -1,11 +1,11 @@
-package com.example.driveme.controller;
-
-import com.example.driveme.model.Payment;
-import com.example.driveme.repository.PaymentRepository;
+package com.sdos.driveme.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.sdos.driveme.model.Payment;
+import com.sdos.driveme.repository.PaymentRepository;
 
 import java.util.List;
 import java.util.Optional;

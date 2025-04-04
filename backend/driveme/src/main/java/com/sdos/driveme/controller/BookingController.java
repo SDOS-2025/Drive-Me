@@ -1,11 +1,11 @@
-package com.example.driveme.controller;
-
-import com.example.driveme.model.Booking;
-import com.example.driveme.repository.BookingRepository;
+package com.sdos.driveme.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.sdos.driveme.model.Booking;
+import com.sdos.driveme.repository.BookingRepository;
 
 import java.util.List;
 import java.util.Optional;

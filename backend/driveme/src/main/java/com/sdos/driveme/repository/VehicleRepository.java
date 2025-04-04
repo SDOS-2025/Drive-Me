@@ -1,8 +1,9 @@
-package com.example.driveme.repository;
+package com.sdos.driveme.repository;
 
-import com.example.driveme.model.User;
-import com.example.driveme.model.Vehicle;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.sdos.driveme.model.User;
+import com.sdos.driveme.model.Vehicle;
 
 import java.util.List;
 

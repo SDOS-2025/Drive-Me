@@ -1,10 +1,9 @@
-package com.example.driveme.repository;
+package com.sdos.driveme.repository;
 
-import com.example.driveme.model.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.sdos.driveme.model.Booking;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {

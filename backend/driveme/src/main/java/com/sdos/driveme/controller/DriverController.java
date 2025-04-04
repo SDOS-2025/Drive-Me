@@ -1,8 +1,9 @@
-package com.example.driveme.controller;
+package com.sdos.driveme.controller;
 
-import com.example.driveme.model.Driver;
-import com.example.driveme.repository.DriverRepository;
 import org.springframework.web.bind.annotation.*;
+
+import com.sdos.driveme.model.Driver;
+import com.sdos.driveme.repository.DriverRepository;
 
 import java.util.List;
 

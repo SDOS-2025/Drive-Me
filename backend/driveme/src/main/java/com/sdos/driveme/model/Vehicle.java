@@ -1,4 +1,4 @@
-package com.example.driveme.model;
+package com.sdos.driveme.model;
 import jakarta.persistence.*;
 
 @Entity
