@@ -11,5 +11,5 @@ import com.example.driveme.model.Driver;
 public interface DriverRepository extends JpaRepository<Driver, Long> {
     // Finding driver by email and full name
     Optional<Driver> findByEmail(String email);
-    Optional<Driver> findByFullName(String fullName);
+    Optional<Driver> findByName(String name);
 }
