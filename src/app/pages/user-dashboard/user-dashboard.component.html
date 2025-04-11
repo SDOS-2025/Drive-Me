@@ -1,0 +1,76 @@
+<app-navbar></app-navbar>
+  <div class="dashboard">
+    
+    <app-sidebar [menuItems]="sidebarMenuItems"></app-sidebar>
+
+    
+    <div class="main-content">
+      <div class="dashboard-header">
+        <h2>Welcome, {{userName}}!</h2>
+        <div class="search-bar">
+          <i>🔍</i>
+          <input type="text" placeholder="Find driver...">
+        </div>
+      </div>
+      
+      <div class="stats-container">
+        <div class="stat-card" *ngFor="let stat of stats">
+          <div class="icon">{{stat.icon}}</div>
+          <h3>{{stat.title}}</h3>
+          <div class="value">{{stat.value}}</div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h3>Upcoming Bookings</h3>
+          <button class="btn btn-primary" routerLink = "/driver-booking">Book New Ride</button>
+        </div>
+        
+        <div class="trip-card" *ngFor="let booking of upcomingBookings">
+          <div class="trip-icon">{{booking.icon}}</div>
+          <div class="trip-details">
+            <h4>{{booking.title}}</h4>
+            <div>{{booking.date}}</div>
+            <div>{{booking.driver}}</div>
+          </div>
+          <div class="trip-status">
+            <span>{{booking.status}}</span>
+            <div class="status-dot" [style.background-color]="booking.statusColor">{{booking.statusIcon}}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header">
+            <h3>Top Rated Drivers</h3>
+            <a href="#">View All</a>
+          </div>
+          
+          <div class="trip-card" *ngFor="let driver of topDrivers">
+            <div class="trip-icon">{{driver.icon}}</div>
+            <div class="trip-details">
+              <h4>{{driver.name}}</h4>
+              <div>{{driver.experience}}</div>
+            </div>
+            <button class="btn btn-light">Book</button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <h3>Recent Activity</h3>
+          </div>
+          
+          <div class="trip-card" *ngFor="let activity of recentActivities">
+            <div class="trip-icon">{{activity.icon}}</div>
+            <div class="trip-details">
+              <h4>{{activity.title}}</h4>
+              <div>{{activity.details}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

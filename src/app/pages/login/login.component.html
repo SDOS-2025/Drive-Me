@@ -1,26 +1,37 @@
-<div class="login-container">
-    <app-navbar></app-navbar>
-  
+<div class="page-wrapper">
+  <app-navbar></app-navbar>
+
+  <main class="login-container">
     <div class="user-type-selection">
-      <button class="btn-light">Drivers</button>
-      <button class="btn-dark">Regular Users</button>
-      <button class="btn-light">Admin</button>
+      <button [ngClass]="{ 'btn-selected': userType === 'driver' }" (click)="selectUserType('driver')">Drivers</button>
+      <button [ngClass]="{ 'btn-selected': userType === 'regular' }" (click)="selectUserType('regular')">Regular Users</button>
+      <button [ngClass]="{ 'btn-selected': userType === 'admin' }" (click)="selectUserType('admin')">Admin</button>
     </div>
-  
-    <div class="auth-forms">
-      <div class="login-form">
-        <h2>Sign in as Regular User</h2>
+
+    <div class="auth-card">
+      <div class="form-switch">
+        <button [ngClass]="{ 'active-tab': formMode === 'login' }" (click)="setFormMode('login')">Login</button>
+        <button [ngClass]="{ 'active-tab': formMode === 'signup' }" (click)="setFormMode('signup')">Sign Up</button>
+      </div>
+
+      <div *ngIf="formMode === 'login'" class="form-content">
+        <h2>Sign in as {{ userType | titlecase }}</h2>
         <input type="text" placeholder="Email or Phone" [(ngModel)]="user.email_or_phone" />
         <input type="password" placeholder="Password" [(ngModel)]="user.password_hash" />
+
         <div class="remember-forgot">
-          <label><input type="checkbox" [(ngModel)]="user.rememberMe" name="rememberMe"/> Remember Me</label>
+          <label class="remember-me">
+            <input type="checkbox" [(ngModel)]="user.rememberMe" />
+            Remember Me
+          </label>
           <a href="#">Forgot Password?</a>
         </div>
+
         <button class="btn-dark" (click)="login()">Sign In</button>
       </div>
-  
-      <div class="signup-form">
-        <h2>Sign up as Regular User</h2>
+
+      <div *ngIf="formMode === 'signup'" class="form-content">
+        <h2>Sign up as {{ userType | titlecase }}</h2>
         <input type="text" placeholder="Full Name" [(ngModel)]="user.full_name" />
         <input type="email" placeholder="Email" [(ngModel)]="user.email" />
         <input type="text" placeholder="Phone" [(ngModel)]="user.phone" />
@@ -29,28 +40,28 @@
         <button class="btn-dark" (click)="signup()">Sign Up</button>
       </div>
     </div>
-  
-    <footer>
-      <div class="newsletter">
-        <h3>Subscribe to our newsletter</h3>
-        <input type="email" placeholder="Input your email" />
-        <button class="btn-light">Subscribe</button>
-      </div>
-      <div class="footer-links">
-        <a href="#">Pricing</a>
-        <a href="#">About us</a>
-        <a href="#">Features</a>
-        <a href="#">Help Center</a>
-        <a href="#">Contact us</a>
-        <a href="#">FAQs</a>
-        <a href="#">Careers</a>
-      </div>
-      <div class="social-icons">
-        <i class="fa fa-twitter"></i>
-        <i class="fa fa-facebook"></i>
-        <i class="fa fa-linkedin"></i>
-        <i class="fa fa-youtube"></i>
-      </div>
-    </footer>
-  </div>
-  
+  </main>
+
+  <footer>
+    <div class="newsletter">
+      <h3>Subscribe to our newsletter</h3>
+      <input type="email" placeholder="Input your email" />
+      <button class="btn-light">Subscribe</button>
+    </div>
+    <div class="footer-links">
+      <a href="#">Pricing</a>
+      <a href="#">About us</a>
+      <a href="#">Features</a>
+      <a href="#">Help Center</a>
+      <a href="#">Contact us</a>
+      <a href="#">FAQs</a>
+      <a href="#">Careers</a>
+    </div>
+    <div class="social-icons">
+      <i class="fa fa-twitter"></i>
+      <i class="fa fa-facebook"></i>
+      <i class="fa fa-linkedin"></i>
+      <i class="fa fa-youtube"></i>
+    </div>
+  </footer>
+</div>

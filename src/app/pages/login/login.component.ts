@@ -12,15 +12,26 @@ import { NavbarComponent } from "../../components/navbar/navbar.component";
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  user = { 
-    full_name: '', 
-    email: '', 
-    phone: '', 
-    aadhar_card: '', 
-    password_hash: '', 
+  userType: 'driver' | 'regular' | 'admin' = 'regular';
+  formMode: 'login' | 'signup' = 'login';
+
+  user = {
+    full_name: '',
+    email: '',
+    phone: '',
+    aadhar_card: '',
+    password_hash: '',
     email_or_phone: '',
-    rememberMe: false 
+    rememberMe: false
   };
+
+  selectUserType(type: 'driver' | 'regular' | 'admin') {
+    this.userType = type;
+  }
+
+  setFormMode(mode: 'login' | 'signup') {
+    this.formMode = mode;
+  }
 
   login() {
     const loginPayload = {
@@ -28,7 +39,7 @@ export class LoginComponent {
       phone: this.user.email_or_phone.includes('@') ? null : this.user.email_or_phone,
       passwordHash: this.user.password_hash
     };
-  
+
     fetch('http://localhost:8080/users/verify', {
       method: 'POST',
       body: JSON.stringify(loginPayload),
@@ -45,7 +56,7 @@ export class LoginComponent {
     .then(data => console.log('Success:', data))
     .catch(error => console.error('Error:', error));
   }
-  
+
   signup() {
     const signupPayload = {
       fullName: this.user.full_name,
@@ -64,6 +75,5 @@ export class LoginComponent {
     });
 
     console.log('Signing up with:', this.user);
-    // Implement signup logic
   }
 }

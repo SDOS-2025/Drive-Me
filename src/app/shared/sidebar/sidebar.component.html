@@ -1,0 +1,9 @@
+<aside [class.dark-theme]="isDarkTheme" class="sidebar">
+    <ul class="menu">
+      <li *ngFor="let item of menuItems" [class.active]="item.active">
+        <span class="icon">{{ item.icon }}</span>
+        <span class="label">{{ item.label }}</span>
+      </li>
+    </ul>
+  </aside>
+  
