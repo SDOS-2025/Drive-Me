@@ -28,7 +28,7 @@ public class ApplicationConfiguration {
         // If email, use findByEmail
         // If phone, use findByPhone
         // For now, we will just use findByEmail
-        return email -> userRepository.findByEmail(email)
+        return email -> userRepository.findByFullName(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 

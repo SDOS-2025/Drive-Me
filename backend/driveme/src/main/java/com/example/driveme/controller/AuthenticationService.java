@@ -38,6 +38,8 @@ public class AuthenticationService {
         User user = new User()
                 .setFullName(input.getFullName())
                 .setEmail(input.getEmail())
+                .setPhone(input.getPhone()) // MISSING: You need to set the phone
+                .setAadharCard(input.getAadharCard()) // MISSING: You need to set the aadharCard
                 .setPassword(passwordEncoder.encode(input.getPassword()));
 
         return userRepository.save(user);

@@ -26,7 +26,8 @@ public class Driver implements UserDetails {
     public Driver() {
     }
 
-    public Driver(String name, String email, String phone, String aadhar_card, String license_number, String password_hash) {
+    public Driver(String name, String email, String phone, String aadhar_card, String license_number,
+            String password_hash) {
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -134,5 +135,26 @@ public class Driver implements UserDetails {
     @Override
     public String getUsername() {
         return name;
+    }
+
+    // Add these to both User and Driver classes
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

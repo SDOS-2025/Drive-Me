@@ -1,19 +1,26 @@
 package com.example.driveme.model;
 
-import jakarta.persistence.*;
-
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long user_id;  // Renamed from user_id
+    private Long user_id; // Renamed from user_id
 
     @Column(name = "full_name")
     private String fullName;
@@ -26,7 +33,7 @@ public class User implements UserDetails {
     private String aadharCard;
 
     @Column(name = "password_hash")
-    private String passwordHash;
+    private String password;
 
     @Column(name = "created_at")
     private String createdAt;
@@ -34,14 +41,15 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vehicle> vehicles;
 
-    public User() {}
+    public User() {
+    }
 
-    public User(String fullName, String email, String phone, String aadharCard, String passwordHash) {
+    public User(String fullName, String email, String phone, String aadharCard, String password) {
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
         this.aadharCard = aadharCard;
-        this.passwordHash = passwordHash;
+        this.password = password;
     }
 
     @Override
@@ -56,7 +64,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return passwordHash;
+        return password;
     }
 
     @Override
@@ -111,11 +119,11 @@ public class User implements UserDetails {
     }
 
     public String getPasswordHash() {
-        return passwordHash;
+        return password;
     }
 
-    public User setPassword(String passwordHash) {
-        this.passwordHash = passwordHash;
+    public User setPassword(String password) {
+        this.password = password;
         return this;
     }
 
@@ -130,7 +138,7 @@ public class User implements UserDetails {
         }
         return this;
     }
-    
+
     // 🔹 toString
     @Override
     public String toString() {
@@ -144,4 +152,24 @@ public class User implements UserDetails {
                 '}';
     }
 
+    // Add these to both User and Driver classes
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

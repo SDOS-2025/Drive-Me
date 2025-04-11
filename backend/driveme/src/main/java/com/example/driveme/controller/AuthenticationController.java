@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.example.driveme.model.*;
 import com.example.driveme.DTO.*;
@@ -14,6 +16,7 @@ import com.example.driveme.JwtAuth.*;
 @RestController
 public class AuthenticationController {
     private final JwtServices jwtService;
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
     
     private final AuthenticationService authenticationService;
 
@@ -24,6 +27,7 @@ public class AuthenticationController {
 
     @PostMapping("/user/signup")
     public ResponseEntity<User> register(@RequestBody RegisterRequestDTO registerUserDto) {
+        logger.info("Registering user: " + registerUserDto.getFullName() + " with email: " + registerUserDto.getEmail());
         User registeredUser = authenticationService.signup(registerUserDto);
 
         return ResponseEntity.ok(registeredUser);
