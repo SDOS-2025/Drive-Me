@@ -1,11 +1,16 @@
 package com.example.driveme.model;
 
 import jakarta.persistence.*;
+
+import java.util.Collection;
 import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long user_id;  // Renamed from user_id
@@ -37,6 +42,21 @@ public class User {
         this.phone = phone;
         this.aadharCard = aadharCard;
         this.passwordHash = passwordHash;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getPassword() {
+        return passwordHash;
+    }
+
+    @Override
+    public String getUsername() {
+        return fullName;
     }
 
     // 🔹 Getters and Setters
@@ -108,4 +128,5 @@ public class User {
                 ", createdAt=" + createdAt +
                 '}';
     }
+
 }

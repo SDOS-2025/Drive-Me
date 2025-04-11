@@ -18,9 +18,9 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/{full_name}")
-    public ResponseEntity<User> getUserByFullName(@PathVariable("full_name") String full_name) {
-        return userRepository.findByFullName(full_name)
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserByFullName(@PathVariable("id") Integer id) {
+        return userRepository.findById(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
@@ -56,9 +56,9 @@ public class UserController {
         }
     }
 
-    @PostMapping("/{full_name}/add-vehicle")
-    public ResponseEntity<User> addVehicle(@PathVariable("full_name") String full_name, @RequestBody User user) {
-        return userRepository.findByFullName(full_name)
+    @PostMapping("/{id}/add-vehicle")
+    public ResponseEntity<User> addVehicle(@PathVariable("id") Integer Id, @RequestBody User user) {
+        return userRepository.findById(Id)
             .map(u -> {
                 u.getVehicles().addAll(user.getVehicles());
                 return ResponseEntity.ok(userRepository.save(u));
