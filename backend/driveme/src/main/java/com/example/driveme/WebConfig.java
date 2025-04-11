@@ -35,10 +35,10 @@ public class WebConfig {
         http.csrf(csrf -> csrf.disable()) // Disable CSRF protection
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/api/users/register",
-                    "/api/users/login",
-                    "/api/drivers/login",
-                    "/api/drivers/register"
+                    "/auth/users/register",
+                    "/auth/users/login",
+                    "/auth/drivers/login",
+                    "/auth/drivers/register"
                     ).permitAll()
                     .anyRequest().authenticated()
                 )

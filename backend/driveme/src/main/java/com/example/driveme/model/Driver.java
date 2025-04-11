@@ -1,12 +1,18 @@
 package com.example.driveme.model;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "drivers")
-public class Driver {
+public class Driver implements UserDetails {
     @Id
     private Long driver_id;
     private String name;
@@ -33,64 +39,72 @@ public class Driver {
         return driver_id;
     }
 
-    public void setDriver_id(Long driver_id) {
+    public Driver setDriver_id(Long driver_id) {
         this.driver_id = driver_id;
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public Driver setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public Driver setEmail(String email) {
         this.email = email;
+        return this;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public Driver setPhone(String phone) {
         this.phone = phone;
+        return this;
     }
 
     public String getAadhar_card() {
         return aadhar_card;
     }
 
-    public void setAadhar_card(String aadhar_card) {
+    public Driver setAadhar_card(String aadhar_card) {
         this.aadhar_card = aadhar_card;
+        return this;
     }
 
     public String getLicense_number() {
         return license_number;
     }
 
-    public void setLicense_number(String license_number) {
+    public Driver setLicense_number(String license_number) {
         this.license_number = license_number;
+        return this;
     }
 
     public String getPassword_hash() {
         return password_hash;
     }
 
-    public void setPassword_hash(String password_hash) {
+    public Driver setPassword_hash(String password_hash) {
         this.password_hash = password_hash;
+        return this;
     }
 
     public String getCreated_at() {
         return created_at;
     }
 
-    public void setCreated_at(String created_at) {
+    public Driver setCreated_at(String created_at) {
         this.created_at = created_at;
+        return this;
     }
 
     @Override
@@ -105,5 +119,20 @@ public class Driver {
                 ", password_hash='" + password_hash + '\'' +
                 ", created_at='" + created_at + '\'' +
                 '}';
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getPassword() {
+        return password_hash;
+    }
+
+    @Override
+    public String getUsername() {
+        return name;
     }
 }

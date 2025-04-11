@@ -1,6 +1,5 @@
 package com.example.driveme.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,37 +22,6 @@ public class UserController {
         return userRepository.findById(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/add")
-    public User addUser(@RequestBody User user) {
-        // Printing user details for debugging
-
-        System.out.println("Adding user: " + user.getFullName() + ", " + user.getEmail() + ", " + user.getPhone() + ", " + user.getAadharCard() + ", " + user.getPasswordHash());
-        return userRepository.save(user);
-    }
-
-    @PostMapping("/verify")
-    public ResponseEntity<String> verifyUser(@RequestBody User user) {
-        boolean isValidUser = false;
-    
-        // Check if email is provided and valid
-        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-            isValidUser = userRepository.findByEmail(user.getEmail()).stream()
-                .anyMatch(u -> u.getPasswordHash().equals(user.getPasswordHash()));
-        }
-    
-        // If not valid by email, check by phone
-        if (!isValidUser && user.getPhone() != null && !user.getPhone().isEmpty()) {
-            isValidUser = userRepository.findByPhone(user.getPhone()).stream()
-                .anyMatch(u -> u.getPasswordHash().equals(user.getPasswordHash()));
-        }
-    
-        if (isValidUser) {
-            return ResponseEntity.ok("User Logged In");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
-        }
     }
 
     @PostMapping("/{id}/add-vehicle")

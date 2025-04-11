@@ -49,6 +49,11 @@ public class User implements UserDetails {
         return List.of();
     }
 
+    public String setUsername(String username) {
+        this.fullName = username;
+        return username;
+    }
+
     @Override
     public String getPassword() {
         return passwordHash;
@@ -64,56 +69,66 @@ public class User implements UserDetails {
         return user_id;
     }
 
-    public void setId(Long id) {
+    public User setId(Long id) {
         this.user_id = id;
+        return this;
     }
 
     public String getFullName() {
         return fullName;
     }
 
-    public void setFullName(String fullName) {
+    public User setFullName(String fullName) {
         this.fullName = fullName;
+        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public User setEmail(String email) {
         this.email = email;
+        return this;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public User setPhone(String phone) {
         this.phone = phone;
+        return this;
     }
 
     public String getAadharCard() {
         return aadharCard;
     }
 
-    public void setAadharCard(String aadharCard) {
+    public User setAadharCard(String aadharCard) {
         this.aadharCard = aadharCard;
+        return this;
     }
 
     public String getPasswordHash() {
         return passwordHash;
     }
 
-    public void setPasswordHash(String passwordHash) {
+    public User setPassword(String passwordHash) {
         this.passwordHash = passwordHash;
+        return this;
     }
 
     public List<Vehicle> getVehicles() {
         return vehicles;
     }
 
-    public void setVehicles(List<Vehicle> vehicles) {
+    public User setVehicles(List<Vehicle> vehicles) {
         this.vehicles = vehicles;
+        for (Vehicle vehicle : vehicles) {
+            vehicle.setUser(this);
+        }
+        return this;
     }
     
     // 🔹 toString
