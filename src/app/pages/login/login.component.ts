@@ -1,19 +1,25 @@
 import { Component } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { NavbarComponent } from "../../components/navbar/navbar.component";
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, NavbarComponent],
   templateUrl: './login.component.html',
+  providers: [AuthService],
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
   userType: 'driver' | 'regular' | 'admin' = 'regular';
   formMode: 'login' | 'signup' = 'login';
+  errorMessage: string = '';
+  loading: boolean = false;
+  returnUrl: string = '';
 
   user = {
     full_name: '',
@@ -25,55 +31,77 @@ export class LoginComponent {
     rememberMe: false
   };
 
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    // Get return URL from route parameters or default to dashboard
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || 
+      (this.userType === 'driver' ? '/driver-dashboard' : '/user-dashboard');
+  }
+
   selectUserType(type: 'driver' | 'regular' | 'admin') {
     this.userType = type;
+    // Update returnUrl based on user type
+    this.returnUrl = type === 'driver' ? '/driver-dashboard' : 
+                     type === 'admin' ? '/admin-dashboard' : '/user-dashboard';
   }
 
   setFormMode(mode: 'login' | 'signup') {
     this.formMode = mode;
+    this.errorMessage = '';
   }
 
   login() {
-    const loginPayload = {
-      email: this.user.email_or_phone.includes('@') ? this.user.email_or_phone : null,
-      phone: this.user.email_or_phone.includes('@') ? null : this.user.email_or_phone,
-      passwordHash: this.user.password_hash
-    };
-
-    fetch('http://localhost:8080/users/verify', {
-      method: 'POST',
-      body: JSON.stringify(loginPayload),
-      headers: {
-        'Content-Type': 'application/json'
-      }
+    this.loading = true;
+    this.errorMessage = '';
+    
+    const role = this.userType === 'regular' ? 'user' : this.userType;
+    
+    this.authService.login({
+      emailOrPhone: this.user.email_or_phone,
+      password: this.user.password_hash,
+      role: role as any // Cast to expected type
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-      return response.text();
+    .then(() => {
+      this.router.navigate([this.returnUrl]);
     })
-    .then(data => console.log('Success:', data))
-    .catch(error => console.error('Error:', error));
+    .catch((error: HttpErrorResponse) => {
+      this.errorMessage = error.error?.message || 'Login failed. Please check your credentials.';
+      console.error('Login error:', error);
+    })
+    .finally(() => {
+      this.loading = false;
+    });
   }
 
   signup() {
+    this.loading = true;
+    this.errorMessage = '';
+
     const signupPayload = {
       fullName: this.user.full_name,
       email: this.user.email,
       phone: this.user.phone,
       aadharCard: this.user.aadhar_card,
-      passwordHash: this.user.password_hash
+      password: this.user.password_hash
     };
 
-    fetch('http://localhost:8080/users/add', {
-      method: 'POST',
-      body: JSON.stringify(signupPayload),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    const role = this.userType === 'regular' ? 'user' : 'driver';
 
-    console.log('Signing up with:', this.user);
+    this.authService.signup(signupPayload, role as any)
+      .then(() => {
+        // After successful signup, switch to login mode
+        this.formMode = 'login';
+        this.errorMessage = 'Account created successfully! Please login.';
+      })
+      .catch((error: HttpErrorResponse) => {
+        this.errorMessage = 'Signup failed. Please try again.';
+        console.error('Signup error:', error);
+      })
+      .finally(() => {
+        this.loading = false;
+      });
   }
 }

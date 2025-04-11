@@ -6,13 +6,6 @@
     "configurations": [
         {
             "type": "java",
-            "name": "KeyGen",
-            "request": "launch",
-            "mainClass": "com.example.driveme.KeyGen",
-            "projectName": "driveme"
-        },
-        {
-            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
