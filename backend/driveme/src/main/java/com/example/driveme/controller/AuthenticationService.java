@@ -52,6 +52,8 @@ public class AuthenticationService {
                         input.getPassword()
                 )
         );
+
+        System.out.println(">>> Authenticating user with email or phone: " + input.getEmailOrPhone());
         
         if (userRepository.findByEmail(input.getEmailOrPhone()).isPresent()) {
             return userRepository.findByEmail(input.getEmailOrPhone()).get();

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.driveme.model.User;
+import com.example.driveme.model.Vehicle;
 import com.example.driveme.repository.UserRepository;
 
 @RestController
@@ -25,13 +26,6 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserByFullName(@PathVariable("id") Integer id) {
-        return userRepository.findById(id)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-    }
-
     @PostMapping("/{id}/add-vehicle")
     public ResponseEntity<User> addVehicle(@PathVariable("id") Integer Id, @RequestBody User user) {
         return userRepository.findById(Id)
@@ -39,6 +33,13 @@ public class UserController {
                 u.getVehicles().addAll(user.getVehicles());
                 return ResponseEntity.ok(userRepository.save(u));
             })
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/vehicles")
+    public ResponseEntity<List<Vehicle>> getVehicles(@PathVariable("id") Integer Id) {
+        return userRepository.findById(Id)
+            .map(user -> ResponseEntity.ok(user.getVehicles()))
             .orElse(ResponseEntity.notFound().build());
     }
 

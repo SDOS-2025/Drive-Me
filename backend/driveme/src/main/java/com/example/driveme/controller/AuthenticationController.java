@@ -26,18 +26,34 @@ public class AuthenticationController {
     }
 
     @PostMapping("/user/signup")
-    public ResponseEntity<User> register(@RequestBody RegisterRequestDTO registerUserDto) {
+    public ResponseEntity<RegisterResponseDTO> register(@RequestBody RegisterRequestDTO registerUserDto) {
         logger.info("Registering user: " + registerUserDto.getFullName() + " with email: " + registerUserDto.getEmail());
         User registeredUser = authenticationService.signup(registerUserDto);
-
-        return ResponseEntity.ok(registeredUser);
+    
+        
+        RegisterResponseDTO registerResponse = new RegisterResponseDTO()
+                .setId(registeredUser.getId())
+                .setFullName(registeredUser.getFullName())
+                .setEmail(registeredUser.getEmail())
+                .setPhone(registeredUser.getPhone())
+                .setAadharCard(registeredUser.getAadharCard());
+        logger.info("User registered successfully: " + registerResponse.getFullName() + " with email: " + registerResponse.getEmail());
+        return ResponseEntity.ok(registerResponse);
     }
 
     @PostMapping("/driver/signup")
-    public ResponseEntity<Driver> registerDriver(@RequestBody RegisterRequestDTO registerUserDto) {
+    public ResponseEntity<RegisterResponseDTO> registerDriver(@RequestBody RegisterRequestDTO registerUserDto) {
         Driver registeredDriver = authenticationService.signupDriver(registerUserDto);
 
-        return ResponseEntity.ok(registeredDriver);
+        RegisterResponseDTO registerResponse = new RegisterResponseDTO()
+                .setId(registeredDriver.getDriver_id())
+                .setFullName(registeredDriver.getName())
+                .setEmail(registeredDriver.getEmail())
+                .setPhone(registeredDriver.getPhone())
+                .setAadharCard(registeredDriver.getAadhar_card());
+
+
+        return ResponseEntity.ok(registerResponse);
     }
 
     @PostMapping("/user/login")
