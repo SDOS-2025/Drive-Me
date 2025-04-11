@@ -247,9 +247,15 @@
           </div>
         </div>
 
-        <div class="form-actions">
-          <button class="btn btn-secondary" (click)="prevStep()">Back</button>
-          <button class="btn btn-primary" (click)="submitBooking()" [disabled]="!isPaymentValid()">Confirm Booking</button>
+          <div class="form-actions">
+            <button class="btn btn-secondary" (click)="prevStep()">Back</button>
+            <button 
+              type="button" 
+              class="btn btn-primary"
+              (click)="submitBooking()" 
+              [disabled]="!isPaymentValid() || isLoading">
+              {{ isLoading ? 'Processing...' : 'Confirm Booking' }}
+            </button>
         </div>
       </form>
     </div>

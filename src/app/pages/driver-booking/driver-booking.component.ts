@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NavbarComponent } from "../../components/navbar/navbar.component";
+import {  HttpClientModule } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
+import { BookingRequest, BookingService } from '../../services/driver.service';
 
 interface Driver {
   id: number;
@@ -23,18 +26,29 @@ interface Driver {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    NavbarComponent
-]
+    NavbarComponent,
+    HttpClientModule
+],
+  providers: [BookingService, AuthService],
 })
 export class DriverBookingComponent implements OnInit {
   bookingForm!: FormGroup;
   tripDetailsForm!: FormGroup;
   driverSelectionForm!: FormGroup;
   paymentForm!: FormGroup;
+
+  // Redirect to this data if user is not logged in
+  userId: number = 0; // User ID from AuthService
+
+  // Test Data
+  vehicleId: number = 1; // Example vehicle ID
+  isLoading: boolean = false; // Loading state for async operations
+  errorMessage: string = ''; // Error message for displaying errors 
   
   currentStep: number = 1;
   totalSteps: number = 3;
-  
+ 
+  // List of Drivers as an example
   drivers: Driver[] = [
     {
       id: 1,
@@ -84,26 +98,82 @@ export class DriverBookingComponent implements OnInit {
   totalCost = 0;
   bookingSuccess = false;
 
-  constructor(private fb: FormBuilder) {}
-
-  ngOnInit(): void {
-    this.createForms();
-    this.updateAvailableDrivers();
-    
-    // Set min date to today
-    const today = new Date();
-    this.minDate = today.toISOString().split('T')[0];
-    
-    // Update total cost when trip details change
-    this.tripDetailsForm.valueChanges.subscribe(() => {
-      this.calculateTotalCost();
-    });
-    
-    // Update driver selection when pickup date/time changes
-    this.tripDetailsForm.get('pickupDate')?.valueChanges.subscribe(() => {
-      this.updateAvailableDrivers();
-    });
+  constructor(private fb: FormBuilder, 
+    private bookingService: BookingService,
+    private authService: AuthService
+  ) {
+    console.log('Component constructor called');
   }
+  
+  ngOnInit(): void {
+    console.log('ngOnInit called');
+    try {
+      console.log('Getting current user...');
+      this.getCurrentUser();
+      
+      console.log('Creating forms...');
+      this.createForms();
+      
+      console.log('Updating available drivers...');
+      this.updateAvailableDrivers();
+      
+      // Set min date to today
+      const today = new Date();
+      this.minDate = today.toISOString().split('T')[0];
+      console.log('Min date set:', this.minDate);
+      
+      // Form subscriptions
+      if (this.tripDetailsForm) {
+        this.tripDetailsForm.valueChanges.subscribe(() => {
+          this.calculateTotalCost();
+        });
+        
+        this.tripDetailsForm.get('pickupDate')?.valueChanges.subscribe(() => {
+          this.updateAvailableDrivers();
+        });
+      } else {
+        console.error('tripDetailsForm is undefined');
+      }
+    } catch (error) {
+      console.error('Error in ngOnInit:', error);
+      this.errorMessage = 'Error initializing booking page: ' + (error as Error).message;
+    }
+  }
+
+  getCurrentUser(): void {
+    const currentUser = this.authService.currentUserValue;
+
+    if (currentUser) {
+      this.userId = currentUser.id || 1;
+      console.log('Current User ID:', this.userId);
+    }
+  }
+
+
+  // loadAvailableDrivers(): void {
+  //   this.isLoading = true;
+  //   this.bookingService.getAvailableDrivers().subscribe({
+  //     next: (data) => {
+  //       this.drivers = data.map(driver => ({
+  //         id: driver.driver_id,
+  //         name: driver.name,
+  //         rating: driver.rating || 4.5,
+  //         experience: driver.experience || 5,
+  //         specialties: driver.specialties || ['Professional Driving'],
+  //         hourlyRate: driver.hourlyRate || 25,
+  //         available: true,
+  //         imageUrl: 'assets/driver1.jpg'
+  //       }));
+  //       this.availableDrivers = this.drivers.filter(driver => driver.available);
+  //       this.isLoading = false;
+  //     },
+  //     error: (error) => {
+  //       console.error('Error fetching drivers', error);
+  //       this.errorMessage = 'Failed to load drivers. Please try again.';
+  //       this.isLoading = false;
+  //     }
+  //   });
+  // }
 
   createForms(): void {
     // Trip details form
@@ -159,10 +229,35 @@ export class DriverBookingComponent implements OnInit {
   }
 
   submitBooking(): void {
-    if (this.bookingForm.valid) {
-      // In a real app, this would send the booking data to a backend service
-      console.log('Booking submitted:', this.bookingForm.value);
-      this.bookingSuccess = true;
+
+    console.log("here");
+    console.log(this.userId);
+    console.log(this.authService.currentUserValue?.role);
+
+    if (this.bookingForm.valid && this.selectedDriver) {
+      this.isLoading = true;
+      
+      // Create booking request with the user ID
+      const bookingRequest: BookingRequest = {
+        customer: { id: this.userId },
+        driver: { driver_id: this.selectedDriver.id },
+        vehicle: { id: 8 },
+        pickupLocation: this.tripDetailsForm.get('pickupLocation')?.value,
+        dropoffLocation: this.tripDetailsForm.get('destination')?.value,
+        fare: this.totalCost
+      }; 
+
+      // 2. Send booking request to backend
+      this.bookingService.createBooking(bookingRequest).subscribe({
+        next: (bookingResponse) => {
+          console.log('Booking created:', bookingResponse);
+        },
+        error: (error) => {
+          console.error('Booking error:', error);
+          this.errorMessage = 'Booking failed. Please try again.';
+          this.isLoading = false;
+        }
+      });
     } else {
       // Mark all fields as touched to trigger validation messages
       this.markFormGroupTouched(this.bookingForm);

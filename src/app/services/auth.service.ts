@@ -67,7 +67,7 @@ export class AuthService {
       };
       
       // Store user in localStorage and update subject
-      localStorage.setItem('currentUser', JSON.stringify(user));
+      localStorage.setItem("token", data.token);
       this.currentUserSubject.next(user);
       
       return user;
