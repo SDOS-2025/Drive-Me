@@ -157,7 +157,7 @@ public ResponseEntity<?> cancelBooking(@PathVariable Long id, Authentication aut
         // Get the current user's ID from the authentication token
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
-        User user = userRepository.findByEmail(username)
+        User user = userRepository.findByFullName(username)
             .orElseThrow(() -> new RuntimeException("User not found"));
         
         // Get the booking
