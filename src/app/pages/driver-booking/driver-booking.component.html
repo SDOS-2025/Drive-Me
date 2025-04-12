@@ -5,6 +5,20 @@
     <p>Let our professional drivers take you where you need to go safely and reliably</p>
   </div>
 
+  <div *ngIf="!userId" class="auth-alert">
+    <p><i class="fas fa-exclamation-circle"></i> Please <a routerLink="/login">log in</a> to book a driver</p>
+  </div>
+  
+  <div *ngIf="isLoading" class="loading-indicator">
+    <div class="spinner"></div>
+    <p>Processing your booking request...</p>
+  </div>
+  
+  <div *ngIf="errorMessage" class="error-alert">
+    <p><i class="fas fa-exclamation-triangle"></i> {{errorMessage}}</p>
+    <button class="btn btn-secondary" (click)="errorMessage = ''">Dismiss</button>
+  </div>
+
   <!-- Progress Indicator -->
   <div class="progress-container">
     <div class="progress-steps">

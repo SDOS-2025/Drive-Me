@@ -63,11 +63,14 @@ export class AuthService {
       const user: User = {
         // Map response properties to user object
         role: credentials.role,
-        token: data.token
+        token: data.token,
+        id: data.userId,
+        fullName: data.fullName,
       };
       
       // Store user in localStorage and update subject
       localStorage.setItem("token", data.token);
+      localStorage.setItem('currentUser', JSON.stringify(user));
       this.currentUserSubject.next(user);
       
       return user;

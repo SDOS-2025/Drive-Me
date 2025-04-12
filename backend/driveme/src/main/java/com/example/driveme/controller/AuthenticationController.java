@@ -63,6 +63,9 @@ public class AuthenticationController {
         String jwtToken = jwtService.generateToken(authenticatedUser);
 
         LoginResponseDTO loginResponse = new LoginResponseDTO().setToken(jwtToken).setExpiresIn(jwtService.getExpirationTime());
+        loginResponse.setUserId(authenticatedUser.getId());
+        loginResponse.setFullName(authenticatedUser.getFullName());
+        logger.info("User authenticated successfully: " + loginResponse.getFullName() + " with email: " + authenticatedUser.getEmail());
 
         return ResponseEntity.ok(loginResponse);
     }

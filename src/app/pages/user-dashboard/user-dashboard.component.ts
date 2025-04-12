@@ -3,17 +3,35 @@ import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { NavbarComponent } from "../../components/navbar/navbar.component";
 import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { UserBookingService, BookingSummary } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-user-dashboard',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, NavbarComponent, RouterModule],
+  imports: [CommonModule, SidebarComponent, NavbarComponent, RouterModule, HttpClientModule],
+  providers: [UserBookingService],
   templateUrl: './user-dashboard.component.html',
   styleUrls: ['./user-dashboard.component.css']
 })
 export class UserDashboardComponent implements OnInit {
   userName: string = 'Sarah';
+  isLoading: boolean = false;
+  errorMessage: string = '';
   
+  // All bookings from the backend
+  allBookings: BookingSummary[] = [];
+  
+  // Upcoming/Active bookings (PENDING or CONFIRMED)
+  upcomingBookings: BookingSummary[] = [];
+  
+  // Past bookings (COMPLETED or CANCELLED)
+  pastBookings: BookingSummary[] = [];
+  
+  // Tabs for switching between booking views
+  activeTab: 'upcoming' | 'past' | 'all' = 'upcoming';
+
   sidebarMenuItems = [
     { icon: '📊', label: 'Dashboard', active: true },
     { icon: '📅', label: 'My Bookings' },
@@ -28,33 +46,13 @@ export class UserDashboardComponent implements OnInit {
   ];
   
   stats = [
-    { icon: '🚗', title: 'Total Rides', value: '23' },
-    { icon: '🎯', title: 'Upcoming Rides', value: '2' },
-    { icon: '💰', title: 'Total Spent', value: '$480' },
-    { icon: '⭐', title: 'Avg. Rating Given', value: '4.7' }
+    { icon: '🚗', title: 'Total Rides', value: '0' },
+    { icon: '🎯', title: 'Upcoming Rides', value: '0' },
+    { icon: '💰', title: 'Total Spent', value: '$0' },
+    { icon: '⭐', title: 'Avg. Rating Given', value: '0' }
   ];
   
-  upcomingBookings = [
-    {
-      icon: '🏢',
-      title: 'Business Meeting',
-      date: 'April 15, 2025 • 10:00 AM',
-      driver: 'Michael S. • Toyota Camry',
-      status: 'Confirmed',
-      statusIcon: '✓',
-      statusColor: '#28a745'
-    },
-    {
-      icon: '✈️',
-      title: 'Airport Pickup',
-      date: 'April 20, 2025 • 8:30 PM',
-      driver: 'Robert J. • Tesla Model Y',
-      status: 'Pending',
-      statusIcon: '⏱',
-      statusColor: '#ffc107'
-    }
-  ];
-  
+  // Keep original sample data for top drivers and activities
   topDrivers = [
     {
       icon: '👨‍✈️',
@@ -91,8 +89,125 @@ export class UserDashboardComponent implements OnInit {
     }
   ];
   
-  constructor() { }
+  constructor(
+    private bookingService: UserBookingService,
+    private authService: AuthService
+  ) { 
+    console.log('UserDashboardComponent constructor called');
+  }
 
   ngOnInit(): void {
+    console.log('UserDashboardComponent ngOnInit called');
+    this.loadUserData();
+    this.loadBookings();
+  }
+  
+  loadUserData(): void {
+    console.log('Loading user data');
+    const user = this.authService.currentUserValue;
+    if (user && user.fullName) {
+      this.userName = user.fullName.split(' ')[0];
+    }
+    console.log('User name set to:', this.userName);
+  }
+
+  loadBookings(): void {
+    console.log('Loading bookings...');
+    this.isLoading = true;
+    this.bookingService.getUserBookings().subscribe({
+      next: (bookings: any[]) => {
+        this.allBookings = bookings;
+        
+        console.log('All bookings:', this.allBookings);
+        // Filter upcoming bookings (PENDING or CONFIRMED)
+        this.upcomingBookings = bookings.filter((booking: { status: string; }) => 
+          booking.status === 'PENDING' || booking.status === 'CONFIRMED'
+        );
+        
+        // Filter past bookings (COMPLETED or CANCELLED)
+        this.pastBookings = bookings.filter((booking: { status: string; }) => 
+          booking.status === 'COMPLETED' || booking.status === 'CANCELLED'
+        );
+        
+        // Update stats
+        this.updateStats(bookings);
+        this.isLoading = false;
+        console.log('Bookings loaded successfully', bookings);
+      },
+      error: (error: Error) => {
+        console.error('Error fetching bookings', error);
+        this.errorMessage = 'Unable to load your bookings. Please try again later.';
+        this.isLoading = false;
+      }
+    });
+  }
+  
+  updateStats(bookings: BookingSummary[]): void {
+    // Update total rides
+    this.stats[0].value = bookings.length.toString();
+    
+    // Update upcoming rides
+    this.stats[1].value = this.upcomingBookings.length.toString();
+    
+    // Calculate total spent
+    const totalSpent = bookings
+      .filter(booking => booking.status === 'COMPLETED')
+      .reduce((sum, booking) => sum + booking.fare, 0);
+    this.stats[2].value = `$${totalSpent}`;
+  }
+  
+  setActiveTab(tab: 'upcoming' | 'past' | 'all'): void {
+    console.log('Setting active tab to:', tab);
+    this.activeTab = tab;
+  }
+  
+  getStatusColor(status: string): string {
+    switch(status) {
+      case 'CONFIRMED': return '#28a745'; // Green
+      case 'PENDING': return '#ffc107';   // Yellow
+      case 'CANCELLED': return '#dc3545'; // Red
+      case 'COMPLETED': return '#6c757d'; // Gray
+      default: return '#6c757d';
+    }
+  }
+  
+  getStatusIcon(status: string): string {
+    switch(status) {
+      case 'CONFIRMED': return '✓';      // Checkmark
+      case 'PENDING': return '⏱';        // Clock
+      case 'CANCELLED': return '✗';      // X
+      case 'COMPLETED': return '🏁';     // Flag
+      default: return '❓';
+    }
+  }
+  
+  cancelBooking(bookingId: number): void {
+    console.log('Attempting to cancel booking ID:', bookingId);
+    if (confirm('Are you sure you want to cancel this booking?')) {
+      this.isLoading = true;
+      this.bookingService.cancelBooking(bookingId).subscribe({
+        next: () => {
+          console.log('Booking cancelled successfully');
+          // Refresh bookings
+          this.loadBookings();
+        },
+        error: (error: any) => {
+          console.error('Error cancelling booking', error);
+          this.errorMessage = 'Unable to cancel booking. Please try again later.';
+          this.isLoading = false;
+        }
+      });
+    }
+  }
+  
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 }

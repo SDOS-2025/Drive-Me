@@ -1,76 +1,192 @@
 <app-navbar></app-navbar>
-  <div class="dashboard">
-    
-    <app-sidebar [menuItems]="sidebarMenuItems"></app-sidebar>
 
+<div class="dashboard-container">
+  <app-sidebar [menuItems]="sidebarMenuItems"></app-sidebar>
+  
+  <main class="dashboard-content">
+    <div class="welcome-section">
+      <h1>Welcome, {{userName}}!</h1>
+      <p class="subtitle">Here's an overview of your current rides and activity</p>
+    </div>
     
-    <div class="main-content">
-      <div class="dashboard-header">
-        <h2>Welcome, {{userName}}!</h2>
-        <div class="search-bar">
-          <i>🔍</i>
-          <input type="text" placeholder="Find driver...">
+    <!-- Loading and Error Messages -->
+    <div *ngIf="isLoading" class="loading-indicator">
+      <div class="spinner"></div>
+      <p>Loading your bookings...</p>
+    </div>
+    
+    <div *ngIf="errorMessage" class="error-alert">
+      <p><i class="fas fa-exclamation-triangle"></i> {{errorMessage}}</p>
+      <button class="btn btn-secondary" (click)="errorMessage = ''">Dismiss</button>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="stats-container">
+      <div class="stat-card" *ngFor="let stat of stats">
+        <div class="stat-icon">{{stat.icon}}</div>
+        <div class="stat-info">
+          <p class="stat-value">{{stat.value}}</p>
+          <p class="stat-title">{{stat.title}}</p>
         </div>
       </div>
-      
-      <div class="stats-container">
-        <div class="stat-card" *ngFor="let stat of stats">
-          <div class="icon">{{stat.icon}}</div>
-          <h3>{{stat.title}}</h3>
-          <div class="value">{{stat.value}}</div>
-        </div>
+    </div>
+    
+    <!-- Bookings Section -->
+    <div class="bookings-section">
+      <div class="section-header">
+        <h2>My Bookings</h2>
+        <a routerLink="/driver-booking" class="btn btn-primary">Book a Driver</a>
       </div>
       
-      <div class="card">
-        <div class="card-header">
-          <h3>Upcoming Bookings</h3>
-          <button class="btn btn-primary" routerLink = "/driver-booking">Book New Ride</button>
-        </div>
-        
-        <div class="trip-card" *ngFor="let booking of upcomingBookings">
-          <div class="trip-icon">{{booking.icon}}</div>
-          <div class="trip-details">
-            <h4>{{booking.title}}</h4>
-            <div>{{booking.date}}</div>
-            <div>{{booking.driver}}</div>
-          </div>
-          <div class="trip-status">
-            <span>{{booking.status}}</span>
-            <div class="status-dot" [style.background-color]="booking.statusColor">{{booking.statusIcon}}</div>
-          </div>
-        </div>
+      <!-- Booking Tabs -->
+      <div class="booking-tabs">
+        <button 
+          [class.active]="activeTab === 'upcoming'" 
+          (click)="setActiveTab('upcoming')">
+          Upcoming ({{upcomingBookings.length}})
+        </button>
+        <button 
+          [class.active]="activeTab === 'past'" 
+          (click)="setActiveTab('past')">
+          Past ({{pastBookings.length}})
+        </button>
+        <button 
+          [class.active]="activeTab === 'all'" 
+          (click)="setActiveTab('all')">
+          All ({{allBookings.length}})
+        </button>
       </div>
       
-      <div class="dashboard-grid">
-        <div class="card">
-          <div class="card-header">
-            <h3>Top Rated Drivers</h3>
-            <a href="#">View All</a>
-          </div>
-          
-          <div class="trip-card" *ngFor="let driver of topDrivers">
-            <div class="trip-icon">{{driver.icon}}</div>
-            <div class="trip-details">
-              <h4>{{driver.name}}</h4>
-              <div>{{driver.experience}}</div>
+      <!-- No Bookings Message -->
+      <div *ngIf="(activeTab === 'upcoming' && upcomingBookings.length === 0) || 
+                  (activeTab === 'past' && pastBookings.length === 0) || 
+                  (activeTab === 'all' && allBookings.length === 0)" 
+           class="no-bookings">
+        <p>No bookings to display</p>
+        <a routerLink="/driver-booking" class="btn btn-primary">Book Your First Trip</a>
+      </div>
+      
+      <!-- Bookings List -->
+      <div class="bookings-list">
+        <!-- For Upcoming Tab -->
+        <div *ngIf="activeTab === 'upcoming'">
+          <div *ngFor="let booking of upcomingBookings" class="booking-card">
+            <div class="booking-main">
+              <div class="booking-icon">🚕</div>
+              <div class="booking-details">
+                <div class="booking-id">Booking #{{booking.bookingId}}</div>
+                <h3 class="booking-title">{{booking.pickupLocation}} → {{booking.dropoffLocation}}</h3>
+                <p class="booking-time">{{formatDate(booking.createdAt)}}</p>
+                <p class="booking-driver" *ngIf="booking.driverName">Driver: {{booking.driverName}}</p>
+              </div>
             </div>
-            <button class="btn btn-light">Book</button>
+            <div class="booking-status">
+              <span [style.color]="getStatusColor(booking.status)" class="status-badge">
+                <span class="status-icon">{{getStatusIcon(booking.status)}}</span>
+                {{booking.status}}
+              </span>
+              <div class="booking-price">${{booking.fare}}</div>
+              <button 
+                *ngIf="booking.status === 'PENDING' || booking.status === 'CONFIRMED'" 
+                class="btn btn-cancel"
+                (click)="cancelBooking(booking.bookingId)">
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
         
-        <div class="card">
-          <div class="card-header">
-            <h3>Recent Activity</h3>
+        <!-- For Past Tab -->
+        <div *ngIf="activeTab === 'past'">
+          <div *ngFor="let booking of pastBookings" class="booking-card">
+            <div class="booking-main">
+              <div class="booking-icon">🚕</div>
+              <div class="booking-details">
+                <div class="booking-id">Booking #{{booking.bookingId}}</div>
+                <h3 class="booking-title">{{booking.pickupLocation}} → {{booking.dropoffLocation}}</h3>
+                <p class="booking-time">{{formatDate(booking.createdAt)}}</p>
+                <p class="booking-driver" *ngIf="booking.driverName">Driver: {{booking.driverName}}</p>
+              </div>
+            </div>
+            <div class="booking-status">
+              <span [style.color]="getStatusColor(booking.status)" class="status-badge">
+                <span class="status-icon">{{getStatusIcon(booking.status)}}</span>
+                {{booking.status}}
+              </span>
+              <div class="booking-price">${{booking.fare}}</div>
+              <button 
+                *ngIf="booking.status === 'COMPLETED'" 
+                class="btn btn-review">
+                Leave Review
+              </button>
+            </div>
           </div>
-          
-          <div class="trip-card" *ngFor="let activity of recentActivities">
-            <div class="trip-icon">{{activity.icon}}</div>
-            <div class="trip-details">
-              <h4>{{activity.title}}</h4>
-              <div>{{activity.details}}</div>
+        </div>
+        
+        <!-- For All Tab -->
+        <div *ngIf="activeTab === 'all'">
+          <div *ngFor="let booking of allBookings" class="booking-card">
+            <div class="booking-main">
+              <div class="booking-icon">🚕</div>
+              <div class="booking-details">
+                <div class="booking-id">Booking #{{booking.bookingId}}</div>
+                <h3 class="booking-title">{{booking.pickupLocation}} → {{booking.dropoffLocation}}</h3>
+                <p class="booking-time">{{formatDate(booking.createdAt)}}</p>
+                <p class="booking-driver" *ngIf="booking.driverName">Driver: {{booking.driverName}}</p>
+              </div>
+            </div>
+            <div class="booking-status">
+              <span [style.color]="getStatusColor(booking.status)" class="status-badge">
+                <span class="status-icon">{{getStatusIcon(booking.status)}}</span>
+                {{booking.status}}
+              </span>
+              <div class="booking-price">${{booking.fare}}</div>
+              <button 
+                *ngIf="booking.status === 'PENDING' || booking.status === 'CONFIRMED'" 
+                class="btn btn-cancel"
+                (click)="cancelBooking(booking.bookingId)">
+                Cancel
+              </button>
+              <button 
+                *ngIf="booking.status === 'COMPLETED'" 
+                class="btn btn-review">
+                Review
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+    
+    <!-- Other Dashboard Sections -->
+    <div class="dashboard-grid">
+      <!-- Top Drivers Section -->
+      <div class="dashboard-card">
+        <h2>Top Rated Drivers</h2>
+        <div class="top-drivers">
+          <div class="driver-item" *ngFor="let driver of topDrivers">
+            <div class="driver-icon">{{driver.icon}}</div>
+            <div class="driver-info">
+              <div class="driver-name">{{driver.name}}</div>
+              <div class="driver-experience">{{driver.experience}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Recent Activity Section -->
+      <div class="dashboard-card">
+        <h2>Recent Activity</h2>
+        <div class="activity-list">
+          <div class="activity-item" *ngFor="let activity of recentActivities">
+            <div class="activity-icon">{{activity.icon}}</div>
+            <div class="activity-info">
+              <div class="activity-title">{{activity.title}}</div>
+              <div class="activity-details">{{activity.details}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

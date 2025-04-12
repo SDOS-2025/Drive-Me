@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators } 
 import { NavbarComponent } from "../../components/navbar/navbar.component";
 import {  HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-import { BookingRequest, BookingService } from '../../services/driver.service';
+import { BookingRequest, BookingService } from '../../services/bookings.service';
 
 interface Driver {
   id: number;
