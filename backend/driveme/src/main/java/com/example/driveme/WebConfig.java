@@ -45,7 +45,8 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         }))
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/**").permitAll()
+            .requestMatchers("/auth/**",
+            "/api/chat/**").permitAll()
             .anyRequest().authenticated()
         )
         .sessionManagement(session -> session

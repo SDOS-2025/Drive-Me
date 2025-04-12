@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.example.driveme.model.*;
+import com.example.driveme.services.AuthenticationService;
 import com.example.driveme.DTO.*;
 import com.example.driveme.JwtAuth.*;
 
