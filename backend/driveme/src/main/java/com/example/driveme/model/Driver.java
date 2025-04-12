@@ -4,9 +4,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -14,6 +17,7 @@ import jakarta.persistence.Table;
 @Table(name = "drivers")
 public class Driver implements UserDetails {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long driver_id;
     private String name;
     private String email;
@@ -123,11 +127,6 @@ public class Driver implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-    }
-
-    @Override
     public String getPassword() {
         return password_hash;
     }
@@ -138,6 +137,12 @@ public class Driver implements UserDetails {
     }
 
     // Add these to both User and Driver classes
+    // Assuming Driver implements UserDetails
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_DRIVER"));
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

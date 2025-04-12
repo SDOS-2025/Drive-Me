@@ -20,46 +20,48 @@ import jakarta.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 @Configuration
 public class WebConfig {
-    private final AuthenticationProvider authenticationProvider;
+    private final List<AuthenticationProvider> authenticationProviders;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     
     public WebConfig(
-        AuthenticationProvider authenticationProvider,
+        List<AuthenticationProvider> authenticationProviders,
         JwtAuthenticationFilter jwtAuthenticationFilter
     ) {
-        this.authenticationProvider = authenticationProvider;
+        this.authenticationProviders = authenticationProviders;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
     
-   @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .cors(cors -> cors.configurationSource(_ -> {
-            CorsConfiguration configuration = new CorsConfiguration();
-            configuration.addAllowedOrigin("*");
-            configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-            configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-            source.registerCorsConfiguration("/**", configuration);
-            return configuration;
-        }))
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/auth/**",
-            "/api/chat/**").permitAll()
-            .anyRequest().authenticated()
-        )
-        .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authenticationProvider(authenticationProvider)
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        .exceptionHandling(ex -> ex
-            .authenticationEntryPoint((_, response, authException) -> {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: " + authException.getMessage());
-            })
-        );
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .cors(cors -> cors.configurationSource(_ -> {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.addAllowedOrigin("*");
+                configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return configuration;
+            }))
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint((_, response, authException) -> {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized: " + authException.getMessage());
+                })
+            );
 
-    return http.build();
+        // Add all authentication providers
+        for (AuthenticationProvider provider : authenticationProviders) {
+            http.authenticationProvider(provider);
+        }
+
+        return http.build();
     }
-
 }

@@ -3,6 +3,7 @@ package com.example.driveme.services;
 
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -65,21 +66,30 @@ public class AuthenticationService {
     }
 
     public Driver authenticateDriver(LoginRequestDTO input) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        input.getEmailOrPhone(),
-                        input.getPassword()
-                )
-        );
-        
+    try {
+        // First, check if driver exists
+        Driver driver = null;
+
         if (driverRepository.findByEmail(input.getEmailOrPhone()).isPresent()) {
-            return driverRepository.findByEmail(input.getEmailOrPhone()).get();
+            driver = driverRepository.findByEmail(input.getEmailOrPhone()).get();
         } else if (driverRepository.findByPhone(input.getEmailOrPhone()).isPresent()) {
-            return driverRepository.findByPhone(input.getEmailOrPhone()).get();
+            driver = driverRepository.findByPhone(input.getEmailOrPhone()).get();
         } else {
             throw new RuntimeException("Driver not found");
         }
+
+        // Verify password manually instead of using authenticationManager
+        if (!passwordEncoder.matches(input.getPassword(), driver.getPassword_hash())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        return driver;
+    } catch (BadCredentialsException e) {
+        throw new RuntimeException("Invalid credentials", e);
+    } catch (Exception e) {
+        throw new RuntimeException("Authentication failed", e);
     }
+}
 
     public Driver signupDriver(RegisterRequestDTO input) {
         Driver driver = new Driver() // Replace 'ConcreteDriver' with the actual implementation class of Driver
