@@ -78,6 +78,8 @@ public class AuthenticationController {
         String jwtToken = jwtService.generateToken(authenticatedDriver);
 
         LoginResponseDTO loginResponse = new LoginResponseDTO().setToken(jwtToken).setExpiresIn(jwtService.getExpirationTime());
+        loginResponse.setUserId(authenticatedDriver.getDriver_id());
+        loginResponse.setFullName(authenticatedDriver.getName());
 
         return ResponseEntity.ok(loginResponse);
     }

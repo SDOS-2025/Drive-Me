@@ -2,12 +2,11 @@
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "interactive",
     "workbench.colorCustomizations": {
-    "statusBar.background" : "#9bb2ff",
-    "statusBar.noFolderBackground" : "#00ffbb",
-    "statusBar.debuggingBackground": "#c1eaff",
-    "statusBar.debuggingForeground": "#000000",
-    "statusBar.foreground": "#000000",
-    "statusBar.noFolderForeground": "#000000",
-}
-
+        "statusBar.background": "#9bb2ff",
+        "statusBar.noFolderBackground": "#00ffbb",
+        "statusBar.debuggingBackground": "#c1eaff",
+        "statusBar.debuggingForeground": "#000000",
+        "statusBar.foreground": "#000000",
+        "statusBar.noFolderForeground": "#000000",
+    }
 }

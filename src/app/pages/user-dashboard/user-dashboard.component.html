@@ -1,12 +1,26 @@
-<app-navbar></app-navbar>
+<app-dashboard-navbar></app-dashboard-navbar>
 
 <div class="dashboard-container">
   <app-sidebar [menuItems]="sidebarMenuItems"></app-sidebar>
   
+  <div class="content-container">
+    <!-- Error message display -->
+    <div *ngIf="errorMessage" class="error-container">
+      <div class="error-message">
+        <span class="error-text">{{ errorMessage }}</span>
+        <button class="error-close" (click)="clearError()">×</button>
+      </div>
+    </div>
+    
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading your bookings...</p> 
+    </div>
+    </div>
   <main class="dashboard-content">
     <div class="welcome-section">
-      <h1>Welcome, {{userName}}!</h1>
-      <p class="subtitle">Here's an overview of your current rides and activity</p>
+      <h2>Welcome, {{userName}}!</h2>
     </div>
     
     <!-- Loading and Error Messages -->
@@ -23,7 +37,6 @@
     <!-- Stats Cards -->
     <div class="stats-container">
       <div class="stat-card" *ngFor="let stat of stats">
-        <div class="stat-icon">{{stat.icon}}</div>
         <div class="stat-info">
           <p class="stat-value">{{stat.value}}</p>
           <p class="stat-title">{{stat.title}}</p>
@@ -63,7 +76,6 @@
                   (activeTab === 'all' && allBookings.length === 0)" 
            class="no-bookings">
         <p>No bookings to display</p>
-        <a routerLink="/driver-booking" class="btn btn-primary">Book Your First Trip</a>
       </div>
       
       <!-- Bookings List -->
@@ -168,7 +180,7 @@
             <div class="driver-icon">{{driver.icon}}</div>
             <div class="driver-info">
               <div class="driver-name">{{driver.name}}</div>
-              <div class="driver-experience">{{driver.experience}}</div>
+              <div class="driver-experience">{{driver.number}}</div>
             </div>
           </div>
         </div>
@@ -179,7 +191,6 @@
         <h2>Recent Activity</h2>
         <div class="activity-list">
           <div class="activity-item" *ngFor="let activity of recentActivities">
-            <div class="activity-icon">{{activity.icon}}</div>
             <div class="activity-info">
               <div class="activity-title">{{activity.title}}</div>
               <div class="activity-details">{{activity.details}}</div>

@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.driveme.model.Driver;
 import com.example.driveme.repository.DriverRepository;
+import com.example.driveme.DTO.RegisterResponseDTO;
 
 import java.util.List;
 
@@ -17,8 +18,14 @@ public class DriverController {
     }
 
     @GetMapping
-    public List<Driver> getAllUsers() {
-        return driverRepository.findAll();
+    public List<RegisterResponseDTO> getAllUsers() {
+        List<Driver> data = driverRepository.findAll();
+
+        // Return the required data only
+        return data.stream()
+                .map(driver -> new RegisterResponseDTO(driver.getDriver_id(), driver.getName(), driver.getEmail(), driver.getPhone(), driver.getAadhar_card()))
+                .toList();
+
     }
 
 }

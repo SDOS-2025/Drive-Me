@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { NavbarComponent } from "../../components/navbar/navbar.component";
-import {  HttpClientModule } from '@angular/common/http';
+import { DashboardNavbarComponent } from "../../components/dashboard-navbar/dashboard-navbar.component";
+import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
+import { DriverService } from '../../services/driver.service';
 import { BookingRequest, BookingService } from '../../services/bookings.service';
+import { Router } from '@angular/router';
 
 interface Driver {
   id: number;
@@ -26,10 +28,10 @@ interface Driver {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    NavbarComponent,
+    DashboardNavbarComponent,
     HttpClientModule
-],
-  providers: [BookingService, AuthService],
+  ],
+  providers: [BookingService, AuthService, DriverService],
 })
 export class DriverBookingComponent implements OnInit {
   bookingForm!: FormGroup;
@@ -41,13 +43,13 @@ export class DriverBookingComponent implements OnInit {
   userId: number = 0; // User ID from AuthService
 
   // Test Data
-  vehicleId: number = 1; // Example vehicle ID
+  vehicleId: number = 4; // Example vehicle ID
   isLoading: boolean = false; // Loading state for async operations
   errorMessage: string = ''; // Error message for displaying errors 
-  
+
   currentStep: number = 1;
   totalSteps: number = 3;
- 
+
   // List of Drivers as an example
   drivers: Driver[] = [
     {
@@ -98,36 +100,38 @@ export class DriverBookingComponent implements OnInit {
   totalCost = 0;
   bookingSuccess = false;
 
-  constructor(private fb: FormBuilder, 
+  constructor(private fb: FormBuilder,
     private bookingService: BookingService,
-    private authService: AuthService
+    private authService: AuthService,
+    private driverService: DriverService,
+    private router: Router
   ) {
     console.log('Component constructor called');
   }
-  
+
   ngOnInit(): void {
     console.log('ngOnInit called');
     try {
       console.log('Getting current user...');
       this.getCurrentUser();
-      
+
       console.log('Creating forms...');
       this.createForms();
-      
+
       console.log('Updating available drivers...');
       this.updateAvailableDrivers();
-      
+
       // Set min date to today
       const today = new Date();
       this.minDate = today.toISOString().split('T')[0];
       console.log('Min date set:', this.minDate);
-      
+
       // Form subscriptions
       if (this.tripDetailsForm) {
         this.tripDetailsForm.valueChanges.subscribe(() => {
           this.calculateTotalCost();
         });
-        
+
         this.tripDetailsForm.get('pickupDate')?.valueChanges.subscribe(() => {
           this.updateAvailableDrivers();
         });
@@ -236,21 +240,27 @@ export class DriverBookingComponent implements OnInit {
 
     if (this.bookingForm.valid && this.selectedDriver) {
       this.isLoading = true;
-      
+
       // Create booking request with the user ID
       const bookingRequest: BookingRequest = {
         customer: { id: this.userId },
         driver: { driver_id: this.selectedDriver.id },
-        vehicle: { id: 8 },
+        vehicle: { id: 4 },
         pickupLocation: this.tripDetailsForm.get('pickupLocation')?.value,
         dropoffLocation: this.tripDetailsForm.get('destination')?.value,
         fare: this.totalCost
-      }; 
+      };
 
       // 2. Send booking request to backend
       this.bookingService.createBooking(bookingRequest).subscribe({
         next: (bookingResponse) => {
           console.log('Booking created:', bookingResponse);
+          // go back to user dashboard
+          this.bookingSuccess = true;
+          this.isLoading = false;
+
+          // change the route to user dashboard
+          this.router.navigate(['/user-dashboard']);
         },
         error: (error) => {
           console.error('Booking error:', error);
@@ -296,6 +306,8 @@ export class DriverBookingComponent implements OnInit {
     this.totalCost = 0;
     this.currentStep = 1;
     this.bookingSuccess = false;
+    this.errorMessage = '';
+    this.isLoading = false;
   }
 
   // Utility for star rating display

@@ -1,14 +1,10 @@
-<app-navbar></app-navbar>
+<app-dashboard-navbar></app-dashboard-navbar>
   <div class="dashboard">
     <app-sidebar [menuItems]="sidebarMenuItems" [isDarkTheme]="true"></app-sidebar>
     
     <div class="main-content">
       <div class="dashboard-header">
         <h2>Driver Dashboard</h2>
-        <div class="search-bar">
-          <i>🔍</i>
-          <input type="text" placeholder="Find Driver">
-        </div>
       </div>
       
       <div class="driver-profile-card">
@@ -21,11 +17,6 @@
           
           <div class="driver-stats">
             <div class="stat-group">
-              <span>Rating</span>
-              <strong>Total</strong>
-            </div>
-            <div class="stat-group">
-              <span>Experience: 5 years</span>
               <strong>License: Valid</strong>
               <span>Driver ID: {{driverId}}</span>
             </div>
@@ -48,21 +39,6 @@
             <div class="status-dot">✓</div>
           </div>
         </div>
-        
-        <div class="card">
-          <div class="card-header">
-            <h3>Car Details</h3>
-          </div>
-          
-          <div class="car-details">
-            <div class="car-icon">🚗</div>
-            <div class="car-info">
-              <h4>Luxury Car Selected</h4>
-              <div>Driver Rating: 4.9</div>
-              <div>Fuel Level: Full</div>
-            </div>
-          </div>
-        </div>
       </div>
       
       <div class="dashboard-grid">
@@ -79,31 +55,6 @@
             </div>
             <div class="status-dot">✓</div>
           </div>
-        </div>
-        
-        <div class="card">
-          <div class="card-header">
-            <h3>Speed Limit</h3>
-          </div>
-          
-          <div class="speed-meter">
-            <div class="speed-value">100</div>
-            <div class="meter">
-              <div class="meter-fill"></div>
-            </div>
-            <div class="meter-labels">
-              <span>70</span>
-              <span>85</span>
-              <span>100</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="stats-container">
-        <div class="stat-card" *ngFor="let stat of stats">
-          <h3>{{stat.title}}</h3>
-          <div class="value">{{stat.value}}</div>
         </div>
       </div>
     </div>

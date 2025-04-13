@@ -1,17 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
-import { NavbarComponent } from "../../components/navbar/navbar.component";
+import { DashboardNavbarComponent } from "../../components/dashboard-navbar/dashboard-navbar.component";
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { UserBookingService, BookingSummary } from '../../services/user.service';
+import { DriverService } from '../../services/driver.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-user-dashboard',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, NavbarComponent, RouterModule, HttpClientModule],
-  providers: [UserBookingService],
+  imports: [CommonModule, SidebarComponent, DashboardNavbarComponent, RouterModule, HttpClientModule],
+  providers: [UserBookingService, DriverService],
   templateUrl: './user-dashboard.component.html',
   styleUrls: ['./user-dashboard.component.css']
 })
@@ -33,42 +34,23 @@ export class UserDashboardComponent implements OnInit {
   activeTab: 'upcoming' | 'past' | 'all' = 'upcoming';
 
   sidebarMenuItems = [
-    { icon: '📊', label: 'Dashboard', active: true },
-    { icon: '📅', label: 'My Bookings' },
-    { icon: '🚗', label: 'Find Driver' },
-    { icon: '🗺️', label: 'Trip History' },
-    { icon: '🚗', label: 'My Vehicles' },
-    { icon: '👤', label: 'My Profile' },
-    { icon: '⚙️', label: 'Settings' },
-    { icon: '💬', label: 'Support' },
-    { icon: '🚪', label: 'Sign Out' }
+    { label: 'Dashboard', active: true },
+    { label: 'My Bookings' },
+    { label: 'Find Driver' },
+    { label: 'My Vehicles' , route: '/my-vehicles'},
+    { label: 'Support' },
+    { label: 'Settings' },
+    { label: 'My Profile' },
   ];
   
   stats = [
     { icon: '🚗', title: 'Total Rides', value: '0' },
     { icon: '🎯', title: 'Upcoming Rides', value: '0' },
     { icon: '💰', title: 'Total Spent', value: '$0' },
-    { icon: '⭐', title: 'Avg. Rating Given', value: '0' }
   ];
   
   // Keep original sample data for top drivers and activities
-  topDrivers = [
-    {
-      icon: '👨‍✈️',
-      name: 'John Doe',
-      experience: '5 years experience • 4.9 ⭐'
-    },
-    {
-      icon: '👩‍✈️',
-      name: 'Amanda G.',
-      experience: '3 years experience • 4.8 ⭐'
-    },
-    {
-      icon: '👨‍✈️',
-      name: 'Michael S.',
-      experience: '7 years experience • 4.7 ⭐'
-    }
-  ];
+  topDrivers = [ {name: 'John Doe', number: '1234567890', icon: "👤"} ];
   
   recentActivities = [
     {
@@ -86,19 +68,38 @@ export class UserDashboardComponent implements OnInit {
       title: 'Completed Trip',
       details: 'March 30, 2025 • Downtown'
     }
-  ];
-  
+  ];  
   constructor(
-    private bookingService: UserBookingService,
-    private authService: AuthService
-  ) { 
-    console.log('UserDashboardComponent constructor called');
-  }
-
+    private userBookingService: UserBookingService,
+    private authService: AuthService,
+    private driverService: DriverService
+  ) {}
+  
   ngOnInit(): void {
-    console.log('UserDashboardComponent ngOnInit called');
     this.loadUserData();
     this.loadBookings();
+    this.loadDrivers();
+  }
+
+  loadDrivers(): void {
+    console.log('Loading drivers...');
+    this.isLoading = true;
+    this.driverService.getDriverList().subscribe({
+      next: (drivers: any[]) => {
+        console.log('Drivers loaded successfully', drivers);
+        this.topDrivers = drivers.map(driver => ({
+          name: driver.name,
+          number: driver.phone,
+          icon: "👤"
+        }));
+        this.isLoading = false;
+      },
+      error: (error: Error) => {
+        console.error('Error fetching drivers', error);
+        this.errorMessage = 'Unable to load drivers. Please try again later.';
+        this.isLoading = false;
+      }
+    });
   }
   
   loadUserData(): void {
@@ -108,12 +109,12 @@ export class UserDashboardComponent implements OnInit {
       this.userName = user.fullName.split(' ')[0];
     }
     console.log('User name set to:', this.userName);
-  }
+  } 
 
   loadBookings(): void {
     console.log('Loading bookings...');
     this.isLoading = true;
-    this.bookingService.getUserBookings().subscribe({
+    this.userBookingService.getUserBookings().subscribe({
       next: (bookings: any[]) => {
         this.allBookings = bookings;
         
@@ -139,6 +140,20 @@ export class UserDashboardComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  } 
+  filterBookings(): void {
+    this.upcomingBookings = this.allBookings.filter(
+      booking => booking.status === 'PENDING' || booking.status === 'CONFIRMED'
+    );
+    
+    this.pastBookings = this.allBookings.filter(
+      booking => booking.status === 'COMPLETED' || booking.status === 'CANCELLED'
+    );
+  }
+  
+  // Method to clear error messages
+  clearError(): void {
+    this.errorMessage = '';
   }
   
   updateStats(bookings: BookingSummary[]): void {
@@ -184,7 +199,7 @@ export class UserDashboardComponent implements OnInit {
     console.log('Attempting to cancel booking ID:', bookingId);
     if (confirm('Are you sure you want to cancel this booking?')) {
       this.isLoading = true;
-      this.bookingService.cancelBooking(bookingId).subscribe({
+      this.userBookingService.cancelBooking(bookingId).subscribe({
         next: () => {
           console.log('Booking cancelled successfully');
           // Refresh bookings

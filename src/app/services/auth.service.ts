@@ -67,6 +67,8 @@ export class AuthService {
         id: data.userId,
         fullName: data.fullName,
       };
+      console.log(user);
+      console.log(data);
       
       // Store user in localStorage and update subject
       localStorage.setItem("token", data.token);
@@ -115,6 +117,7 @@ export class AuthService {
 
   logout(): void {
     // Remove user from local storage
+    localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
