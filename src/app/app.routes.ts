@@ -6,6 +6,7 @@ import { UserDashboardComponent } from './pages/user-dashboard/user-dashboard.co
 import { DriverBookingComponent } from "./pages/driver-booking/driver-booking.component";
 import { MyVehiclesComponent } from "./pages/my-vehicles/my-vehicles.component";
 import { authGuard } from "./auth/auth.guard";
+import { MyBookingsComponent } from "./pages/my-bookings/my-bookings.component";
 
 const routeConfig: Routes = [
   { path: '', component: LandingComponent },
@@ -25,6 +26,12 @@ const routeConfig: Routes = [
   {
     path: 'driver-booking', 
     component: DriverBookingComponent,
+    canActivate: [authGuard],
+    data: { requiredRole: 'user' }
+  },
+  {
+    path: 'my-bookings',
+    component: MyBookingsComponent,
     canActivate: [authGuard],
     data: { requiredRole: 'user' }
   },

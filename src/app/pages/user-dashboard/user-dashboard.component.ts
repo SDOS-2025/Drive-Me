@@ -35,7 +35,7 @@ export class UserDashboardComponent implements OnInit {
 
   sidebarMenuItems = [
     { label: 'Dashboard', active: true },
-    { label: 'My Bookings' },
+    { label: 'My Bookings', route: '/my-bookings' },
     { label: 'Find Driver' },
     { label: 'My Vehicles' , route: '/my-vehicles'},
     { label: 'Support' },

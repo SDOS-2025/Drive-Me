@@ -33,7 +33,7 @@ export class MyVehiclesComponent implements OnInit {
   
   sidebarMenuItems = [
     { label: 'Dashboard' , route: '/user-dashboard'},
-    { label: 'My Bookings' },
+    { label: 'My Bookings', route: '/my-bookings' },
     { label: 'Find Driver' },
     { label: 'My Vehicles', active: true },
     { label: 'Support' },

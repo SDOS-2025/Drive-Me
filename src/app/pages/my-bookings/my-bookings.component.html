@@ -1,0 +1,165 @@
+<app-dashboard-navbar></app-dashboard-navbar>
+
+<div class="dashboard-container">
+  <app-sidebar [menuItems]="sidebarMenuItems"></app-sidebar>
+  
+  <main class="dashboard-content">
+    <h1 class="page-title">My Bookings</h1>
+
+    <!-- Error message display -->
+    <div *ngIf="errorMessage" class="error-container">
+      <div class="error-message">
+        <span class="error-text">{{ errorMessage }}</span>
+        <button class="error-close" (click)="clearError()">×</button>
+      </div>
+    </div>
+    
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading your bookings...</p> 
+    </div>
+
+    <!-- Booking Tabs -->
+    <div class="booking-tabs">
+      <button 
+        [class.active]="activeTab === 'upcoming'" 
+        (click)="setActiveTab('upcoming')">
+        Upcoming ({{upcomingBookings.length}})
+      </button>
+      <button 
+        [class.active]="activeTab === 'completed'" 
+        (click)="setActiveTab('completed')">
+        Completed ({{completedBookings.length}})
+      </button>
+      <button 
+        [class.active]="activeTab === 'cancelled'" 
+        (click)="setActiveTab('cancelled')">
+        Cancelled ({{cancelledBookings.length}})
+      </button>
+      <button 
+        [class.active]="activeTab === 'all'" 
+        (click)="setActiveTab('all')">
+        All ({{allBookings.length}})
+      </button>
+    </div>
+    
+    <!-- No Bookings Message -->
+    <div *ngIf="(activeTab === 'upcoming' && upcomingBookings.length === 0) || 
+                (activeTab === 'completed' && completedBookings.length === 0) || 
+                (activeTab === 'cancelled' && cancelledBookings.length === 0) || 
+                (activeTab === 'all' && allBookings.length === 0)" 
+          class="no-bookings">
+      <p>No bookings to display</p>
+    </div>
+    
+    <!-- Bookings List -->
+    <div class="bookings-list">
+      <!-- For Upcoming Tab -->
+      <div *ngIf="activeTab === 'upcoming'">
+        <div *ngFor="let booking of upcomingBookings" class="booking-card">
+          <div class="booking-main">
+            <div class="booking-icon">🚕</div>
+            <div class="booking-details">
+              <div class="booking-id">Booking #{{booking.bookingId}}</div>
+              <h3 class="booking-title">{{booking.pickupLocation}} → {{booking.dropoffLocation}}</h3>
+              <p class="booking-time">{{formatDate(booking.createdAt)}}</p>
+              <p class="booking-driver" *ngIf="booking.driverName">Driver: {{booking.driverName}}</p>
+            </div>
+          </div>
+          <div class="booking-status">
+            <span [style.color]="getStatusColor(booking.status)" class="status-badge">
+              <span class="status-icon">{{getStatusIcon(booking.status)}}</span>
+              {{booking.status}}
+            </span>
+            <div class="booking-price">${{booking.fare}}</div>
+            <button 
+              *ngIf="booking.status === 'PENDING' || booking.status === 'CONFIRMED'" 
+              class="btn btn-cancel"
+              (click)="cancelBooking(booking.bookingId)">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- For Completed Tab -->
+      <div *ngIf="activeTab === 'completed'">
+        <div *ngFor="let booking of completedBookings" class="booking-card">
+          <div class="booking-main">
+            <div class="booking-icon">🚕</div>
+            <div class="booking-details">
+              <div class="booking-id">Booking #{{booking.bookingId}}</div>
+              <h3 class="booking-title">{{booking.pickupLocation}} → {{booking.dropoffLocation}}</h3>
+              <p class="booking-time">{{formatDate(booking.createdAt)}}</p>
+              <p class="booking-driver" *ngIf="booking.driverName">Driver: {{booking.driverName}}</p>
+            </div>
+          </div>
+          <div class="booking-status">
+            <span [style.color]="getStatusColor(booking.status)" class="status-badge">
+              <span class="status-icon">{{getStatusIcon(booking.status)}}</span>
+              {{booking.status}}
+            </span>
+            <div class="booking-price">${{booking.fare}}</div>
+            <button class="btn btn-review">Leave Review</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- For Cancelled Tab -->
+      <div *ngIf="activeTab === 'cancelled'">
+        <div *ngFor="let booking of cancelledBookings" class="booking-card">
+          <div class="booking-main">
+            <div class="booking-icon">🚕</div>
+            <div class="booking-details">
+              <div class="booking-id">Booking #{{booking.bookingId}}</div>
+              <h3 class="booking-title">{{booking.pickupLocation}} → {{booking.dropoffLocation}}</h3>
+              <p class="booking-time">{{formatDate(booking.createdAt)}}</p>
+              <p class="booking-driver" *ngIf="booking.driverName">Driver: {{booking.driverName}}</p>
+            </div>
+          </div>
+          <div class="booking-status">
+            <span [style.color]="getStatusColor(booking.status)" class="status-badge">
+              <span class="status-icon">{{getStatusIcon(booking.status)}}</span>
+              {{booking.status}}
+            </span>
+            <div class="booking-price">${{booking.fare}}</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- For All Tab -->
+      <div *ngIf="activeTab === 'all'">
+        <div *ngFor="let booking of allBookings" class="booking-card">
+          <div class="booking-main">
+            <div class="booking-icon">🚕</div>
+            <div class="booking-details">
+              <div class="booking-id">Booking #{{booking.bookingId}}</div>
+              <h3 class="booking-title">{{booking.pickupLocation}} → {{booking.dropoffLocation}}</h3>
+              <p class="booking-time">{{formatDate(booking.createdAt)}}</p>
+              <p class="booking-driver" *ngIf="booking.driverName">Driver: {{booking.driverName}}</p>
+            </div>
+          </div>
+          <div class="booking-status">
+            <span [style.color]="getStatusColor(booking.status)" class="status-badge">
+              <span class="status-icon">{{getStatusIcon(booking.status)}}</span>
+              {{booking.status}}
+            </span>
+            <div class="booking-price">${{booking.fare}}</div>
+            <button 
+              *ngIf="booking.status === 'PENDING' || booking.status === 'CONFIRMED'" 
+              class="btn btn-cancel"
+              (click)="cancelBooking(booking.bookingId)">
+              Cancel
+            </button>
+            <button 
+              *ngIf="booking.status === 'COMPLETED'" 
+              class="btn btn-review">
+              Review
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
