@@ -35,6 +35,9 @@ public class Booking {
     @Column(name = "dropoff_location", nullable = false)
     private String dropoffLocation;
 
+    @Column(name = "pickup_time", nullable = false)
+    private String pickupTime;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 15, nullable = false)
     private BookingStatus status = BookingStatus.PENDING;

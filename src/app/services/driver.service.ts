@@ -3,8 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface DriverDetails {
-    driverId: number;
-    name: string;
+    id: number;
+    fullName: string;
     email: string;
     phone: string;
     aadharNumber: string;

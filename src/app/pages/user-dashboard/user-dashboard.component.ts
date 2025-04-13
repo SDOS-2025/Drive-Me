@@ -88,7 +88,7 @@ export class UserDashboardComponent implements OnInit {
       next: (drivers: any[]) => {
         console.log('Drivers loaded successfully', drivers);
         this.topDrivers = drivers.map(driver => ({
-          name: driver.name,
+          name: driver.fullName,
           number: driver.phone,
           icon: "👤"
         }));

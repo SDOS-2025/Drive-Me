@@ -5,16 +5,8 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { HttpClientModule } from '@angular/common/http';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { DashboardNavbarComponent } from "../../components/dashboard-navbar/dashboard-navbar.component";
-
-interface Vehicle {
-  id: number;
-  make: string;
-  model: string;
-  year: number;
-  licensePlate: string;
-  color: string;
-  type: string;
-}
+import { VehicleService, BackendVehicle } from '../../services/vehicle.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-my-vehicles',
@@ -27,15 +19,17 @@ interface Vehicle {
     HttpClientModule,
     ReactiveFormsModule
   ],
+  providers: [VehicleService],
   templateUrl: './my-vehicles.component.html',
   styleUrls: ['./my-vehicles.component.css']
 })
 export class MyVehiclesComponent implements OnInit {
   isLoading: boolean = false;
   errorMessage: string = '';
-  vehicles: Vehicle[] = [];
+  vehicles: BackendVehicle[] = [];
   showAddForm: boolean = false;
   vehicleForm: FormGroup;
+  userId: number = 0;
   
   sidebarMenuItems = [
     { label: 'Dashboard' , route: '/user-dashboard'},
@@ -47,39 +41,59 @@ export class MyVehiclesComponent implements OnInit {
     { label: 'My Profile' },
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private vehicleService: VehicleService,
+    private authService: AuthService
+  ) {
     this.vehicleForm = this.fb.group({
-      make: ['', Validators.required],
       model: ['', Validators.required],
-      year: ['', [Validators.required, Validators.min(1980), Validators.max(new Date().getFullYear())]],
-      licensePlate: ['', Validators.required],
-      color: ['', Validators.required],
-      type: ['', Validators.required]
+      registerationNumber: ['', Validators.required],
+      carNumber: ['', Validators.required],
     });
   }
   
   ngOnInit(): void {
-    // Mock data for display
-    this.vehicles = [
-      {
-        id: 1,
-        make: 'Toyota',
-        model: 'Camry',
-        year: 2019,
-        licensePlate: 'ABC123',
-        color: 'Black',
-        type: 'Sedan'
+    this.getCurrentUser();
+    this.loadUserVehicles();
+  }
+
+  getCurrentUser(): void {
+    const currentUser = this.authService.currentUserValue;
+    if (currentUser) {
+      this.userId = currentUser.id || 0;
+      console.log('Current User ID:', this.userId);
+    }
+  }
+
+  loadUserVehicles(): void {
+    this.isLoading = true;
+    this.vehicleService.getUserVehicles().subscribe({
+      next: (backendVehicles) => {
+        // Map backend vehicles to frontend format
+        this.vehicles = backendVehicles
+          .filter(v => v.userId === this.userId) // Only show current user's vehicles
+          .map(v => {
+            
+            const model = v.model || 'Not specified'; // Default if model not available
+            const registerationNumber = v.registerationNumber || 'Not specified'; // Default if registerationNumber not available
+            const carNumber = v.carNumber || 'Not specified'; // Default if carNumber not available
+            return {
+              id: v.id,
+              model: model,
+              registerationNumber: registerationNumber,
+              carNumber: carNumber,
+              userId: v.userId,
+            };
+          });
+        this.isLoading = false;
       },
-      {
-        id: 2,
-        make: 'Honda',
-        model: 'Accord',
-        year: 2020,
-        licensePlate: 'XYZ789',
-        color: 'White',
-        type: 'Sedan'
+      error: (error) => {
+        console.error('Error loading vehicles:', error);
+        this.errorMessage = 'Unable to load vehicles. Please try again later.';
+        this.isLoading = false;
       }
-    ];
+    });
   }
 
   toggleAddForm(): void {
@@ -96,30 +110,43 @@ export class MyVehiclesComponent implements OnInit {
     
     this.isLoading = true;
     
-    // Mock adding a vehicle
-    const newVehicle: Vehicle = {
-      id: this.vehicles.length + 1,
-      ...this.vehicleForm.value
-    };
-    
-    // Simulate API call
-    setTimeout(() => {
-      this.vehicles.push(newVehicle);
-      this.isLoading = false;
+      this.vehicleService.addVehicle(this.userId, this.vehicleForm.value).subscribe({
+  next: (response) => {
+    console.log('Vehicle added successfully:', response); // Inspect the response
+    if (response) {
+      this.loadUserVehicles(); // Reload vehicles only if response is valid
       this.showAddForm = false;
       this.vehicleForm.reset();
-    }, 1000);
+    } else {
+      console.warn('Empty response received');
+      this.errorMessage = 'Vehicle added, but no data returned.';
+      this.isLoading = false;
+    }
+  },
+  error: (error) => {
+    console.error('Error adding vehicle:', error);
+    this.errorMessage = 'Failed to add vehicle: ' + (error.message || 'Unknown error');
+    this.isLoading = false;
+  }
+});
   }
   
   removeVehicle(id: number): void {
     if (confirm('Are you sure you want to remove this vehicle?')) {
       this.isLoading = true;
       
-      // Simulate API call
-      setTimeout(() => {
-        this.vehicles = this.vehicles.filter(v => v.id !== id);
-        this.isLoading = false;
-      }, 1000);
+      this.vehicleService.removeVehicle(id).subscribe({
+        next: () => {
+          console.log('Vehicle removed successfully');
+          this.vehicles = this.vehicles.filter(v => v.id !== id);
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error removing vehicle:', error);
+          this.errorMessage = 'Failed to remove vehicle. Please try again.';
+          this.isLoading = false;
+        }
+      });
     }
   }
   

@@ -1,4 +1,7 @@
 package com.example.driveme.model;
+import java.time.LocalDate;
+
+
 import jakarta.persistence.*;
 
 @Entity
@@ -15,23 +18,30 @@ public class Vehicle {
     private String model;
     private String registration_number;
     private String car_number; // Moved from users table
-    private String created_at;
+    private LocalDate createdAt = LocalDate.now(); // Changed to LocalDate for better date handling 
 
     // Constructor
     public Vehicle() {
     }
 
-    public Vehicle(User user, String model, String registration_number, String car_number, String created_at) {
+    public Vehicle(User user, String model, String registration_number, String car_number) {
         this.user = user;
         this.model = model;
         this.registration_number = registration_number;
         this.car_number = car_number;
-        this.created_at = created_at;
     }
 
     // Getters and Setters
     public Long getVehicle_id() {
         return vehicle_id;
+    }
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
     }
 
     public void setVehicle_id(Long vehicle_id) {
@@ -70,14 +80,6 @@ public class Vehicle {
         this.car_number = car_number;
     }
 
-    public String getCreated_at() {
-        return created_at;
-    }
-
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
-    }
-
     // toString
     @Override
     public String toString() {
@@ -87,7 +89,7 @@ public class Vehicle {
                 ", model='" + model + '\'' +
                 ", registration_number='" + registration_number + '\'' +
                 ", car_number='" + car_number + '\'' +
-                ", created_at='" + created_at + '\'' +
+                ", created_at='" + createdAt + '\'' +
                 '}';
     }
 }

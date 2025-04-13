@@ -35,14 +35,6 @@
         <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()">
           <div class="form-row">
             <div class="form-group">
-              <label for="make">Make</label>
-              <input type="text" id="make" formControlName="make" placeholder="e.g. Toyota">
-              <div *ngIf="vehicleForm.get('make')?.invalid && vehicleForm.get('make')?.touched" class="error-text">
-                Make is required
-              </div>
-            </div>
-            
-            <div class="form-group">
               <label for="model">Model</label>
               <input type="text" id="model" formControlName="model" placeholder="e.g. Camry">
               <div *ngIf="vehicleForm.get('model')?.invalid && vehicleForm.get('model')?.touched" class="error-text">
@@ -50,47 +42,24 @@
               </div>
             </div>
           </div>
-          
-          <div class="form-row">
+
+
+          <div>
             <div class="form-group">
-              <label for="year">Year</label>
-              <input type="number" id="year" formControlName="year" placeholder="e.g. 2022">
-              <div *ngIf="vehicleForm.get('year')?.invalid && vehicleForm.get('year')?.touched" class="error-text">
-                Valid year is required
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="licensePlate">License Plate</label>
-              <input type="text" id="licensePlate" formControlName="licensePlate" placeholder="e.g. ABC123">
-              <div *ngIf="vehicleForm.get('licensePlate')?.invalid && vehicleForm.get('licensePlate')?.touched" class="error-text">
-                License plate is required
+              <label for="registerationNumber">Registeration Number</label>
+              <input type="text" id="registerationNumber" formControlName="registerationNumber" placeholder="e.g. ABC123">
+              <div *ngIf="vehicleForm.get('registerationNumber')?.invalid && vehicleForm.get('registerationNumber')?.touched" class="error-text">
+                Registeration Number is required
               </div>
             </div>
           </div>
           
-          <div class="form-row">
+          <div>
             <div class="form-group">
-              <label for="color">Color</label>
-              <input type="text" id="color" formControlName="color" placeholder="e.g. Black">
-              <div *ngIf="vehicleForm.get('color')?.invalid && vehicleForm.get('color')?.touched" class="error-text">
-                Color is required
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <label for="type">Type</label>
-              <select id="type" formControlName="type">
-                <option value="">Select vehicle type</option>
-                <option value="Sedan">Sedan</option>
-                <option value="SUV">SUV</option>
-                <option value="Hatchback">Hatchback</option>
-                <option value="Pickup">Pickup Truck</option>
-                <option value="Minivan">Minivan</option>
-                <option value="Other">Other</option>
-              </select>
-              <div *ngIf="vehicleForm.get('type')?.invalid && vehicleForm.get('type')?.touched" class="error-text">
-                Type is required
+              <label for="carNumber">License Plate</label>
+              <input type="text" id="carNumber" formControlName="carNumber" placeholder="e.g. ABC123">
+              <div *ngIf="vehicleForm.get('carNumber')?.invalid && vehicleForm.get('carNumber')?.touched" class="error-text">
+                License plate is required
               </div>
             </div>
           </div>
@@ -110,11 +79,10 @@
       <div class="vehicles-list">
         <div class="vehicle-card" *ngFor="let vehicle of vehicles">
           <div class="vehicle-info">
-            <h3 class="vehicle-name">{{vehicle.make}} {{vehicle.model}} ({{vehicle.year}})</h3>
+            <h3 class="vehicle-name">{{vehicle.model}}</h3>
             <div class="vehicle-detail">
-              <span class="license-plate">License: {{vehicle.licensePlate}}</span>
-              <span class="color">Color: {{vehicle.color}}</span>
-              <span class="type">Type: {{vehicle.type}}</span>
+              <span class="license-plate">License Plate: {{vehicle.carNumber}}</span>
+              <span class="registerationNumber">Registration Number: {{vehicle.registerationNumber}}</span>
             </div>
           </div>
           <div class="vehicle-actions">
