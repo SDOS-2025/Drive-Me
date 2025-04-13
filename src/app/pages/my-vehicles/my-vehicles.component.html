@@ -1,0 +1,127 @@
+<app-dashboard-navbar></app-dashboard-navbar>
+
+<div class="dashboard-container">
+  <app-sidebar [menuItems]="sidebarMenuItems"></app-sidebar>
+  
+  <main class="dashboard-content">
+    <div class="welcome-section">
+      <h2>My Vehicles</h2>
+      <p class="subtitle">Manage your registered vehicles for your rides.</p>
+    </div>
+    
+    <!-- Loading and Error Messages -->
+    <div *ngIf="isLoading" class="loading-indicator">
+      <div class="spinner"></div>
+      <p>Processing...</p>
+    </div>
+    
+    <div *ngIf="errorMessage" class="error-alert">
+      <p><i class="fas fa-exclamation-triangle"></i> {{errorMessage}}</p>
+      <button class="btn btn-secondary" (click)="clearError()">Dismiss</button>
+    </div>
+    
+    <!-- Vehicles Section -->
+    <div class="vehicles-section">
+      <div class="section-header">
+        <h2>Your Vehicles</h2>
+        <button class="btn btn-primary" (click)="toggleAddForm()">
+          {{ showAddForm ? 'Cancel' : 'Add Vehicle' }}
+        </button>
+      </div>
+      
+      <!-- Add Vehicle Form -->
+      <div *ngIf="showAddForm" class="add-vehicle-form">
+        <h3>Add New Vehicle</h3>
+        <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="make">Make</label>
+              <input type="text" id="make" formControlName="make" placeholder="e.g. Toyota">
+              <div *ngIf="vehicleForm.get('make')?.invalid && vehicleForm.get('make')?.touched" class="error-text">
+                Make is required
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="model">Model</label>
+              <input type="text" id="model" formControlName="model" placeholder="e.g. Camry">
+              <div *ngIf="vehicleForm.get('model')?.invalid && vehicleForm.get('model')?.touched" class="error-text">
+                Model is required
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="year">Year</label>
+              <input type="number" id="year" formControlName="year" placeholder="e.g. 2022">
+              <div *ngIf="vehicleForm.get('year')?.invalid && vehicleForm.get('year')?.touched" class="error-text">
+                Valid year is required
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="licensePlate">License Plate</label>
+              <input type="text" id="licensePlate" formControlName="licensePlate" placeholder="e.g. ABC123">
+              <div *ngIf="vehicleForm.get('licensePlate')?.invalid && vehicleForm.get('licensePlate')?.touched" class="error-text">
+                License plate is required
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="color">Color</label>
+              <input type="text" id="color" formControlName="color" placeholder="e.g. Black">
+              <div *ngIf="vehicleForm.get('color')?.invalid && vehicleForm.get('color')?.touched" class="error-text">
+                Color is required
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="type">Type</label>
+              <select id="type" formControlName="type">
+                <option value="">Select vehicle type</option>
+                <option value="Sedan">Sedan</option>
+                <option value="SUV">SUV</option>
+                <option value="Hatchback">Hatchback</option>
+                <option value="Pickup">Pickup Truck</option>
+                <option value="Minivan">Minivan</option>
+                <option value="Other">Other</option>
+              </select>
+              <div *ngIf="vehicleForm.get('type')?.invalid && vehicleForm.get('type')?.touched" class="error-text">
+                Type is required
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="vehicleForm.invalid">Add Vehicle</button>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Vehicles List -->
+      <div *ngIf="vehicles.length === 0" class="no-vehicles">
+        <p>You have no vehicles registered yet.</p>
+        <button class="btn btn-primary" (click)="toggleAddForm()">Add your first vehicle</button>
+      </div>
+      
+      <div class="vehicles-list">
+        <div class="vehicle-card" *ngFor="let vehicle of vehicles">
+          <div class="vehicle-info">
+            <h3 class="vehicle-name">{{vehicle.make}} {{vehicle.model}} ({{vehicle.year}})</h3>
+            <div class="vehicle-detail">
+              <span class="license-plate">License: {{vehicle.licensePlate}}</span>
+              <span class="color">Color: {{vehicle.color}}</span>
+              <span class="type">Type: {{vehicle.type}}</span>
+            </div>
+          </div>
+          <div class="vehicle-actions">
+            <button class="btn btn-danger" (click)="removeVehicle(vehicle.id)">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,13 @@
+<header class="navbar">
+  <div class="brand" (click)="navigateHome()">
+    <img class="brand-logo" src="assets/logo.svg" alt="DriveMe logo" />
+  </div>
+  <nav class="nav-links">
+    <ng-container *ngFor="let link of navLinks">
+      <a [routerLink]="link.path" routerLinkActive="active-link">{{ link.label }}</a>
+    </ng-container>
+    
+    <!-- Add a logout option -->
+    <a (click)="logout()" class="logout-btn">Logout</a>
+  </nav>
+</header>
