@@ -4,7 +4,7 @@ import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { DashboardNavbarComponent } from "../../components/dashboard-navbar/dashboard-navbar.component";
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
-import { DriverService, DriverDetails } from '../../services/driver.service';
+import { DriverService, DriverStatus } from '../../services/driver.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -16,8 +16,8 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./find-driver.component.css']
 })
 export class FindDriverComponent implements OnInit {
-  drivers: DriverDetails[] = [];
-  filteredDrivers: DriverDetails[] = [];
+  drivers: DriverStatus[] = [];
+  filteredDrivers: DriverStatus[] = [];
   isLoading: boolean = false;
   errorMessage: string = '';
   searchTerm: string = '';
@@ -43,8 +43,8 @@ export class FindDriverComponent implements OnInit {
     console.log('Loading drivers...');
     this.isLoading = true;
     
-    this.driverService.getDriverList().subscribe({
-      next: (drivers: DriverDetails[]) => {
+    this.driverService.getDriverStatus().subscribe({
+      next: (drivers: DriverStatus[]) => {
         this.drivers = drivers;
         this.applyFilters(); // Initialize filtered drivers
         this.isLoading = false;
@@ -60,14 +60,14 @@ export class FindDriverComponent implements OnInit {
   
   applyFilters(): void {
     let filtered = this.drivers;
-    
+
     
     // Apply search filter if search term exists
     if (this.searchTerm.trim()) {
       const searchLower = this.searchTerm.toLowerCase().trim();
       filtered = filtered.filter(driver => 
-        driver.fullName.toLowerCase().includes(searchLower) ||
-        driver.aadharNumber.toLowerCase().includes(searchLower)
+        driver.name.toLowerCase().includes(searchLower) ||
+        driver.phone.toLowerCase().includes(searchLower)
       );
     }
     

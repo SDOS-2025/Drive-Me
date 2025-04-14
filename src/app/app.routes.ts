@@ -7,6 +7,7 @@ import { DriverBookingComponent } from "./pages/driver-booking/driver-booking.co
 import { MyVehiclesComponent } from "./pages/my-vehicles/my-vehicles.component";
 import { authGuard } from "./auth/auth.guard";
 import { MyBookingsComponent } from "./pages/my-bookings/my-bookings.component";
+import { FindDriverComponent } from "./pages/find-driver/find-driver.component";
 
 const routeConfig: Routes = [
   { path: '', component: LandingComponent },
@@ -38,6 +39,12 @@ const routeConfig: Routes = [
   {
     path: 'my-vehicles',
     component: MyVehiclesComponent,
+    canActivate: [authGuard],
+    data: { requiredRole: 'user' }
+  },
+  {
+    path: 'find-driver',
+    component: FindDriverComponent,
     canActivate: [authGuard],
     data: { requiredRole: 'user' }
   },

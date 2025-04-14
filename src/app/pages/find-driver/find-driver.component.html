@@ -64,29 +64,13 @@
           {{ driver.status }}
         </div>
         
-        <div class="driver-avatar">
-          <img [src]="driver.imageUrl || 'assets/images/default-driver.png'" alt="{{ driver.fullName }}">
-        </div>
-        
         <div class="driver-info">
-          <h3 class="driver-name">{{ driver.fullName }}</h3>
+          <h3 class="driver-name">{{ driver.name }}</h3>
           <!-- <div class="driver-rating">{{ getRatingStars(driver.rating) }} ({{ driver.rating }})</div> -->
           
           <div class="driver-details">
-            <p><strong>License:</strong> {{ driver.licenseNumber }}</p>
-            <p><strong>Aadhar:</strong> {{ driver.aadharNumber.substring(0, 8) }}XXXX</p>
             <p><strong>Phone:</strong> {{ driver.phone }}</p>
           </div>
-        </div>
-        
-        <div class="driver-actions">
-          <button 
-            [disabled]="driver.status !== 'AVAILABLE'" 
-            class="btn btn-book" 
-            (click)="bookDriver(driver.id)"
-          >
-            Book Now
-          </button>
         </div>
       </div>
     </div>

@@ -12,7 +12,7 @@ import com.example.driveme.model.User;
 public interface UserRepository extends JpaRepository<User, Long> {
     @EntityGraph(attributePaths = "vehicles")
     Optional<User> findByEmail(String email);
-    Optional<User> findById(Integer id);
+    Optional<User> findByUserId(Integer id);
     Optional<User> findByPhone(String phone);
     Optional<User> findByFullName(String fullName);
 }

@@ -34,7 +34,7 @@ export class MyVehiclesComponent implements OnInit {
   sidebarMenuItems = [
     { label: 'Dashboard' , route: '/user-dashboard'},
     { label: 'My Bookings', route: '/my-bookings' },
-    { label: 'Find Driver' },
+    { label: 'Find Driver', route: '/find-driver' },
     { label: 'My Vehicles', active: true },
     { label: 'Support' },
     { label: 'Settings' },
@@ -48,7 +48,7 @@ export class MyVehiclesComponent implements OnInit {
   ) {
     this.vehicleForm = this.fb.group({
       model: ['', Validators.required],
-      registerationNumber: ['', Validators.required],
+      registrationNumber: ['', Validators.required],
       carNumber: ['', Validators.required],
     });
   }
@@ -76,14 +76,15 @@ export class MyVehiclesComponent implements OnInit {
           .map(v => {
             
             const model = v.model || 'Not specified'; // Default if model not available
-            const registerationNumber = v.registerationNumber || 'Not specified'; // Default if registerationNumber not available
+            const registrationNumber = v.registrationNumber || 'Not specified'; // Default if registerationNumber not available
             const carNumber = v.carNumber || 'Not specified'; // Default if carNumber not available
             return {
-              id: v.id,
+              vehicleId: v.vehicleId,
               model: model,
-              registerationNumber: registerationNumber,
+              registrationNumber: registrationNumber,
               carNumber: carNumber,
               userId: v.userId,
+
             };
           });
         this.isLoading = false;
@@ -138,7 +139,7 @@ export class MyVehiclesComponent implements OnInit {
       this.vehicleService.removeVehicle(id).subscribe({
         next: () => {
           console.log('Vehicle removed successfully');
-          this.vehicles = this.vehicles.filter(v => v.id !== id);
+          this.vehicles = this.vehicles.filter(v => v.vehicleId !== id);
           this.isLoading = false;
         },
         error: (error) => {

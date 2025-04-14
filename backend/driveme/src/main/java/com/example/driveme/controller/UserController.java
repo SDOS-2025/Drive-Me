@@ -41,24 +41,35 @@ public class UserController {
 
     @PostMapping("/add-vehicle")
     public ResponseEntity<?> addVehicle(@RequestBody VehicleRequestDTO request) {
-        logger.info("Adding vehicle for user with ID: {}", request.getUser_id());
 
         // Find the user
-        Optional<User> userOptional = userRepository.findById(request.getUser_id());
+        Optional<User> userOptional = userRepository.findById(request.getUserId());
 
         if (!userOptional.isPresent()) {
-            logger.error("User with ID: {} not found", request.getUser_id());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID: " + request.getUser_id() + " not found");
+                    .body("User with ID: " + request.getUserId() + " not found");
         }
 
         User user = userOptional.get();
 
         // Create new vehicle
-        Vehicle vehicle = new Vehicle();
-        vehicle.setModel(request.getModel());
-        vehicle.setRegistrationNumber(request.getRegistration_number());
-        vehicle.setCarNumber(request.getCar_number());
+        System.out.println("Registration NUmber: " + request.getRegistrationNumber());
+        Vehicle vehicle = new Vehicle(
+                user,
+                request.getModel(),
+                request.getRegistrationNumber(),
+                request.getCarNumber()
+        );
+
+        if (request.getVehicleType() != null) {
+            try {
+                Vehicle.VehicleType vehicleType = Vehicle.VehicleType.valueOf(request.getVehicleType().toUpperCase());
+                vehicle.setVehicleType(vehicleType);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Invalid vehicle type: " + request.getVehicleType());
+            }
+        }
 
         user.addVehicle(vehicle);
         userRepository.save(user);

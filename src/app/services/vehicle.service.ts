@@ -49,10 +49,10 @@ export class VehicleService {
     // Map frontend vehicle to backend format
     const backendVehicle = {
         model: vehicleData.model,
-        registration_number: vehicleData.registrationNumber,
-        car_number: vehicleData.carNumber,
-        user_id: userId,
-        vehicle_type: vehicleData.vehicleType || 'SEDAN',
+        registrationNumber: vehicleData.registrationNumber,
+        carNumber: vehicleData.carNumber,
+        vehicleType: vehicleData.vehicleType || 'SEDAN',
+        userId: userId,
     };
 
     return this.http.post(`${this.apiUrl}/users/add-vehicle`, backendVehicle, { headers });

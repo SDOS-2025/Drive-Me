@@ -2,26 +2,35 @@ package com.example.driveme.DTO;
 
 public class VehicleRequestDTO {
     private String model;
-    private String registration_number;
-    private String car_number;
-    private Long user_id;
+    private String registrationNumber;
+    private String carNumber;
+    private String vehicleType;
+    private Long userId;
 
     public VehicleRequestDTO() {
     }
 
-    public VehicleRequestDTO(String model, String registration_number, String car_number, Long user_id) {
+    public VehicleRequestDTO(String model, String registration_number, String car_number, Long user_id, String vehicle_type) {
         this.model = model;
-        this.registration_number = registration_number;
-        this.car_number = car_number;
-        this.user_id = user_id;
+        this.registrationNumber = registration_number;
+        this.carNumber = car_number;
+        this.userId = user_id;
+        this.vehicleType = vehicle_type;
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public String getVehicleType() {
+        return vehicleType;
+    }
+    public void setVehicleType(String vehicle_type) {
+        this.vehicleType = vehicle_type;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long user_id) {
+        this.userId = user_id;
     }
 
     public String getModel() {
@@ -32,19 +41,19 @@ public class VehicleRequestDTO {
         this.model = model;
     }
 
-    public String getRegistration_number() {
-        return registration_number;
+    public String getRegistrationNumber() {
+        return registrationNumber;
     }
 
-    public void setRegistration_number(String registration_number) {
-        this.registration_number = registration_number;
+    public void setRegistrationNumber(String registration_number) {
+        this.registrationNumber = registration_number;
     }
 
-    public String getCar_number() {
-        return car_number;
+    public String getCarNumber() {
+        return carNumber;
     }
 
-    public void setCar_number(String car_number) {
-        this.car_number = car_number;
+    public void setCarNumber(String car_number) {
+        this.carNumber = car_number;
     }
 }

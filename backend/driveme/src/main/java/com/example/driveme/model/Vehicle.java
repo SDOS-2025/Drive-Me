@@ -18,7 +18,6 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -39,7 +38,6 @@ public class Vehicle {
     private String model;
     
     @NotBlank(message = "Registration number is required")
-    @Pattern(regexp = "^[A-Z]{2}[0-9]{2}[A-Z]{1,2}[0-9]{4}$", message = "Invalid registration number format")
     @Column(name = "registration_number", nullable = false, unique = true)
     private String registrationNumber;
     
