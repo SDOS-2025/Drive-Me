@@ -97,7 +97,8 @@ public class AuthenticationService {
                 .setEmail(input.getEmail())
                 .setPhone(input.getPhone())
                 .setAadhar_card(input.getAadharCard())
-                .setPassword_hash(passwordEncoder.encode(input.getPassword()));
+                .setPassword_hash(passwordEncoder.encode(input.getPassword()))
+                .setLicense_number(input.getlicenseNumber());
 
         return driverRepository.save(driver);
     }

@@ -5,6 +5,7 @@ public class LoginResponseDTO {
     private Long userId;
     private String fullName;
     private Long expiresIn;
+    private String licenseNumber;
 
     public LoginResponseDTO() {
     }
@@ -19,6 +20,14 @@ public class LoginResponseDTO {
     // Getters
     public String getToken() {
         return token;
+    }
+
+    public String getLicenseNumber() {
+        return licenseNumber;
+    }
+
+    public void setLicenseNumber(String licenseNumber) {
+        this.licenseNumber = licenseNumber;
     }
 
     public Long getUserId() {

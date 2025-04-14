@@ -3,14 +3,18 @@ package com.example.driveme.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,15 +25,18 @@ import com.example.driveme.DTO.VehicleResponseDTO;
 import com.example.driveme.model.User;
 import com.example.driveme.model.Vehicle;
 import com.example.driveme.repository.UserRepository;
+import com.example.driveme.repository.VehicleRepository;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private final UserRepository userRepository;
+    private final VehicleRepository vehicleRepository;
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public UserController(UserRepository userRepository) { // Constructor-based Injection
+    public UserController(UserRepository userRepository, VehicleRepository vehicleRepository) {
         this.userRepository = userRepository;
+        this.vehicleRepository = vehicleRepository;
     }
 
     @PostMapping("/add-vehicle")
@@ -50,25 +57,16 @@ public class UserController {
         // Create new vehicle
         Vehicle vehicle = new Vehicle();
         vehicle.setModel(request.getModel());
-        vehicle.setRegistration_number(request.getRegistration_number());
-        vehicle.setCar_number(request.getCar_number());
+        vehicle.setRegistrationNumber(request.getRegistration_number());
+        vehicle.setCarNumber(request.getCar_number());
 
-        List<Vehicle> vehicles = user.getVehicles();
-        if (vehicles == null) {
-            vehicles = new ArrayList<>();
-        }
-        vehicles.add(vehicle);
-        vehicle.setUser(user); // Set the user for the vehicle
-        user.setVehicles(vehicles); // Set the vehicles list for the user
-
-        // Save updated user
+        user.addVehicle(vehicle);
         userRepository.save(user);
+        
         Map<String, String> response = new HashMap<>();
         response.put("message", "Vehicle added successfully");
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-
     }
-
 
     @GetMapping("/vehicles")
     public List<VehicleResponseDTO> getAllVehicles() {
@@ -79,11 +77,11 @@ public class UserController {
         for (User user : users) {
             for (Vehicle vehicle : user.getVehicles()) {
                 VehicleResponseDTO dto = new VehicleResponseDTO(
-                    vehicle.getVehicle_id(), 
+                    vehicle.getVehicleId(), 
                     vehicle.getModel(),
-                    vehicle.getRegistration_number(),
-                    vehicle.getCar_number(),
-                    user.getId()  // just include user ID reference
+                    vehicle.getRegistrationNumber(),
+                    vehicle.getCarNumber(),
+                    user.getUserId()
                 );
                 allVehicles.add(dto);
             }
@@ -92,9 +90,73 @@ public class UserController {
         return allVehicles;
     }
 
+    @GetMapping("/my-vehicles")
+    public ResponseEntity<?> getUserVehicles(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "User not authenticated"));
+        }
+
+        try {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String email = userDetails.getUsername();
+            User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+                
+            List<VehicleResponseDTO> userVehicles = user.getVehicles().stream()
+                .map(vehicle -> new VehicleResponseDTO(
+                    vehicle.getVehicleId(),
+                    vehicle.getModel(),
+                    vehicle.getRegistrationNumber(),
+                    vehicle.getCarNumber(),
+                    user.getUserId()
+                )).toList();
+                
+            return ResponseEntity.ok(userVehicles);
+        } catch (Exception e) {
+            logger.error("Error fetching user vehicles", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to fetch user vehicles: " + e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/vehicles/{vehicleId}")
+    public ResponseEntity<?> removeVehicle(@PathVariable Long vehicleId, Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "User not authenticated"));
+        }
+
+        try {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String email = userDetails.getUsername();
+            User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+                
+            Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+                
+            // Verify the vehicle belongs to this user
+            if (!vehicle.getUser().getUserId().equals(user.getUserId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "You do not have permission to delete this vehicle"));
+            }
+            
+            // Remove the vehicle
+            user.removeVehicle(vehicle);
+            userRepository.save(user);
+            vehicleRepository.delete(vehicle);
+            
+            return ResponseEntity.ok(Map.of("message", "Vehicle removed successfully"));
+        } catch (Exception e) {
+            logger.error("Error removing vehicle", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to remove vehicle: " + e.getMessage()));
+        }
+    }
+
     @GetMapping
     public List<User> getAllUsers() {
-            System.out.println(">>> Hit /users endpoint!");
         logger.info("Fetching all users");
         return userRepository.findAll();
     }

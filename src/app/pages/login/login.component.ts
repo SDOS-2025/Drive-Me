@@ -22,14 +22,16 @@ export class LoginComponent {
   returnUrl: string = '';
 
   user = {
-    full_name: '',
+    fullName: '',
     email: '',
     phone: '',
-    aadhar_card: '',
-    password_hash: '',
-    email_or_phone: '',
-    rememberMe: false
-  };
+    aadharCard: '',
+    licenseNumber: '',
+    emailOrPhone: '',
+    password: '',
+    passwordLogin: '',
+    rememberMe: false,
+  }
 
   constructor(
     private authService: AuthService,
@@ -44,6 +46,10 @@ export class LoginComponent {
   selectUserType(type: 'driver' | 'regular' | 'admin') {
     this.userType = type;
     // Update returnUrl based on user type
+
+    if (type === 'admin') {
+      this.formMode = 'login'; // Admins only have login mode
+    }
     this.returnUrl = type === 'driver' ? '/driver-dashboard' : 
                      type === 'admin' ? '/admin-dashboard' : '/user-dashboard';
   }
@@ -60,8 +66,8 @@ export class LoginComponent {
     const role = this.userType === 'regular' ? 'user' : this.userType;
     
     this.authService.login({
-      emailOrPhone: this.user.email_or_phone,
-      password: this.user.password_hash,
+      emailOrPhone: this.user.emailOrPhone,
+      password: this.user.passwordLogin,
       role: role as any // Cast to expected type
     })
     .then(() => {
@@ -80,13 +86,24 @@ export class LoginComponent {
     this.loading = true;
     this.errorMessage = '';
 
-    const signupPayload = {
-      fullName: this.user.full_name,
+    const signupPayload: {
+      fullName: string;
+      email: string;
+      phone: string;
+      aadharCard: string;
+      password: string;
+      licenseNumber?: string;
+    } = {
+      fullName: this.user.fullName,
       email: this.user.email,
       phone: this.user.phone,
-      aadharCard: this.user.aadhar_card,
-      password: this.user.password_hash
+      aadharCard: this.user.aadharCard,
+      password: this.user.password
     };
+
+    if (this.userType === 'driver') {
+      signupPayload['licenseNumber'] = this.user.licenseNumber;
+    }
 
     const role = this.userType === 'regular' ? 'user' : 'driver';
 

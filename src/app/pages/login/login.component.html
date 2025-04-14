@@ -11,13 +11,13 @@
     <div class="auth-card">
       <div class="form-switch">
         <button [ngClass]="{ 'active-tab': formMode === 'login' }" (click)="setFormMode('login')">Login</button>
-        <button [ngClass]="{ 'active-tab': formMode === 'signup' }" (click)="setFormMode('signup')">Sign Up</button>
+        <button *ngIf="userType !== 'admin'" [ngClass]="{ 'active-tab': formMode === 'signup' }" (click)="setFormMode('signup')">Sign Up</button>
       </div>
 
       <div *ngIf="formMode === 'login'" class="form-content">
         <h2>Sign in as {{ userType | titlecase }}</h2>
-        <input type="text" placeholder="Email or Phone" [(ngModel)]="user.email_or_phone" />
-        <input type="password" placeholder="Password" [(ngModel)]="user.password_hash" />
+        <input type="text" placeholder="Email or Phone" [(ngModel)]="user.emailOrPhone" />
+        <input type="password" placeholder="Password" [(ngModel)]="user.passwordLogin" />
 
         <div class="remember-forgot">
           <label class="remember-me">
@@ -32,11 +32,12 @@
 
       <div *ngIf="formMode === 'signup'" class="form-content">
         <h2>Sign up as {{ userType | titlecase }}</h2>
-        <input type="text" placeholder="Full Name" [(ngModel)]="user.full_name" />
+        <input type="text" placeholder="Full Name" [(ngModel)]="user.fullName" />
         <input type="email" placeholder="Email" [(ngModel)]="user.email" />
         <input type="text" placeholder="Phone" [(ngModel)]="user.phone" />
-        <input type="text" placeholder="Aadhar Card Number" [(ngModel)]="user.aadhar_card" />
-        <input type="password" placeholder="Password" [(ngModel)]="user.password_hash" />
+        <input type="text" placeholder="Aadhar Card Number" [(ngModel)]="user.aadharCard" />
+        <input *ngIf="userType === 'driver'" type="text" placeholder="License Number" [(ngModel)]="user.licenseNumber" />
+        <input type="password" placeholder="Password" [(ngModel)]="user.password" />
         <button class="btn-dark" (click)="signup()">Sign Up</button>
       </div>
     </div>

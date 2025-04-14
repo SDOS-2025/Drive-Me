@@ -15,6 +15,7 @@ import { AuthService } from '../../services/auth.service';
 export class DriverDashboardComponent implements OnInit {
   driverName: string = 'John Doe';
   driverId: number = 1;
+  licenseNumber: string = 'DL1234567890';
   
   sidebarMenuItems = [
     { label: 'Dashboard', active: true },
@@ -62,12 +63,13 @@ export class DriverDashboardComponent implements OnInit {
   }
 
   loadDriverData(): void {
-    this.authService.currentUser.subscribe(user => {
-      if (user) {
-        console.log(user);
-        this.driverName = user.fullName || 'John Doe';
-        this.driverId = user.id || 1;
-      }
+    const driverDetails = localStorage.getItem('currentUser');
+    if (driverDetails) {
+      const driver = JSON.parse(driverDetails);
+      this.driverName = driver.fullName || 'John Doe';
+      this.driverId = driver.id || 1;
+      this.licenseNumber = driver.licenseNumber || 'DL1234567890';
     }
-  )}; 
+    
+  }; 
 }

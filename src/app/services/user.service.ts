@@ -10,7 +10,15 @@ export interface BookingSummary {
   status: string;
   fare: number;
   driverName?: string;
-  vehicleType?: string;
+  vehicleModel?: string;
+}
+
+export interface UserDetails {
+  userId: number;
+  fullName: string;
+  email: string;
+  phone: string;
+  aadharCard: string;
 }
 
 @Injectable({
@@ -23,37 +31,47 @@ export class UserBookingService {
 
   // Get all bookings for the current user
   getUserBookings(): Observable<BookingSummary[]> {
-    // Get token from localStorage
-    const token = localStorage.getItem('token');
-    
-    // Create headers with Bearer token
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    });
-
+    const headers = this.getAuthHeaders();
     return this.http.get<BookingSummary[]>(`${this.apiUrl}/bookings/user`, { headers });
   }
 
-  // Get a specific booking by ID
-  getBookingDetails(id: number): Observable<any> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    });
-
-    return this.http.get<any>(`${this.apiUrl}/bookings/${id}`, { headers });
+  // Get user's confirmed bookings
+  getConfirmedBookings(): Observable<BookingSummary[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<BookingSummary[]>(`${this.apiUrl}/bookings/user/confirmed`, { headers });
+  }
+  
+  // Get user's cancelled bookings
+  getCancelledBookings(): Observable<BookingSummary[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<BookingSummary[]>(`${this.apiUrl}/bookings/user/cancelled`, { headers });
+  }
+  
+  // Get user's completed bookings
+  getCompletedBookings(): Observable<BookingSummary[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<BookingSummary[]>(`${this.apiUrl}/bookings/user/completed`, { headers });
   }
   
   // Cancel a booking
-  cancelBooking(id: number): Observable<any> {
+  cancelBooking(bookingId: number, reason?: string): Observable<any> {
+    const headers = this.getAuthHeaders();
+    const payload = reason ? { reason } : {};
+    return this.http.put<any>(`${this.apiUrl}/bookings/${bookingId}/cancel`, payload, { headers });
+  }
+  
+  // Get all users (admin operation)
+  getAllUsers(): Observable<UserDetails[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<UserDetails[]>(`${this.apiUrl}/users`, { headers });
+  }
+  
+  // Helper method for authorization headers
+  private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
+    return new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
-
-    return this.http.put<any>(`${this.apiUrl}/bookings/${id}/cancel`, {}, { headers });
   }
 }

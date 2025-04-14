@@ -51,7 +51,8 @@ public class AuthenticationController {
                 .setFullName(registeredDriver.getName())
                 .setEmail(registeredDriver.getEmail())
                 .setPhone(registeredDriver.getPhone())
-                .setAadharCard(registeredDriver.getAadhar_card());
+                .setAadharCard(registeredDriver.getAadhar_card())
+                .setlicenseNumber(registeredDriver.getLicense_number());
 
 
         return ResponseEntity.ok(registerResponse);
@@ -80,6 +81,7 @@ public class AuthenticationController {
         LoginResponseDTO loginResponse = new LoginResponseDTO().setToken(jwtToken).setExpiresIn(jwtService.getExpirationTime());
         loginResponse.setUserId(authenticatedDriver.getDriver_id());
         loginResponse.setFullName(authenticatedDriver.getName());
+        loginResponse.setLicenseNumber(authenticatedDriver.getLicense_number());
 
         return ResponseEntity.ok(loginResponse);
     }

@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 export interface BackendVehicle {
-  id: number;
+  vehicleId: number;
   model: string;
-  registerationNumber: string;
+  registrationNumber: string;
   carNumber: string;
   userId: number;
+  vehicleType?: string;
 }
 
 @Injectable({
@@ -29,40 +30,47 @@ export class VehicleService {
       'Authorization': `Bearer ${token}`
     });
 
+    return this.http.get<BackendVehicle[]>(`${this.apiUrl}/users/my-vehicles`, { headers });
+  }
+
+  // Get all vehicles
+  getAllVehicles(): Observable<BackendVehicle[]> {
+    const token = localStorage.getItem('token');
+    const headers = this.getAuthHeaders(token);
+
     return this.http.get<BackendVehicle[]>(`${this.apiUrl}/users/vehicles`, { headers });
   }
 
   // Add a new vehicle
   addVehicle(userId: number, vehicleData: any): Observable<any> {
     const token = localStorage.getItem('token');
-    
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    });
+    const headers = this.getAuthHeaders(token);
     
     // Map frontend vehicle to backend format
     const backendVehicle = {
         model: vehicleData.model,
-        registration_number: vehicleData.registerationNumber,
+        registration_number: vehicleData.registrationNumber,
         car_number: vehicleData.carNumber,
         user_id: userId,
+        vehicle_type: vehicleData.vehicleType || 'SEDAN',
     };
 
-    return this.http.post(`${this.apiUrl}/users/add-vehicle`, backendVehicle, { 
-        headers, 
-      });
+    return this.http.post(`${this.apiUrl}/users/add-vehicle`, backendVehicle, { headers });
   }
 
   // Delete a vehicle
   removeVehicle(vehicleId: number): Observable<any> {
     const token = localStorage.getItem('token');
-    
-    const headers = new HttpHeaders({
+    const headers = this.getAuthHeaders(token);
+
+    return this.http.delete(`${this.apiUrl}/users/vehicles/${vehicleId}`, { headers });
+  }
+
+  // Helper method for authorization headers
+  private getAuthHeaders(token: string | null): HttpHeaders {
+    return new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
-
-    return this.http.delete(`${this.apiUrl}/users/vehicles/${vehicleId}`, { headers });
   }
 }

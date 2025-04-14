@@ -6,16 +6,27 @@ public class RegisterResponseDTO {
     private String email;
     private String phone;
     private String aadharCard;
+    private String licenseNumber;
 
     public RegisterResponseDTO() {
     }
 
-    public RegisterResponseDTO(Long id, String fullName, String email, String phone, String aadharCard) {
+    public RegisterResponseDTO(Long id, String fullName, String email, String phone, String aadharCard, String licenseNumber) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
         this.phone = phone;
         this.aadharCard = aadharCard;
+        this.licenseNumber = licenseNumber;
+    }
+
+    public String getlicenseNumber() {
+        return licenseNumber;
+    }
+
+    public RegisterResponseDTO setlicenseNumber(String licenseNumber) {
+        this.licenseNumber = licenseNumber;
+        return this;
     }
 
     public Long getId() {

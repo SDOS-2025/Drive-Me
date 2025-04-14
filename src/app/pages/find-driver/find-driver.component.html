@@ -1,0 +1,94 @@
+<app-dashboard-navbar></app-dashboard-navbar>
+
+<div class="dashboard-container">
+  <app-sidebar [menuItems]="sidebarMenuItems"></app-sidebar>
+  
+  <main class="dashboard-content">
+    <div class="page-header">
+      <h1 class="page-title">Find a Driver</h1>
+      <p class="page-subtitle">Browse and book available drivers for your trip</p>
+    </div>
+    
+    <!-- Error message display -->
+    <div *ngIf="errorMessage" class="error-container">
+      <div class="error-message">
+        <span class="error-text">{{ errorMessage }}</span>
+        <button class="error-close" (click)="clearError()">×</button>
+      </div>
+    </div>
+    
+    <!-- Loading indicator -->
+    <div *ngIf="isLoading" class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading available drivers...</p> 
+    </div>
+    
+    <!-- Search and filter controls -->
+    <div class="search-filter-container">
+      <div class="search-box">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          placeholder="Search by name or ID..." 
+          (keyup.enter)="onSearch()"
+          class="search-input"
+        >
+        <button class="search-btn" (click)="onSearch()">Search</button>
+      </div>
+      
+      <div class="filter-box">
+        <label for="status-filter">Filter by status:</label>
+        <select 
+          id="status-filter" 
+          [(ngModel)]="filterStatus" 
+          (change)="onFilterChange()" 
+          class="filter-select"
+        >
+          <option value="all">All Drivers</option>
+          <option value="AVAILABLE">Available</option>
+          <option value="BUSY">Busy</option>
+          <option value="OFFLINE">Offline</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- No drivers message -->
+    <div *ngIf="!isLoading && filteredDrivers.length === 0" class="no-drivers">
+      <p>No drivers found matching your criteria</p>
+    </div>
+    
+    <!-- Drivers list -->
+    <div class="drivers-grid">
+      <div *ngFor="let driver of filteredDrivers" class="driver-card">
+        <div class="driver-status" [style.backgroundColor]="getStatusColor(driver.status)">
+          {{ driver.status }}
+        </div>
+        
+        <div class="driver-avatar">
+          <img [src]="driver.imageUrl || 'assets/images/default-driver.png'" alt="{{ driver.fullName }}">
+        </div>
+        
+        <div class="driver-info">
+          <h3 class="driver-name">{{ driver.fullName }}</h3>
+          <!-- <div class="driver-rating">{{ getRatingStars(driver.rating) }} ({{ driver.rating }})</div> -->
+          
+          <div class="driver-details">
+            <p><strong>License:</strong> {{ driver.licenseNumber }}</p>
+            <p><strong>Aadhar:</strong> {{ driver.aadharNumber.substring(0, 8) }}XXXX</p>
+            <p><strong>Phone:</strong> {{ driver.phone }}</p>
+          </div>
+        </div>
+        
+        <div class="driver-actions">
+          <button 
+            [disabled]="driver.status !== 'AVAILABLE'" 
+            class="btn btn-book" 
+            (click)="bookDriver(driver.id)"
+          >
+            Book Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

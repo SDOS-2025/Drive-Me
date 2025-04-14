@@ -34,7 +34,7 @@ export class AuthService {
     return !!this.currentUserValue?.token;
   }
 
-  login(credentials: { emailOrPhone: string, password: string, role: 'user' | 'driver' | 'admin' }): Promise<User> {
+  async login(credentials: { emailOrPhone: string, password: string, role: 'user' | 'driver' | 'admin' }): Promise<User> {
     // Determine endpoint based on role
     const endpoint = credentials.role === 'driver' ? 
       'http://localhost:8080/auth/driver/login' : 
@@ -60,15 +60,28 @@ export class AuthService {
     })
     .then(data => {
       // Create user object from response
-      const user: User = {
+      const user: {
+        id: number;
+        fullName: string;
+        email?: string;
+        phone?: string;
+        aadharCard?: string;
+        role: 'user' | 'driver' | 'admin';
+        token: string;
+        licenseNumber?: string; // Only for drivers
+      } = {
         // Map response properties to user object
         role: credentials.role,
         token: data.token,
         id: data.userId,
         fullName: data.fullName,
       };
-      console.log(user);
-      console.log(data);
+
+      console.log('User data:', data);
+      if (credentials.role === 'driver') {
+        user.licenseNumber = data.licenseNumber;
+        console.log('Driver login successful:', user);
+      }
       
       // Store user in localStorage and update subject
       localStorage.setItem("token", data.token);
@@ -79,19 +92,31 @@ export class AuthService {
     });
   }
 
-  signup(userDetails: any, role: 'user' | 'driver'): Promise<User> {
+  async signup(userDetails: any, role: 'user' | 'driver'): Promise<User> {
     const endpoint = role === 'driver' ? 
       'http://localhost:8080/auth/driver/signup' : 
       'http://localhost:8080/auth/user/signup';
       
-    const signupPayload = {
+
+    const signupPayload: {
+      fullName: string;
+      email: string;
+      phone: string;
+      aadharCard: string;
+      password: string;
+      licenseNumber?: string;
+    } = {
       fullName: userDetails.fullName,
       email: userDetails.email,
       phone: userDetails.phone,
       aadharCard: userDetails.aadharCard,
       password: userDetails.password
     };
-
+    
+    if (role === 'driver') {
+      signupPayload['licenseNumber'] = userDetails.licenseNumber;
+    }
+    
     return fetch(endpoint, {
       method: 'POST',
       body: JSON.stringify(signupPayload),
