@@ -129,44 +129,50 @@ public class User implements UserDetails {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public User setUserId(Long userId) {
         this.userId = userId;
+        return this;
     }
 
     public String getFullName() {
         return fullName;
     }
 
-    public void setFullName(String fullName) {
+    public User setFullName(String fullName) {
         this.fullName = fullName;
+        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public User setEmail(String email) {
         this.email = email;
+        return this;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public User setPhone(String phone) {
         this.phone = phone;
+        return this;
     }
 
     public String getAadharCard() {
         return aadharCard;
     }
 
-    public void setAadharCard(String aadharCard) {
+    public User setAadharCard(String aadharCard) {
         this.aadharCard = aadharCard;
+        return this;
     }
 
-    public void setPassword(String password) {
+    public User setPassword(String password) {
         this.password = password;
+        return this;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -177,37 +183,42 @@ public class User implements UserDetails {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public User setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+        return this;
     }
 
     public AccountStatus getAccountStatus() {
         return accountStatus;
     }
 
-    public void setAccountStatus(AccountStatus accountStatus) {
+    public User setAccountStatus(AccountStatus accountStatus) {
         this.accountStatus = accountStatus;
+        return this;
     }
 
     public List<Vehicle> getVehicles() {
         return vehicles;
     }
 
-    public void setVehicles(List<Vehicle> vehicles) {
+    public User setVehicles(List<Vehicle> vehicles) {
         this.vehicles = vehicles;
         for (Vehicle vehicle : vehicles) {
             vehicle.setUser(this);
         }
+        return this;
     }
     
-    public void addVehicle(Vehicle vehicle) {
+    public User addVehicle(Vehicle vehicle) {
         vehicles.add(vehicle);
         vehicle.setUser(this);
+        return this;
     }
     
-    public void removeVehicle(Vehicle vehicle) {
+    public User removeVehicle(Vehicle vehicle) {
         vehicles.remove(vehicle);
         vehicle.setUser(null);
+        return this;
     }
     
     public List<Booking> getBookings() {

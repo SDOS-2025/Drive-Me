@@ -33,7 +33,7 @@ public class AuthenticationController {
     
         
         RegisterResponseDTO registerResponse = new RegisterResponseDTO()
-                .setId(registeredUser.getId())
+                .setId(registeredUser.getUserId())
                 .setFullName(registeredUser.getFullName())
                 .setEmail(registeredUser.getEmail())
                 .setPhone(registeredUser.getPhone())
@@ -47,12 +47,12 @@ public class AuthenticationController {
         Driver registeredDriver = authenticationService.signupDriver(registerUserDto);
 
         RegisterResponseDTO registerResponse = new RegisterResponseDTO()
-                .setId(registeredDriver.getDriver_id())
+                .setId(registeredDriver.getDriverId())
                 .setFullName(registeredDriver.getName())
                 .setEmail(registeredDriver.getEmail())
                 .setPhone(registeredDriver.getPhone())
-                .setAadharCard(registeredDriver.getAadhar_card())
-                .setlicenseNumber(registeredDriver.getLicense_number());
+                .setAadharCard(registeredDriver.getAadharCard())
+                .setlicenseNumber(registeredDriver.getLicenseNumber());
 
 
         return ResponseEntity.ok(registerResponse);
@@ -65,7 +65,7 @@ public class AuthenticationController {
         String jwtToken = jwtService.generateToken(authenticatedUser);
 
         LoginResponseDTO loginResponse = new LoginResponseDTO().setToken(jwtToken).setExpiresIn(jwtService.getExpirationTime());
-        loginResponse.setUserId(authenticatedUser.getId());
+        loginResponse.setUserId(authenticatedUser.getUserId());
         loginResponse.setFullName(authenticatedUser.getFullName());
         logger.info("User authenticated successfully: " + loginResponse.getFullName() + " with email: " + authenticatedUser.getEmail());
 
@@ -79,9 +79,9 @@ public class AuthenticationController {
         String jwtToken = jwtService.generateToken(authenticatedDriver);
 
         LoginResponseDTO loginResponse = new LoginResponseDTO().setToken(jwtToken).setExpiresIn(jwtService.getExpirationTime());
-        loginResponse.setUserId(authenticatedDriver.getDriver_id());
+        loginResponse.setUserId(authenticatedDriver.getDriverId());
         loginResponse.setFullName(authenticatedDriver.getName());
-        loginResponse.setLicenseNumber(authenticatedDriver.getLicense_number());
+        loginResponse.setLicenseNumber(authenticatedDriver.getLicenseNumber());
 
         return ResponseEntity.ok(loginResponse);
     }

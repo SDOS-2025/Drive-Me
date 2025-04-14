@@ -79,7 +79,7 @@ public class AuthenticationService {
         }
 
         // Verify password manually instead of using authenticationManager
-        if (!passwordEncoder.matches(input.getPassword(), driver.getPassword_hash())) {
+        if (!passwordEncoder.matches(input.getPassword(), driver.getPassword())) {
             throw new BadCredentialsException("Invalid password");
         }
 
@@ -96,9 +96,9 @@ public class AuthenticationService {
                 .setName(input.getFullName())
                 .setEmail(input.getEmail())
                 .setPhone(input.getPhone())
-                .setAadhar_card(input.getAadharCard())
-                .setPassword_hash(passwordEncoder.encode(input.getPassword()))
-                .setLicense_number(input.getlicenseNumber());
+                .setAadharCard(input.getAadharCard())
+                .setPasswordHash(passwordEncoder.encode(input.getPassword()))
+                .setLicenseNumber(input.getlicenseNumber());
 
         return driverRepository.save(driver);
     }

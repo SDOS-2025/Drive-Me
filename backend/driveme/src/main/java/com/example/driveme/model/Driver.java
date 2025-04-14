@@ -54,9 +54,6 @@ public class Driver implements UserDetails {
     @NotBlank(message = "License number is required")
     @Column(name = "license_number", unique = true, nullable = false)
     private String licenseNumber;
-    
-    @Column(name = "license_expiry")
-    private LocalDateTime licenseExpiry;
 
     @NotBlank(message = "Password is required")
     @Column(name = "password_hash", nullable = false)
@@ -151,56 +148,54 @@ public class Driver implements UserDetails {
         return driverId;
     }
 
-    public void setDriverId(Long driverId) {
+    public Driver setDriverId(Long driverId) {
         this.driverId = driverId;
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public Driver setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public Driver setEmail(String email) {
         this.email = email;
+        return this;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public Driver setPhone(String phone) {
         this.phone = phone;
+        return this;
     }
 
     public String getAadharCard() {
         return aadharCard;
     }
 
-    public void setAadharCard(String aadharCard) {
+    public Driver setAadharCard(String aadharCard) {
         this.aadharCard = aadharCard;
+        return this;
     }
 
     public String getLicenseNumber() {
         return licenseNumber;
     }
 
-    public void setLicenseNumber(String licenseNumber) {
+    public Driver setLicenseNumber(String licenseNumber) {
         this.licenseNumber = licenseNumber;
-    }
-    
-    public LocalDateTime getLicenseExpiry() {
-        return licenseExpiry;
-    }
-    
-    public void setLicenseExpiry(LocalDateTime licenseExpiry) {
-        this.licenseExpiry = licenseExpiry;
+        return this;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -211,60 +206,68 @@ public class Driver implements UserDetails {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public Driver setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+        return this;
     }
 
     public DriverStatus getStatus() {
         return status;
     }
 
-    public void setStatus(DriverStatus status) {
+    public Driver setStatus(DriverStatus status) {
         this.status = status;
+        return this;
     }
     
     public AccountStatus getAccountStatus() {
         return accountStatus;
     }
     
-    public void setAccountStatus(AccountStatus accountStatus) {
+    public Driver setAccountStatus(AccountStatus accountStatus) {
         this.accountStatus = accountStatus;
+        return this;
     }
     
     public String getCurrentLocation() {
         return currentLocation;
     }
     
-    public void setCurrentLocation(String currentLocation) {
+    public Driver setCurrentLocation(String currentLocation) {
         this.currentLocation = currentLocation;
+        return this;
     }
     
     public Double getAverageRating() {
         return averageRating;
     }
     
-    public void setAverageRating(Double averageRating) {
+    public Driver setAverageRating(Double averageRating) {
         this.averageRating = averageRating;
+        return this;
     }
     
     public Integer getTotalTrips() {
         return totalTrips;
     }
     
-    public void setTotalTrips(Integer totalTrips) {
+    public Driver setTotalTrips(Integer totalTrips) {
         this.totalTrips = totalTrips;
+        return this;
     }
     
-    public void incrementTotalTrips() {
+    public Driver incrementTotalTrips() {
         this.totalTrips++;
+        return this;
     }
     
     public List<Booking> getBookings() {
         return bookings;
     }
 
-    public void setPasswordHash(String passwordHash) {
+    public Driver setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+        return this;
     }
 
     // Pre-update callback
