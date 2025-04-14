@@ -24,7 +24,7 @@ export class FindDriverComponent implements OnInit {
   filterStatus: string = 'all';
 
   sidebarMenuItems = [
-    { label: 'Dashboard', route: '/dashboard' },
+    { label: 'Dashboard', route: '/user-dashboard' },
     { label: 'My Bookings', route: '/my-bookings' },
     { label: 'Find Driver', active: true },
     { label: 'My Vehicles', route: '/my-vehicles' },

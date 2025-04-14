@@ -102,4 +102,25 @@ public class AuthenticationService {
 
         return driverRepository.save(driver);
     }
+
+    public User authenticateAdmin(LoginRequestDTO input) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        input.getEmailOrPhone(),
+                        input.getPassword()
+                )
+        );
+
+        System.out.println(">>> Authenticating admin with email or phone: " + input.getEmailOrPhone());
+        
+        if (userRepository.findByEmail(input.getEmailOrPhone()).isPresent() 
+                && userRepository.findByEmail(input.getEmailOrPhone()).get().isSuperuser()) {
+            return userRepository.findByEmail(input.getEmailOrPhone()).get();
+        } else if (userRepository.findByPhone(input.getEmailOrPhone()).isPresent()
+                && userRepository.findByPhone(input.getEmailOrPhone()).get().isSuperuser()) {
+            return userRepository.findByPhone(input.getEmailOrPhone()).get();
+        } else {
+            throw new RuntimeException("Admin not found");
+        }
+    }
 }

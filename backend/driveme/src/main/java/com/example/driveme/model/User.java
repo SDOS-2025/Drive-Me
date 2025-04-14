@@ -47,6 +47,11 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     private String phone;
 
+    @NotBlank(message = "isSuperuser is required")
+    @Pattern(regexp = "^(true|false)$", message = "isSuperuser must be true or false")
+    @Column(name = "is_superuser")
+    private boolean isSuperuser = false;
+
     @NotBlank(message = "Aadhar card is required")
     @Pattern(regexp = "^\\d{12}$", message = "Aadhar card must be 12 digits")
     @Column(name = "aadhar_card", unique = true, nullable = false)
@@ -223,6 +228,14 @@ public class User implements UserDetails {
     
     public List<Booking> getBookings() {
         return bookings;
+    }
+
+    public void setSuperuser(boolean isSuperuser) {
+        this.isSuperuser = isSuperuser;
+    }
+
+    public boolean isSuperuser() {
+        return isSuperuser;
     }
 
     // Pre-update callback

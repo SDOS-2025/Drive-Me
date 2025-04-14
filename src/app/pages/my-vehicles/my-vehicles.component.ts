@@ -79,7 +79,7 @@ export class MyVehiclesComponent implements OnInit {
             const registrationNumber = v.registrationNumber || 'Not specified'; // Default if registerationNumber not available
             const carNumber = v.carNumber || 'Not specified'; // Default if carNumber not available
             return {
-              vehicleId: v.vehicleId,
+              id: v.id,
               model: model,
               registrationNumber: registrationNumber,
               carNumber: carNumber,
@@ -139,7 +139,7 @@ export class MyVehiclesComponent implements OnInit {
       this.vehicleService.removeVehicle(id).subscribe({
         next: () => {
           console.log('Vehicle removed successfully');
-          this.vehicles = this.vehicles.filter(v => v.vehicleId !== id);
+          this.vehicles = this.vehicles.filter(v => v.id !== id);
           this.isLoading = false;
         },
         error: (error) => {

@@ -8,6 +8,13 @@ import { UserBookingService, BookingSummary } from '../../services/user.service'
 import { DriverService } from '../../services/driver.service';
 import { AuthService } from '../../services/auth.service';
 
+interface Activity {
+  title: string;
+  details: string;
+  date?: Date; // For sorting
+  bookingId?: number; // For reference
+}
+
 @Component({
   selector: 'app-user-dashboard',
   standalone: true,
@@ -44,31 +51,15 @@ export class UserDashboardComponent implements OnInit {
   ];
   
   stats = [
-    { icon: '🚗', title: 'Total Rides', value: '0' },
-    { icon: '🎯', title: 'Upcoming Rides', value: '0' },
-    { icon: '💰', title: 'Total Spent', value: '$0' },
+    { title: 'Total Rides', value: '0' },
+    { title: 'Upcoming Rides', value: '0' },
+    { title: 'Total Spent', value: '$0' },
   ];
   
   // Keep original sample data for top drivers and activities
   topDrivers = [ {name: 'John Doe', number: '1234567890', icon: "👤"} ];
   
-  recentActivities = [
-    {
-      icon: '💰',
-      title: 'Payment Completed',
-      details: 'April 5, 2025 • $45.00'
-    },
-    {
-      icon: '⭐',
-      title: 'Rated Robert J.',
-      details: 'April 2, 2025 • ⭐⭐⭐⭐⭐'
-    },
-    {
-      icon: '🚗',
-      title: 'Completed Trip',
-      details: 'March 30, 2025 • Downtown'
-    }
-  ];  
+  recentActivities: Activity[] = []
   constructor(
     private userBookingService: UserBookingService,
     private authService: AuthService,
@@ -79,6 +70,7 @@ export class UserDashboardComponent implements OnInit {
     this.loadUserData();
     this.loadBookings();
     this.loadDrivers();
+    this.loadStats();
   }
 
   loadDrivers(): void {
@@ -117,8 +109,21 @@ export class UserDashboardComponent implements OnInit {
     this.userBookingService.getUserBookings().subscribe({
       next: (bookings: any[]) => {
         this.allBookings = bookings;
+
+        if (!bookings || bookings.length === 0) {
+          this.errorMessage = 'No bookings found.';
+          this.isLoading = false;
+          return;
+        }
+
+        // Convert bookings to activities
+        const activities = this.convertBookingsToActivities(bookings);
+
+        // Sort activities by date
+        this.recentActivities = activities.sort((a, b) => {
+          return new Date(b.date!).getTime() - new Date(a.date!).getTime();
+        }).slice(0, 3); // Limit to 5 recent activities
         
-        console.log('All bookings:', this.allBookings);
         // Filter upcoming bookings (PENDING or CONFIRMED)
         this.upcomingBookings = bookings.filter((booking: { status: string; }) => 
           booking.status === 'PENDING' || booking.status === 'CONFIRMED'
@@ -141,6 +146,96 @@ export class UserDashboardComponent implements OnInit {
       }
     });
   } 
+
+  async loadStats() {
+    try {
+      console.log('Loading stats...');
+      const [all, confirmed, completed] = await Promise.all([
+        this.userBookingService.getUserBookings().toPromise(),
+        this.userBookingService.getConfirmedBookings().toPromise(),
+        this.userBookingService.getCompletedBookings().toPromise()
+      ]);
+      
+      // Update stats with real data
+      if (all) {
+        this.stats[0].value = all.length.toString();
+      }
+      
+      if (confirmed) {
+        this.stats[1].value = confirmed.length.toString();
+      }
+      
+      if (completed) {
+        // Calculate total spent from completed bookings
+        const totalSpent = completed.reduce((sum: any, booking: { fare: any; }) => sum + booking.fare, 0);
+        this.stats[2].value = `$${totalSpent.toFixed(2)}`;
+      }
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
+  }
+  
+  convertBookingsToActivities(bookings: BookingSummary[]): Activity[] {
+    console.log('Converting bookings to activities:', bookings);
+    return bookings.map(booking => {
+      let activity: Activity;
+      const bookingDate = booking.createdAt ? new Date(booking.createdAt) : new Date();
+      const formattedDate = bookingDate.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+      
+      switch (booking.status) {
+        case 'COMPLETED':
+          activity = {
+            title: 'Completed Trip',
+            details: `${formattedDate} • ${booking.pickupLocation} to ${booking.dropoffLocation}`,
+            date: bookingDate,
+            bookingId: booking.bookingId
+          };
+          break;
+        
+        case 'CONFIRMED':
+          activity = {
+            title: 'Upcoming Trip',
+            details: `${formattedDate} • ${booking.pickupLocation}`,
+            date: bookingDate,
+            bookingId: booking.bookingId
+          };
+          break;
+          
+        case 'CANCELLED':
+          activity = {
+            title: 'Cancelled Booking',
+            details: `${formattedDate} • ${booking.pickupLocation}`,
+            date: bookingDate,
+            bookingId: booking.bookingId
+          };
+          break;
+          
+        case 'PAID':
+          activity = {
+            title: 'Payment Completed',
+            details: `${formattedDate} • $${booking.fare.toFixed(2)}`,
+            date: bookingDate,
+            bookingId: booking.bookingId
+          };
+          break;
+          
+        default:
+          activity = {
+            title: 'Booking Created',
+            details: `${formattedDate} • ${booking.pickupLocation}`,
+            date: bookingDate,
+            bookingId: booking.bookingId
+          };
+      }
+      
+      return activity;
+    });
+  }
+
   filterBookings(): void {
     this.upcomingBookings = this.allBookings.filter(
       booking => booking.status === 'PENDING' || booking.status === 'CONFIRMED'

@@ -85,4 +85,17 @@ public class AuthenticationController {
 
         return ResponseEntity.ok(loginResponse);
     }
+
+    @PostMapping("/admin/login")
+    public ResponseEntity<LoginResponseDTO> authenticateAdmin(@RequestBody LoginRequestDTO loginUserDto) {
+        User authenticatedAdmin = authenticationService.authenticateAdmin(loginUserDto);
+
+        String jwtToken = jwtService.generateToken(authenticatedAdmin);
+        LoginResponseDTO loginResponse = new LoginResponseDTO().setToken(jwtToken).setExpiresIn(jwtService.getExpirationTime());
+        loginResponse.setUserId(authenticatedAdmin.getUserId());
+        loginResponse.setFullName(authenticatedAdmin.getFullName());
+        logger.info("Admin authenticated successfully: " + loginResponse.getFullName() + " with email: " + authenticatedAdmin.getEmail());
+
+        return ResponseEntity.ok(loginResponse);
+    }
 }

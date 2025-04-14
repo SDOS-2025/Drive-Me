@@ -75,7 +75,7 @@ public class BookingController {
             booking.setVehicle(vehicle);
             booking.setPickupLocation((String) bookingRequest.get("pickupLocation"));
             booking.setDropoffLocation((String) bookingRequest.get("dropoffLocation"));
-            booking.setPickupLocation((String) bookingRequest.get("pickupDateTime"));
+            booking.setPickUpDateTime((String) bookingRequest.get("pickupDateTime"));
             
             // Convert fare to BigDecimal
             Object fareObj = bookingRequest.get("fare");

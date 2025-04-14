@@ -26,7 +26,6 @@ interface Driver {
   totalTrips: number;
   joinDate: string;
   licenseNumber: string;
-  vehicleInfo: string;
 }
 
 @Component({
@@ -116,7 +115,6 @@ export class AdminDashboardComponent implements OnInit {
       totalTrips: 156,
       joinDate: '2022-06-15',
       licenseNumber: 'DL12345678',
-      vehicleInfo: 'Toyota Camry 2020'
     },
     {
       id: 2,
@@ -131,7 +129,6 @@ export class AdminDashboardComponent implements OnInit {
       totalTrips: 213,
       joinDate: '2021-11-05',
       licenseNumber: 'DL87654321',
-      vehicleInfo: 'Honda Accord 2021'
     },
     {
       id: 3,
@@ -146,7 +143,6 @@ export class AdminDashboardComponent implements OnInit {
       totalTrips: 87,
       joinDate: '2023-01-20',
       licenseNumber: 'DL22334455',
-      vehicleInfo: 'Hyundai Sonata 2019'
     },
     {
       id: 4,
@@ -161,7 +157,6 @@ export class AdminDashboardComponent implements OnInit {
       totalTrips: 342,
       joinDate: '2020-03-15',
       licenseNumber: 'DL99887766',
-      vehicleInfo: 'BMW 5 Series 2022'
     }
   ];
 
@@ -266,7 +261,6 @@ export class AdminDashboardComponent implements OnInit {
       hourlyRate: driver.hourlyRate,
       status: driver.status,
       licenseNumber: driver.licenseNumber,
-      vehicleInfo: driver.vehicleInfo,
       specialties: driver.specialties.join(', ')
     });
     this.showDriverModal = true;
@@ -351,7 +345,6 @@ export class AdminDashboardComponent implements OnInit {
           hourlyRate: formValue.hourlyRate,
           status: formValue.status,
           licenseNumber: formValue.licenseNumber,
-          vehicleInfo: formValue.vehicleInfo,
           specialties: specialtiesArray
         };
       }
@@ -366,7 +359,6 @@ export class AdminDashboardComponent implements OnInit {
         hourlyRate: formValue.hourlyRate,
         status: formValue.status,
         licenseNumber: formValue.licenseNumber,
-        vehicleInfo: formValue.vehicleInfo,
         specialties: specialtiesArray,
         rating: 0,
         totalTrips: 0,

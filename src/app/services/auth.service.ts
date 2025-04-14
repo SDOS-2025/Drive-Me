@@ -36,10 +36,12 @@ export class AuthService {
 
   async login(credentials: { emailOrPhone: string, password: string, role: 'user' | 'driver' | 'admin' }): Promise<User> {
     // Determine endpoint based on role
-    const endpoint = credentials.role === 'driver' ? 
-      'http://localhost:8080/auth/driver/login' : 
-      'http://localhost:8080/auth/user/login';
-      
+    const endpoint = credentials.role === 'driver' ?
+      'http://localhost:8080/auth/driver/login' :
+      credentials.role === 'admin' ?
+        'http://localhost:8080/auth/admin/login' :
+        'http://localhost:8080/auth/user/login';
+
     const loginPayload = {
       emailOrPhone: credentials.emailOrPhone,
       password: credentials.password

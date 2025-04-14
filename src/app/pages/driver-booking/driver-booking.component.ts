@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { DriverService } from '../../services/driver.service';
 import { BookingRequest, BookingService } from '../../services/bookings.service';
+import { VehicleService, BackendVehicle } from '../../services/vehicle.service';
 import { Router } from '@angular/router';
 
 interface Driver {
@@ -13,10 +14,10 @@ interface Driver {
   name: string;
   rating: number;
   experience: number;
-  specialties: string[];
+  specialties?: string[];
   hourlyRate: number;
   available: boolean;
-  imageUrl: string;
+  imageUrl?: string;
 }
 
 @Component({
@@ -31,7 +32,7 @@ interface Driver {
     DashboardNavbarComponent,
     HttpClientModule
   ],
-  providers: [BookingService, AuthService, DriverService],
+  providers: [BookingService, AuthService, DriverService, VehicleService],
 })
 export class DriverBookingComponent implements OnInit {
   bookingForm!: FormGroup;
@@ -39,71 +40,31 @@ export class DriverBookingComponent implements OnInit {
   driverSelectionForm!: FormGroup;
   paymentForm!: FormGroup;
 
-  // Redirect to this data if user is not logged in
-  userId: number = 0; // User ID from AuthService
-
-  // Test Data
-  vehicleId: number = 4; // Example vehicle ID
-  isLoading: boolean = false; // Loading state for async operations
-  errorMessage: string = ''; // Error message for displaying errors 
-
+  userId: number = 0;
+  isLoading: boolean = false;
+  errorMessage: string = '';
   currentStep: number = 1;
   totalSteps: number = 3;
 
-  // List of Drivers as an example
-  drivers: Driver[] = [
-    {
-      id: 1,
-      name: 'John Smith',
-      rating: 4.8,
-      experience: 5,
-      specialties: ['Long Distance', 'Night Driving'],
-      hourlyRate: 25,
-      available: true,
-      imageUrl: 'assets/driver1.jpg'
-    },
-    {
-      id: 2,
-      name: 'Sarah Johnson',
-      rating: 4.9,
-      experience: 7,
-      specialties: ['City Driving', 'Airport Transfers'],
-      hourlyRate: 28,
-      available: true,
-      imageUrl: 'assets/driver2.jpg'
-    },
-    {
-      id: 3,
-      name: 'Miguel Rodriguez',
-      rating: 4.7,
-      experience: 4,
-      specialties: ['Highway Driving', 'Elderly Assistance'],
-      hourlyRate: 23,
-      available: false,
-      imageUrl: 'assets/driver3.jpg'
-    },
-    {
-      id: 4,
-      name: 'Emma Williams',
-      rating: 5.0,
-      experience: 10,
-      specialties: ['Luxury Vehicles', 'VIP Service'],
-      hourlyRate: 35,
-      available: true,
-      imageUrl: 'assets/driver4.jpg'
-    }
-  ];
-
+  // Driver and vehicle data
+  drivers: Driver[] = [];
   availableDrivers: Driver[] = [];
   selectedDriver: Driver | null = null;
+  
+  // User's vehicles
+  userVehicles: BackendVehicle[] = [];
+  selectedVehicle: BackendVehicle | null = null;
+
   minDate: string = '';
   totalCost = 0;
   bookingSuccess = false;
 
-  constructor(private fb: FormBuilder,
+  constructor(
+    private fb: FormBuilder,
     private bookingService: BookingService,
     private authService: AuthService,
     private driverService: DriverService,
+    private vehicleService: VehicleService,
     private router: Router
   ) {
     console.log('Component constructor called');
@@ -112,20 +73,16 @@ export class DriverBookingComponent implements OnInit {
   ngOnInit(): void {
     console.log('ngOnInit called');
     try {
-      console.log('Getting current user...');
+      // Get current user and initialize
       this.getCurrentUser();
-
-      console.log('Creating forms...');
       this.createForms();
-
-      console.log('Updating available drivers...');
-      this.updateAvailableDrivers();
+      this.loadUserVehicles();
+      this.loadAvailableDrivers();
 
       // Set min date to today
       const today = new Date();
       this.minDate = today.toISOString().split('T')[0];
-      console.log('Min date set:', this.minDate);
-
+      
       // Form subscriptions
       if (this.tripDetailsForm) {
         this.tripDetailsForm.valueChanges.subscribe(() => {
@@ -135,8 +92,6 @@ export class DriverBookingComponent implements OnInit {
         this.tripDetailsForm.get('pickupDate')?.valueChanges.subscribe(() => {
           this.updateAvailableDrivers();
         });
-      } else {
-        console.error('tripDetailsForm is undefined');
       }
     } catch (error) {
       console.error('Error in ngOnInit:', error);
@@ -146,48 +101,77 @@ export class DriverBookingComponent implements OnInit {
 
   getCurrentUser(): void {
     const currentUser = this.authService.currentUserValue;
-
     if (currentUser) {
-      this.userId = currentUser.id || 1;
+      this.userId = currentUser.id || 0;
       console.log('Current User ID:', this.userId);
     }
   }
 
+  loadUserVehicles(): void {
+    this.isLoading = true;
+    this.vehicleService.getUserVehicles().subscribe({
+      next: (vehicles) => {
+        console.log('All vehicles loaded:', vehicles);
+        // Filter vehicles belonging to current user
+        this.userVehicles = vehicles.filter(v => v.userId === this.userId);
+        console.log('User vehicles filtered:', this.userVehicles);
+        console.log('User ID for filtering:', this.userId);
+        this.isLoading = false;
+        
+        // If there's only one vehicle, automatically select it
+        if (this.userVehicles.length === 1) {
+          this.selectVehicle(this.userVehicles[0].id);
+          this.tripDetailsForm.get('vehicleId')?.setValue(this.userVehicles[0].id);
+          console.log('Auto-selected vehicle:', this.userVehicles[0]);
+        }
+      },
+      error: (error) => {
+        console.error('Error loading vehicles:', error);
+        this.errorMessage = 'Failed to load your vehicles. Please try again.';
+        this.isLoading = false;
+      }
+    });
+  }
 
-  // loadAvailableDrivers(): void {
-  //   this.isLoading = true;
-  //   this.bookingService.getAvailableDrivers().subscribe({
-  //     next: (data) => {
-  //       this.drivers = data.map(driver => ({
-  //         id: driver.driver_id,
-  //         name: driver.name,
-  //         rating: driver.rating || 4.5,
-  //         experience: driver.experience || 5,
-  //         specialties: driver.specialties || ['Professional Driving'],
-  //         hourlyRate: driver.hourlyRate || 25,
-  //         available: true,
-  //         imageUrl: 'assets/driver1.jpg'
-  //       }));
-  //       this.availableDrivers = this.drivers.filter(driver => driver.available);
-  //       this.isLoading = false;
-  //     },
-  //     error: (error) => {
-  //       console.error('Error fetching drivers', error);
-  //       this.errorMessage = 'Failed to load drivers. Please try again.';
-  //       this.isLoading = false;
-  //     }
-  //   });
-  // }
+
+  loadAvailableDrivers(): void {
+    this.isLoading = true;
+    this.driverService.getDriverStatus().subscribe({
+      next: (data) => {
+        // Map API data to our Driver interface
+        this.drivers = data.map(driver => ({
+          id: driver.driverId,
+          name: driver.name,
+          rating: 4.5,
+          experience: 3, // Default if not available from API
+          hourlyRate: 25, // Default if not available from API
+          available: driver.status === 'AVAILABLE'
+        }));
+        
+        // Filter available drivers
+        this.updateAvailableDrivers();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error fetching drivers', error);
+        this.errorMessage = 'Failed to load drivers. Please try again.';
+        this.isLoading = false;
+        
+        // Fallback to sample data if API fails
+        this.updateAvailableDrivers();
+      }
+    });
+  }
 
   createForms(): void {
-    // Trip details form
+    // Trip details form with vehicle selection
     this.tripDetailsForm = this.fb.group({
       pickupLocation: ['', Validators.required],
       destination: ['', Validators.required],
       pickupDate: ['', Validators.required],
       pickupTime: ['', Validators.required],
       estimatedDuration: [1, [Validators.required, Validators.min(1)]],
-      vehicleType: ['', Validators.required],
+      vehicleId: ['', Validators.required], // Changed from vehicleType to vehicleId
       additionalInfo: ['']
     });
 
@@ -223,6 +207,24 @@ export class DriverBookingComponent implements OnInit {
     this.calculateTotalCost();
   }
 
+  selectVehicle(vehicleId: any): void {
+    console.log('selectVehicle called with ID:', vehicleId);
+    
+    if (!vehicleId) {
+      console.log('No vehicle ID provided, clearing selection');
+      this.selectedVehicle = null;
+      return;
+    }
+    
+    // Convert string to number if needed
+    const id = typeof vehicleId === 'string' ? parseInt(vehicleId, 10) : vehicleId;
+    console.log('Looking for vehicle with ID:', id);
+    console.log('Available vehicles:', this.userVehicles);
+    
+    this.selectedVehicle = this.userVehicles.find(v => v.id === id) || null;
+    console.log('Found and selected vehicle:', this.selectedVehicle);
+  }
+
   calculateTotalCost(): void {
     if (this.selectedDriver && this.tripDetailsForm.get('estimatedDuration')?.valid) {
       const hours = this.tripDetailsForm.get('estimatedDuration')?.value;
@@ -233,33 +235,26 @@ export class DriverBookingComponent implements OnInit {
   }
 
   submitBooking(): void {
-
-    console.log("here");
-    console.log(this.userId);
-    console.log(this.authService.currentUserValue?.role);
-
-    if (this.bookingForm.valid && this.selectedDriver) {
+    if (this.bookingForm.valid && this.selectedDriver && this.selectedVehicle) {
       this.isLoading = true;
 
-      // Create booking request with the user ID
+      // Create booking request
       const bookingRequest: BookingRequest = {
         customer: { id: this.userId },
         driver: { driver_id: this.selectedDriver.id },
-        vehicle: { id: 4 },
+        vehicle: { id: this.selectedVehicle.id },
         pickupLocation: this.tripDetailsForm.get('pickupLocation')?.value,
         dropoffLocation: this.tripDetailsForm.get('destination')?.value,
+        // Format date and time for backend
+        pickupDateTime: `${this.tripDetailsForm.get('pickupDate')?.value} ${this.tripDetailsForm.get('pickupTime')?.value}`,
         fare: this.totalCost
       };
 
-      // 2. Send booking request to backend
       this.bookingService.createBooking(bookingRequest).subscribe({
         next: (bookingResponse) => {
           console.log('Booking created:', bookingResponse);
-          // go back to user dashboard
           this.bookingSuccess = true;
           this.isLoading = false;
-
-          // change the route to user dashboard
           this.router.navigate(['/user-dashboard']);
         },
         error: (error) => {
@@ -303,6 +298,7 @@ export class DriverBookingComponent implements OnInit {
   resetForm(): void {
     this.bookingForm.reset();
     this.selectedDriver = null;
+    this.selectedVehicle = null;
     this.totalCost = 0;
     this.currentStep = 1;
     this.bookingSuccess = false;

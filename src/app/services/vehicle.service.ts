@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface BackendVehicle {
-  vehicleId: number;
+  id: number;
   model: string;
   registrationNumber: string;
   carNumber: string;
