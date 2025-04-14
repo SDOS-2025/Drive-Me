@@ -1,408 +1,309 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, NgModel, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AdminService } from '../../services/admin.service';
+import { AdminNavbarComponent } from '../../components/admin-navbar/admin-navbar.component';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AdminNavbarComponent } from "../../components/admin-navbar/admin-navbar.component";
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  joinDate: string;
-  bookingsCount: number;
-  status: 'active' | 'inactive' | 'suspended';
-}
-
-interface Driver {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  rating: number;
-  experience: number;
-  specialties: string[];
-  hourlyRate: number;
-  status: 'active' | 'inactive' | 'suspended';
-  totalTrips: number;
-  joinDate: string;
-  licenseNumber: string;
-}
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css'],
+  imports: [AdminNavbarComponent, CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule],
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    AdminNavbarComponent
-]
+  providers: [AdminService,  FormBuilder],
 })
 export class AdminDashboardComponent implements OnInit {
-  activeTab: 'users' | 'drivers' = 'users';
-  userForm!: FormGroup;
-  driverForm!: FormGroup;
-  searchTerm: string = '';
-  isEditMode: boolean = false;
-  currentUserId: number | null = null;
-  currentDriverId: number | null = null;
+  activeTab = 'users';
+  searchTerm = '';
   showUserModal = false;
   showDriverModal = false;
   confirmDeleteModal = false;
-  entityToDelete: { type: 'user' | 'driver', id: number } | null = null;
+  isEditMode = false;
   
-  users: User[] = [
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      phone: '555-123-4567',
-      joinDate: '2023-01-15',
-      bookingsCount: 12,
-      status: 'active'
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      email: 'jane.smith@example.com',
-      phone: '555-987-6543',
-      joinDate: '2023-03-22',
-      bookingsCount: 5,
-      status: 'active'
-    },
-    {
-      id: 3,
-      name: 'Robert Johnson',
-      email: 'robert.j@example.com',
-      phone: '555-456-7890',
-      joinDate: '2023-05-10',
-      bookingsCount: 0,
-      status: 'inactive'
-    },
-    {
-      id: 4,
-      name: 'Emily Davis',
-      email: 'emily.davis@example.com',
-      phone: '555-222-3333',
-      joinDate: '2023-02-28',
-      bookingsCount: 8,
-      status: 'active'
-    },
-    {
-      id: 5,
-      name: 'Michael Wilson',
-      email: 'michael.w@example.com',
-      phone: '555-888-9999',
-      joinDate: '2023-04-12',
-      bookingsCount: 3,
-      status: 'suspended'
-    }
-  ];
+  users: any[] = [];
+  filteredUsers: any[] = [];
+  drivers: any[] = [];
+  filteredDrivers: any[] = [];
+  
+  userForm: FormGroup;
+  driverForm: FormGroup;
+  
+  entityToDelete: any = null;
+  
+  stats: any = {
+    totalUsers: 0,
+    totalDrivers: 0,
+    totalBookings: 0
+  };
 
-  drivers: Driver[] = [
-    {
-      id: 1,
-      name: 'John Smith',
-      email: 'john.smith@example.com',
-      phone: '555-111-2222',
-      rating: 4.8,
-      experience: 5,
-      specialties: ['Long Distance', 'Night Driving'],
-      hourlyRate: 25,
-      status: 'active',
-      totalTrips: 156,
-      joinDate: '2022-06-15',
-      licenseNumber: 'DL12345678',
-    },
-    {
-      id: 2,
-      name: 'Sarah Johnson',
-      email: 'sarah.j@example.com',
-      phone: '555-333-4444',
-      rating: 4.9,
-      experience: 7,
-      specialties: ['City Driving', 'Airport Transfers'],
-      hourlyRate: 28,
-      status: 'active',
-      totalTrips: 213,
-      joinDate: '2021-11-05',
-      licenseNumber: 'DL87654321',
-    },
-    {
-      id: 3,
-      name: 'Miguel Rodriguez',
-      email: 'miguel.r@example.com',
-      phone: '555-555-6666',
-      rating: 4.7,
-      experience: 4,
-      specialties: ['Highway Driving', 'Elderly Assistance'],
-      hourlyRate: 23,
-      status: 'inactive',
-      totalTrips: 87,
-      joinDate: '2023-01-20',
-      licenseNumber: 'DL22334455',
-    },
-    {
-      id: 4,
-      name: 'Emma Williams',
-      email: 'emma.w@example.com',
-      phone: '555-777-8888',
-      rating: 5.0,
-      experience: 10,
-      specialties: ['Luxury Vehicles', 'VIP Service'],
-      hourlyRate: 35,
-      status: 'active',
-      totalTrips: 342,
-      joinDate: '2020-03-15',
-      licenseNumber: 'DL99887766',
-    }
-  ];
-
-  filteredUsers: User[] = [];
-  filteredDrivers: Driver[] = [];
-
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private adminService: AdminService,
+    private fb: FormBuilder,
+  ) {
+    this.userForm = this.fb.group({
+      fullName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required]],
+      aadharCard: ['', [Validators.required]],
+      accountStatus: ['ACTIVE']
+    });
+    
+    this.driverForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required]],
+      aadharCard: ['', [Validators.required]],
+      licenseNumber: ['', Validators.required],
+      status: ['AVAILABLE'],
+      accountStatus: ['ACTIVE']
+    });
+  }
 
   ngOnInit(): void {
-    this.initForms();
-    this.filteredUsers = [...this.users];
-    this.filteredDrivers = [...this.drivers];
+    this.loadDashboardData();
+    this.loadUsers();
+    this.loadDrivers();
   }
-
-  initForms(): void {
-    this.userForm = this.fb.group({
-      name: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(/^\d{3}-\d{3}-\d{4}$/)]],
-      status: ['active', [Validators.required]]
-    });
-
-    this.driverForm = this.fb.group({
-      name: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(/^\d{3}-\d{3}-\d{4}$/)]],
-      experience: [0, [Validators.required, Validators.min(0)]],
-      hourlyRate: [0, [Validators.required, Validators.min(0)]],
-      status: ['active', [Validators.required]],
-      licenseNumber: ['', [Validators.required]],
-      vehicleInfo: ['', [Validators.required]],
-      specialties: ['', [Validators.required]]
+  
+  loadDashboardData(): void {
+    this.adminService.getStats().subscribe({
+      next: (data: any) => {
+        this.stats = data;
+      },
+      error: (err: Error) => {
+        console.error('Error loading dashboard stats:', err);
+      }
     });
   }
-
-  switchTab(tab: 'users' | 'drivers'): void {
+  
+  loadUsers(): void {
+    this.adminService.getAllUsers().subscribe({
+      next: (data: any) => {
+        this.users = data.map((user: any) => ({
+          userId: user.userId,
+          fullName: user.fullName,
+          email: user.email,
+          phone: user.phone,
+          aadharCard: user.aadharCard,
+          averageRating: user.averageRating || 'N/A',
+          accountStatus: user.status,
+          totalBookings: user.totalBookings,
+          createdAt: new Date(user.createdAt).toLocaleDateString()
+        }));
+        this.filteredUsers = [...this.users];
+      },
+      error: (err: Error) => {
+        console.error('Error loading users:', err);
+      }
+    });
+  }
+  
+  loadDrivers(): void {
+    this.adminService.getAllDrivers().subscribe({
+      next: (data: any) => {
+        this.drivers = data.map((driver: any) => ({
+          driverId: driver.driverId,
+          name: driver.name,
+          email: driver.email,
+          phone: driver.phone,
+          aadharCard: driver.aadharCard,
+          licenseNumber: driver.licenseNumber,
+          status: driver.status,
+          accountStatus: driver.accountStatus,
+          averageRating: driver.averageRating || 'N/A',
+          totalTrips: driver.totalTrips
+        }));
+        this.filteredDrivers = [...this.drivers];
+      },
+      error: (err: Error) => {
+        console.error('Error loading drivers:', err);
+      }
+    });
+  }
+  
+  switchTab(tab: string): void {
     this.activeTab = tab;
     this.searchTerm = '';
-    this.filterEntities();
-  }
-
-  searchUsers(): void {
-    this.filterEntities();
-  }
-
-  filterEntities(): void {
-    const term = this.searchTerm.toLowerCase();
-    
-    if (this.activeTab === 'users') {
-      this.filteredUsers = this.users.filter(user => 
-        user.name.toLowerCase().includes(term) || 
-        user.email.toLowerCase().includes(term) ||
-        user.phone.includes(term)
-      );
+    if (tab === 'users') {
+      this.filteredUsers = [...this.users];
     } else {
-      this.filteredDrivers = this.drivers.filter(driver => 
-        driver.name.toLowerCase().includes(term) || 
-        driver.email.toLowerCase().includes(term) ||
-        driver.phone.includes(term)
-      );
+      this.filteredDrivers = [...this.drivers];
     }
   }
-
+  
+  searchUsers(): void {
+    const term = this.searchTerm.toLowerCase().trim();
+    
+    if (this.activeTab === 'users') {
+      if (!term) {
+        this.filteredUsers = [...this.users];
+      } else {
+        this.filteredUsers = this.users.filter(user => 
+          user.fullName.toLowerCase().includes(term) ||
+          user.email.toLowerCase().includes(term) ||
+          user.phone.includes(term)
+        );
+      }
+    } else {
+      if (!term) {
+        this.filteredDrivers = [...this.drivers];
+      } else {
+        this.filteredDrivers = this.drivers.filter(driver => 
+          driver.name.toLowerCase().includes(term) ||
+          driver.email.toLowerCase().includes(term) ||
+          driver.phone.includes(term)
+        );
+      }
+    }
+  }
+  
+  getStatusClass(status: string): string {
+    const statusLower = status.toLowerCase();
+    if (statusLower === 'active') return 'active';
+    if (statusLower === 'inactive') return 'inactive';
+    if (statusLower === 'suspended') return 'suspended';
+    return '';
+  }
+  
   addNewUser(): void {
     this.isEditMode = false;
-    this.currentUserId = null;
-    this.userForm.reset({status: 'active'});
-    this.showUserModal = true;
-  }
-
-  editUser(user: User): void {
-    this.isEditMode = true;
-    this.currentUserId = user.id;
-    this.userForm.patchValue({
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      status: user.status
+    this.userForm.reset({
+      accountStatus: 'ACTIVE'
     });
     this.showUserModal = true;
   }
-
+  
+  editUser(user: any): void {
+    this.isEditMode = true;
+    this.userForm.patchValue({
+      fullName: user.fullName,
+      email: user.email,
+      phone: user.phone,
+      aadharCard: user.aadharCard,
+      accountStatus: user.accountStatus
+    });
+    this.userForm.get('userId')?.setValue(user.userId);
+    this.showUserModal = true;
+  }
+  
+  saveUser(): void {
+    if (this.userForm.invalid) {
+      this.userForm.markAllAsTouched();
+      return;
+    }
+    
+    const userData = this.userForm.value;
+    
+    if (this.isEditMode) {
+      const userId = this.userForm.get('userId')?.value;
+      this.adminService.updateUser(userId, userData).subscribe({
+        next: () => {
+          this.closeUserModal();
+          this.loadUsers();
+        },
+        error: (err) => {
+          console.error('Error updating user:', err);
+        }
+      });
+    } else {
+      // For new users, would need a registration endpoint
+      this.closeUserModal();
+    }
+  }
+  
+  closeUserModal(): void {
+    this.showUserModal = false;
+    this.userForm.reset();
+  }
+  
   addNewDriver(): void {
     this.isEditMode = false;
-    this.currentDriverId = null;
     this.driverForm.reset({
-      status: 'active',
-      experience: 0,
-      hourlyRate: 0
+      status: 'AVAILABLE',
+      accountStatus: 'ACTIVE'
     });
     this.showDriverModal = true;
   }
-
-  editDriver(driver: Driver): void {
+  
+  editDriver(driver: any): void {
     this.isEditMode = true;
-    this.currentDriverId = driver.id;
     this.driverForm.patchValue({
       name: driver.name,
       email: driver.email,
       phone: driver.phone,
-      experience: driver.experience,
-      hourlyRate: driver.hourlyRate,
-      status: driver.status,
+      aadharCard: driver.aadharCard,
       licenseNumber: driver.licenseNumber,
-      specialties: driver.specialties.join(', ')
+      status: driver.status,
+      accountStatus: driver.accountStatus
     });
+    this.driverForm.get('driverId')?.setValue(driver.driverId);
     this.showDriverModal = true;
   }
-
-  confirmDelete(type: 'user' | 'driver', id: number): void {
+  
+  saveDriver(): void {
+    if (this.driverForm.invalid) {
+      this.driverForm.markAllAsTouched();
+      return;
+    }
+    
+    const driverData = this.driverForm.value;
+    
+    if (this.isEditMode) {
+      const driverId = this.driverForm.get('driverId')?.value;
+      this.adminService.updateDriver(driverId, driverData).subscribe({
+        next: () => {
+          this.closeDriverModal();
+          this.loadDrivers();
+        },
+        error: (err: Error) => {
+          console.error('Error updating driver:', err);
+        }
+      });
+    } else {
+      // For new drivers, would need a registration endpoint
+      this.closeDriverModal();
+    }
+  }
+  
+  closeDriverModal(): void {
+    this.showDriverModal = false;
+    this.driverForm.reset();
+  }
+  
+  confirmDelete(type: string, id: number): void {
     this.entityToDelete = { type, id };
     this.confirmDeleteModal = true;
   }
-
+  
   deleteEntity(): void {
     if (!this.entityToDelete) return;
     
     if (this.entityToDelete.type === 'user') {
-      this.users = this.users.filter(user => user.id !== this.entityToDelete?.id);
-      this.filteredUsers = this.filteredUsers.filter(user => user.id !== this.entityToDelete?.id);
-    } else {
-      this.drivers = this.drivers.filter(driver => driver.id !== this.entityToDelete?.id);
-      this.filteredDrivers = this.filteredDrivers.filter(driver => driver.id !== this.entityToDelete?.id);
+      this.adminService.deleteUser(this.entityToDelete.id).subscribe({
+        next: () => {
+          this.loadUsers();
+          this.closeDeleteModal();
+        },
+        error: (err: Error) => {
+          console.error('Error deleting user:', err);
+        }
+      });
+    } else if (this.entityToDelete.type === 'driver') {
+      this.adminService.deleteDriver(this.entityToDelete.id).subscribe({
+        next: () => {
+          this.loadDrivers();
+          this.closeDeleteModal();
+        },
+        error: (err: Error) => {
+          console.error('Error deleting driver:', err);
+        }
+      });
     }
-    
-    this.closeDeleteModal();
   }
-
-  saveUser(): void {
-    if (this.userForm.invalid) {
-      this.markFormGroupTouched(this.userForm);
-      return;
-    }
-
-    const formValue = this.userForm.value;
-    
-    if (this.isEditMode && this.currentUserId) {
-      // Edit existing user
-      const userIndex = this.users.findIndex(u => u.id === this.currentUserId);
-      if (userIndex !== -1) {
-        this.users[userIndex] = {
-          ...this.users[userIndex],
-          name: formValue.name,
-          email: formValue.email,
-          phone: formValue.phone,
-          status: formValue.status
-        };
-      }
-    } else {
-      // Add new user
-      const newUser: User = {
-        id: this.users.length ? Math.max(...this.users.map(u => u.id)) + 1 : 1,
-        name: formValue.name,
-        email: formValue.email,
-        phone: formValue.phone,
-        status: formValue.status,
-        joinDate: new Date().toISOString().split('T')[0],
-        bookingsCount: 0
-      };
-      this.users.push(newUser);
-    }
-    
-    this.filteredUsers = [...this.users];
-    this.closeUserModal();
-  }
-
-  saveDriver(): void {
-    if (this.driverForm.invalid) {
-      this.markFormGroupTouched(this.driverForm);
-      return;
-    }
-
-    const formValue = this.driverForm.value;
-    const specialtiesArray = formValue.specialties.split(',').map((s: string) => s.trim());
-    
-    if (this.isEditMode && this.currentDriverId) {
-      // Edit existing driver
-      const driverIndex = this.drivers.findIndex(d => d.id === this.currentDriverId);
-      if (driverIndex !== -1) {
-        this.drivers[driverIndex] = {
-          ...this.drivers[driverIndex],
-          name: formValue.name,
-          email: formValue.email,
-          phone: formValue.phone,
-          experience: formValue.experience,
-          hourlyRate: formValue.hourlyRate,
-          status: formValue.status,
-          licenseNumber: formValue.licenseNumber,
-          specialties: specialtiesArray
-        };
-      }
-    } else {
-      // Add new driver
-      const newDriver: Driver = {
-        id: this.drivers.length ? Math.max(...this.drivers.map(d => d.id)) + 1 : 1,
-        name: formValue.name,
-        email: formValue.email,
-        phone: formValue.phone,
-        experience: formValue.experience,
-        hourlyRate: formValue.hourlyRate,
-        status: formValue.status,
-        licenseNumber: formValue.licenseNumber,
-        specialties: specialtiesArray,
-        rating: 0,
-        totalTrips: 0,
-        joinDate: new Date().toISOString().split('T')[0]
-      };
-      this.drivers.push(newDriver);
-    }
-    
-    this.filteredDrivers = [...this.drivers];
-    this.closeDriverModal();
-  }
-
-  closeUserModal(): void {
-    this.showUserModal = false;
-    this.userForm.reset({status: 'active'});
-  }
-
-  closeDriverModal(): void {
-    this.showDriverModal = false;
-    this.driverForm.reset({
-      status: 'active',
-      experience: 0,
-      hourlyRate: 0
-    });
-  }
-
+  
   closeDeleteModal(): void {
     this.confirmDeleteModal = false;
     this.entityToDelete = null;
-  }
-
-  markFormGroupTouched(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach(key => {
-      const control = formGroup.get(key);
-      control?.markAsTouched();
-    });
-  }
-
-  getStatusClass(status: string): string {
-    switch(status) {
-      case 'active': return 'status-active';
-      case 'inactive': return 'status-inactive';
-      case 'suspended': return 'status-suspended';
-      default: return '';
-    }
   }
 }

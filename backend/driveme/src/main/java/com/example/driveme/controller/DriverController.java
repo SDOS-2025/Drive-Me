@@ -92,7 +92,6 @@ public class DriverController {
             driverDetails.put("phone", d.getPhone());
             driverDetails.put("licenseNumber", d.getLicenseNumber());
             driverDetails.put("status", d.getStatus());
-            driverDetails.put("currentLocation", d.getCurrentLocation());
             driverDetails.put("averageRating", d.getAverageRating());
             driverDetails.put("totalTrips", d.getTotalTrips());
             
@@ -128,11 +127,6 @@ public class DriverController {
                         .body(Map.of("error", "Invalid status value: " + newStatus));
             }
             
-            // If location is provided, update it
-            String location = request.get("location");
-            if (location != null) {
-                driver.setCurrentLocation(location);
-            }
             
             driverRepository.save(driver);
             
@@ -195,7 +189,6 @@ public class DriverController {
             driverInfo.put("driverId", driver.getDriverId());
             driverInfo.put("name", driver.getName());
             driverInfo.put("phone", driver.getPhone());
-            driverInfo.put("currentLocation", driver.getCurrentLocation());
             driverInfo.put("rating", driver.getAverageRating());
             return driverInfo;
         }).collect(Collectors.toList());

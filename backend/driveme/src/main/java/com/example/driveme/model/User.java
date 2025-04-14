@@ -57,6 +57,10 @@ public class User implements UserDetails {
     @Column(name = "aadhar_card", unique = true, nullable = false)
     private String aadharCard;
 
+    // Add rating
+    @Column(name = "average_rating" )
+    private double averageRating = 0.0;
+
     @NotBlank(message = "Password is required")
     @Column(name = "password_hash", nullable = false)
     private String password;
@@ -132,6 +136,14 @@ public class User implements UserDetails {
     // Getters and Setters
     public Long getUserId() {
         return userId;
+    }
+
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public double getAverageRating() {
+        return averageRating;
     }
 
     public User setUserId(Long userId) {

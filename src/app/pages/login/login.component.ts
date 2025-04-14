@@ -40,7 +40,9 @@ export class LoginComponent {
   ) {
     // Get return URL from route parameters or default to dashboard
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || 
-      (this.userType === 'driver' ? '/driver-dashboard' : '/user-dashboard');
+      (this.userType === 'driver' ? '/driver-dashboard' : 
+        this.userType === 'admin' ? '/admin-dashboard' : '/user-dashboard'
+      );
   }
 
   selectUserType(type: 'driver' | 'regular' | 'admin') {
@@ -64,6 +66,10 @@ export class LoginComponent {
     this.errorMessage = '';
     
     const role = this.userType === 'regular' ? 'user' : this.userType;
+    
+    // Update returnUrl based on current role before login
+    this.returnUrl = role === 'driver' ? '/driver-dashboard' : 
+                   role === 'admin' ? '/admin-dashboard' : '/user-dashboard';
     
     this.authService.login({
       emailOrPhone: this.user.emailOrPhone,

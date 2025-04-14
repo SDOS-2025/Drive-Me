@@ -73,9 +73,6 @@ public class Driver implements UserDetails {
     @Column(name = "account_status", nullable = false, length = 20)
     private AccountStatus accountStatus = AccountStatus.ACTIVE;
     
-    @Column(name = "current_location")
-    private String currentLocation;
-    
     @Column(name = "average_rating")
     private Double averageRating;
     
@@ -226,15 +223,6 @@ public class Driver implements UserDetails {
     
     public Driver setAccountStatus(AccountStatus accountStatus) {
         this.accountStatus = accountStatus;
-        return this;
-    }
-    
-    public String getCurrentLocation() {
-        return currentLocation;
-    }
-    
-    public Driver setCurrentLocation(String currentLocation) {
-        this.currentLocation = currentLocation;
         return this;
     }
     

@@ -51,6 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             final String jwt = authHeader.substring(7);
             final String username = jwtService.extractUsername(jwt);
+            System.out.println("JWT token found: " + jwt);
             
             logger.debug("JWT token found for user: {}", username);
 

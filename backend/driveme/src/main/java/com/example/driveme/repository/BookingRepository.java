@@ -17,4 +17,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByCustomerAndStatus(User user, BookingStatus status);
     List<Booking> findByDriverAndStatusIn(Driver driver, List<BookingStatus> status);
     List<Booking> findByDriver(Driver driver);
+    List<Booking> findByDriverAndStatus(Driver driver, BookingStatus status);
 }

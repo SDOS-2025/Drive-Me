@@ -13,7 +13,11 @@ export const authGuard: CanActivateFn = (route, state) => {
       // Redirect to appropriate dashboard based on role
       if (authService.currentUserValue?.role === 'driver') {
         router.navigate(['/driver-dashboard']);
-      } else {
+      }
+      else if (authService.currentUserValue?.role === 'admin') {
+        router.navigate(['/admin-dashboard']);
+      } 
+      else {
         router.navigate(['/user-dashboard']);
       }
       return false;
