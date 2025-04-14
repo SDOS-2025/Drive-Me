@@ -8,6 +8,7 @@ import { MyVehiclesComponent } from "./pages/my-vehicles/my-vehicles.component";
 import { authGuard } from "./auth/auth.guard";
 import { MyBookingsComponent } from "./pages/my-bookings/my-bookings.component";
 import { FindDriverComponent } from "./pages/find-driver/find-driver.component";
+import {AdminDashboardComponent} from "./pages/admin-dashboard/admin-dashboard.component";
 
 const routeConfig: Routes = [
   { path: '', component: LandingComponent },
@@ -15,38 +16,44 @@ const routeConfig: Routes = [
   { 
     path: 'driver-dashboard', 
     component: DriverDashboardComponent,
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     data: { requiredRole: 'driver' }
   }, 
   {
     path: 'user-dashboard', 
     component: UserDashboardComponent,
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     data: { requiredRole: 'user' }
   },
   {
     path: 'driver-booking', 
     component: DriverBookingComponent,
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     data: { requiredRole: 'user' }
   },
   {
     path: 'my-bookings',
     component: MyBookingsComponent,
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     data: { requiredRole: 'user' }
   },
   {
     path: 'my-vehicles',
     component: MyVehiclesComponent,
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     data: { requiredRole: 'user' }
   },
   {
     path: 'find-driver',
     component: FindDriverComponent,
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
     data: { requiredRole: 'user' }
+  },
+  {
+    path: 'admin-dashboard',
+    component: AdminDashboardComponent,
+    // canActivate: [authGuard],
+    data: { requiredRole: 'admin' }
   },
   // Add a catch-all route to redirect to landing page
   { path: '**', redirectTo: '' }
