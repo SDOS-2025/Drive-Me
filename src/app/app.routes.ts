@@ -9,6 +9,7 @@ import { authGuard } from "./auth/auth.guard";
 import { MyBookingsComponent } from "./pages/my-bookings/my-bookings.component";
 import { FindDriverComponent } from "./pages/find-driver/find-driver.component";
 import {AdminDashboardComponent} from "./pages/admin-dashboard/admin-dashboard.component";
+import { AllTripsComponent } from "./pages/all-trips/all-trips.component";
 
 const routeConfig: Routes = [
   { path: '', component: LandingComponent },
@@ -19,6 +20,12 @@ const routeConfig: Routes = [
     canActivate: [authGuard],
     data: { requiredRole: 'driver' }
   }, 
+  {
+    path: 'all-trips',
+    component: AllTripsComponent,
+    canActivate: [authGuard],
+    data: { requiredRole: 'driver' }
+  },
   {
     path: 'user-dashboard', 
     component: UserDashboardComponent,

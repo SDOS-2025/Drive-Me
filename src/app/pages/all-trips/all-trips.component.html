@@ -1,0 +1,92 @@
+<app-dashboard-navbar></app-dashboard-navbar>
+<div class="dashboard">
+  <app-sidebar [menuItems]="sidebarMenuItems" [isDarkTheme]="true"></app-sidebar>
+  
+  <div class="main-content">
+    <div class="dashboard-header">
+      <h2>All Trips</h2>
+      
+      <div class="search-bar">
+        <i class="search-icon">🔍</i>
+        <input 
+          type="text" 
+          placeholder="Search trips..." 
+          (input)="searchTrips($event)"
+        >
+      </div>
+    </div>
+    
+    <div class="filter-container">
+      <button 
+        [class.active]="statusFilter === 'all'" 
+        (click)="filterByStatus('all')"
+      >
+        All Trips
+      </button>
+      <button 
+        [class.active]="statusFilter === 'completed'" 
+        (click)="filterByStatus('completed')"
+      >
+        Completed
+      </button>
+      <button 
+        [class.active]="statusFilter === 'upcoming'" 
+        (click)="filterByStatus('upcoming')"
+      >
+        Upcoming
+      </button>
+      <button 
+        [class.active]="statusFilter === 'canceled'" 
+        (click)="filterByStatus('canceled')"
+      >
+        Canceled
+      </button>
+    </div>
+    
+    <div class="trips-list">
+      <div class="trip-item" *ngFor="let trip of filteredTrips">
+        <div class="trip-icon">
+          <span>{{ trip.icon }}</span>
+        </div>
+        
+        <div class="trip-details">
+          <div class="trip-route">
+            <div class="origin">{{ trip.origin }}</div>
+            <div class="route-line">
+              <span class="arrow">→</span>
+            </div>
+            <div class="destination">{{ trip.destination }}</div>
+          </div>
+          
+          <div class="trip-info">
+            <div class="passenger">
+              <span class="label">Passenger:</span>
+              <span class="value">{{ trip.passengerName }}</span>
+            </div>
+            <div class="date-time">
+              <span class="label">Date:</span>
+              <span class="value">{{ trip.date | date:'MMM d, y' }}</span>
+              <span class="label time-label">Time:</span>
+              <span class="value">{{ trip.time }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="trip-status-price">
+          <div class="status" [ngClass]="getStatusClass(trip.status)">
+            {{ trip.status | titlecase }}
+          </div>
+          <div class="price">${{ trip.fare.toFixed(2) }}</div>
+          <div class="rating" *ngIf="trip.rating">
+            <span class="star">★</span>
+            <span class="rating-value">{{ trip.rating }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="no-trips" *ngIf="filteredTrips.length === 0">
+        <p>No trips found matching your filters.</p>
+      </div>
+    </div>
+  </div>
+</div>
