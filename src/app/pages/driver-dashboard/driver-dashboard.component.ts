@@ -18,10 +18,9 @@ export class DriverDashboardComponent implements OnInit {
   licenseNumber: string = 'DL1234567890';
   
   sidebarMenuItems = [
-    { label: 'Dashboard', active: true },
-    { label: 'Bookings' },
-    { label: 'Available Trips' },
-    { label: 'All Trips' },
+    { label: 'Dashboard', active: true, route: '/driver-dashboard' },
+    { label: 'Available Trips', route: '/available-trips' },
+    { label: 'All Trips', route: '/all-trips' },
     { label: 'Notifications' },
     { label: 'Chat Support' },
     { label: 'Settings' },

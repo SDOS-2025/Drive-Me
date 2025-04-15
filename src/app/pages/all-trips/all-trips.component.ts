@@ -30,10 +30,9 @@ export class AllTripsComponent implements OnInit {
   driverId: number = 0;
   
   sidebarMenuItems = [
-    { label: 'Dashboard' },
-    { label: 'Bookings' },
-    { label: 'Available Trips' },
-    { label: 'All Trips', active: true },
+    { label: 'Dashboard', route: '/driver-dashboard' },
+    { label: 'Available Trips', route: '/available-trips' },
+    { label: 'All Trips', active: true, route: '/all-trips' },
     { label: 'Notifications' },
     { label: 'Chat Support' },
     { label: 'Settings' },
