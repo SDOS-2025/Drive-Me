@@ -1,0 +1,347 @@
+<app-dashboard-navbar></app-dashboard-navbar>
+<div class="dashboard">
+  <app-sidebar [menuItems]="sidebarMenuItems" [isDarkTheme]="true"></app-sidebar>
+  
+  <div class="main-content">
+    <div class="settings-header">
+      <h2>Settings</h2>
+    </div>
+    
+    <div class="settings-container">
+      <!-- Settings Navigation Tabs -->
+      <div class="settings-tabs">
+        <button 
+          [class.active]="activeTab === 'account'" 
+          (click)="setActiveTab('account')"
+          aria-label="Account settings"
+        >
+          <span class="tab-icon">👤</span>
+          <span class="tab-label">Account</span>
+        </button>
+        
+        <button 
+          [class.active]="activeTab === 'notifications'" 
+          (click)="setActiveTab('notifications')"
+          aria-label="Notification settings"
+        >
+          <span class="tab-icon">🔔</span>
+          <span class="tab-label">Notifications</span>
+        </button>
+        
+        <button 
+          [class.active]="activeTab === 'privacy'" 
+          (click)="setActiveTab('privacy')"
+          aria-label="Privacy settings"
+        >
+          <span class="tab-icon">🔒</span>
+          <span class="tab-label">Privacy</span>
+        </button>
+        
+        <button 
+          *ngIf="userType === 'driver'"
+          [class.active]="activeTab === 'driver'" 
+          (click)="setActiveTab('driver')"
+          aria-label="Driver settings"
+        >
+          <span class="tab-icon">🚗</span>
+          <span class="tab-label">Driver Preferences</span>
+        </button>
+        
+        <button 
+          [class.active]="activeTab === 'security'" 
+          (click)="setActiveTab('security')"
+          aria-label="Security settings"
+        >
+          <span class="tab-icon">🛡️</span>
+          <span class="tab-label">Security</span>
+        </button>
+      </div>
+      
+      <!-- Settings Content -->
+      <div class="settings-content">
+        <!-- Account Settings -->
+        <div class="settings-section" *ngIf="activeTab === 'account'">
+          <h3>Account Settings</h3>
+          
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h4>Profile Information</h4>
+            </div>
+            <div class="settings-card-body">
+              <div class="profile-info">
+                <div class="user-avatar">
+                  {{userName.charAt(0)}}
+                </div>
+                <div class="user-details">
+                  <div class="user-name">{{userName}}</div>
+                  <div class="user-email">{{userEmail}}</div>
+                  <div class="user-type">{{userType | titlecase}}</div>
+                </div>
+              </div>
+              <div class="form-action">
+                <button class="btn-secondary">Edit Profile</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h4>Display Settings</h4>
+            </div>
+            <div class="settings-card-body">
+              <div class="form-group">
+                <label>Language</label>
+                <select [(ngModel)]="accountSettings.language">
+                  <option *ngFor="let lang of availableLanguages" [value]="lang.value">{{lang.label}}</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label>Currency</label>
+                <select [(ngModel)]="accountSettings.currency">
+                  <option *ngFor="let currency of availableCurrencies" [value]="currency.value">{{currency.label}}</option>
+                </select>
+              </div>
+              
+              <div class="form-group toggle-group">
+                <label>Dark Mode</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="accountSettings.darkMode">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Notification Settings -->
+        <div class="settings-section" *ngIf="activeTab === 'notifications'">
+          <h3>Notification Settings</h3>
+          
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h4>Notification Channels</h4>
+            </div>
+            <div class="settings-card-body">
+              <div class="form-group toggle-group">
+                <label>Email Notifications</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="notificationSettings.emailNotifications">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="form-group toggle-group">
+                <label>Push Notifications</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="notificationSettings.pushNotifications">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="form-group toggle-group">
+                <label>SMS Notifications</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="notificationSettings.smsNotifications">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h4>Notification Types</h4>
+            </div>
+            <div class="settings-card-body">
+              <div class="form-group toggle-group">
+                <label>Trip Updates</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="notificationSettings.tripUpdates">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="form-group toggle-group">
+                <label>Promotional Offers</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="notificationSettings.promotionalOffers">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="form-group toggle-group">
+                <label>Security Alerts</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="notificationSettings.securityAlerts">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Privacy Settings -->
+        <div class="settings-section" *ngIf="activeTab === 'privacy'">
+          <h3>Privacy Settings</h3>
+          
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h4>Data Sharing</h4>
+            </div>
+            <div class="settings-card-body">
+              <div class="form-group toggle-group">
+                <label>Share Location Data</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="privacySettings.shareLocationData">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="form-group toggle-group">
+                <label>Share Profile with Drivers</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="privacySettings.shareProfileWithDrivers">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="form-group toggle-group">
+                <label>Allow Reviews and Ratings</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="privacySettings.allowReviewsAndRatings">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="form-group toggle-group">
+                <label>Share Ride History</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="privacySettings.shareRideHistory">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Driver Settings (Driver only) -->
+        <div class="settings-section" *ngIf="activeTab === 'driver' && userType === 'driver'">
+          <h3>Driver Preferences</h3>
+          
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h4>Trip Preferences</h4>
+            </div>
+            <div class="settings-card-body">
+              <div class="form-group toggle-group">
+                <label>Automatically Accept Trips</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="driverSettings.automaticallyAcceptTrips">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="form-group">
+                <label>Maximum Trip Distance (km)</label>
+                <input type="number" [(ngModel)]="driverSettings.maxTripDistance" min="1" max="100">
+              </div>
+              
+              <div class="form-group">
+                <label>Preferred Trip Types</label>
+                <div class="trip-types-container">
+                  <div class="trip-type-option" *ngFor="let type of availableTripTypes" 
+                       [class.selected]="isTripTypeSelected(type.value)"
+                       (click)="toggleTripType(type.value)">
+                    {{type.label}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h4>Availability Hours</h4>
+            </div>
+            <div class="settings-card-body">
+              <div class="form-group">
+                <label>Working Hours</label>
+                <div class="time-range">
+                  <input type="time" [(ngModel)]="driverSettings.availableHours.start">
+                  <span class="time-separator">to</span>
+                  <input type="time" [(ngModel)]="driverSettings.availableHours.end">
+                </div>
+              </div>
+              
+              <div class="form-group toggle-group">
+                <label>Break Time</label>
+                <label class="toggle-switch">
+                  <input type="checkbox" [(ngModel)]="driverSettings.breakTime.enabled">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              
+              <div class="form-group" *ngIf="driverSettings.breakTime.enabled">
+                <label>Break Start Time</label>
+                <input type="time" [(ngModel)]="driverSettings.breakTime.start">
+              </div>
+              
+              <div class="form-group" *ngIf="driverSettings.breakTime.enabled">
+                <label>Break Duration (minutes)</label>
+                <input type="number" [(ngModel)]="driverSettings.breakTime.duration" min="15" max="120" step="15">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Security Settings -->
+        <div class="settings-section" *ngIf="activeTab === 'security'">
+          <h3>Security Settings</h3>
+          
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h4>Password Management</h4>
+            </div>
+            <div class="settings-card-body">
+              <div class="form-action">
+                <button class="btn-secondary">Change Password</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="settings-card">
+            <div class="settings-card-header">
+              <h4>Two-Factor Authentication</h4>
+            </div>
+            <div class="settings-card-body">
+              <p class="setting-description">Enable two-factor authentication to add an extra layer of security to your account.</p>
+              <div class="form-action">
+                <button class="btn-secondary">Enable 2FA</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="settings-card danger-zone">
+            <div class="settings-card-header">
+              <h4>Account Actions</h4>
+            </div>
+            <div class="settings-card-body">
+              <div class="form-action">
+                <button class="btn-primary" (click)="logout()">Logout</button>
+              </div>
+              
+              <div class="form-action">
+                <button class="btn-danger" (click)="deleteAccount()">Delete Account</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="settings-footer" *ngIf="activeTab !== 'security'">
+      <button class="btn-primary" (click)="saveSettings()">Save Settings</button>
+    </div>
+  </div>
+</div>

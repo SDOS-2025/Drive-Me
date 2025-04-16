@@ -44,10 +44,9 @@ export class UserDashboardComponent implements OnInit {
     { label: 'Dashboard', active: true },
     { label: 'My Bookings', route: '/my-bookings' },
     { label: 'Find Driver', route: '/find-driver' },
-    { label: 'My Vehicles' , route: '/my-vehicles'},
+    { label: 'My Vehicles', route: '/my-vehicles'},
     { label: 'Support' },
-    { label: 'Settings' },
-    { label: 'My Profile' },
+    { label: 'Settings', route: '/settings' },
   ];
   
   stats = [

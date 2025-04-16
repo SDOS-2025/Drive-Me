@@ -11,6 +11,7 @@ import { FindDriverComponent } from "./pages/find-driver/find-driver.component";
 import {AdminDashboardComponent} from "./pages/admin-dashboard/admin-dashboard.component";
 import { AllTripsComponent } from "./pages/all-trips/all-trips.component";
 import { AvailableTripsComponent } from "./pages/available-trips/available-trips.component";
+import { SettingsComponent } from "./pages/settings/settings.component";
 
 const routeConfig: Routes = [
   { path: '', component: LandingComponent },
@@ -31,6 +32,12 @@ const routeConfig: Routes = [
     path: 'available-trips',
     component: AvailableTripsComponent,
     canActivate: [authGuard],
+    data: { requiredRole: 'driver' }
+  },
+  {
+    path: 'settings',
+    component: SettingsComponent,
+    canActivate: [authGuard], 
     data: { requiredRole: 'driver' }
   },
   {
@@ -60,6 +67,12 @@ const routeConfig: Routes = [
   {
     path: 'find-driver',
     component: FindDriverComponent,
+    canActivate: [authGuard],
+    data: { requiredRole: 'user' }
+  },
+  {
+    path: 'settings',
+    component: SettingsComponent, 
     canActivate: [authGuard],
     data: { requiredRole: 'user' }
   },
