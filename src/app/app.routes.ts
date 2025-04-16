@@ -35,7 +35,7 @@ const routeConfig: Routes = [
     data: { requiredRole: 'driver' }
   },
   {
-    path: 'settings',
+    path: 'driver-settings',
     component: SettingsComponent,
     canActivate: [authGuard], 
     data: { requiredRole: 'driver' }
@@ -71,7 +71,7 @@ const routeConfig: Routes = [
     data: { requiredRole: 'user' }
   },
   {
-    path: 'settings',
+    path: 'user-settings',
     component: SettingsComponent, 
     canActivate: [authGuard],
     data: { requiredRole: 'user' }

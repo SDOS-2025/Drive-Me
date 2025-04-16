@@ -37,8 +37,7 @@ export class MyVehiclesComponent implements OnInit {
     { label: 'Find Driver', route: '/find-driver' },
     { label: 'My Vehicles', active: true },
     { label: 'Support' },
-    { label: 'Settings' },
-    { label: 'My Profile' },
+    { label: 'Settings', route: '/user-settings' },
   ];
 
   constructor(

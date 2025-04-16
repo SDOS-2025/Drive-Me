@@ -22,7 +22,7 @@ export class DriverDashboardComponent implements OnInit {
     { label: 'Available Trips', route: '/available-trips' },
     { label: 'All Trips', route: '/all-trips' },
     { label: 'Chat Support' },
-    { label: 'Settings', route: '/settings' },
+    { label: 'Settings', route: '/driver-settings' },
   ];
   
   tripHistory = [
