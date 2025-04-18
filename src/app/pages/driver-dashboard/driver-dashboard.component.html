@@ -1,61 +1,123 @@
 <app-dashboard-navbar></app-dashboard-navbar>
-  <div class="dashboard">
-    <app-sidebar [menuItems]="sidebarMenuItems" [isDarkTheme]="true"></app-sidebar>
+<div class="dashboard">
+  <app-sidebar [menuItems]="sidebarMenuItems" [isDarkTheme]="true"></app-sidebar>
+  
+  <div class="main-content">
+    <div class="dashboard-header">
+      <h2>Driver Dashboard</h2>
+    </div>
     
-    <div class="main-content">
-      <div class="dashboard-header">
-        <h2>Driver Dashboard</h2>
+    <div class="driver-profile-card">
+      <div class="driver-img">
+        <div class="driver-initial">{{driverName.charAt(0)}}</div>
       </div>
-      
-      <div class="driver-profile-card">
-        <div class="driver-img">
-          <div class="car-icon">🚗</div>
-        </div>
-        <div class="driver-info">
-          <h2>Driver</h2>
-          <h3>{{driverName}}</h3>
-          
-          <div class="driver-stats">
-            <div class="stat-group">
-              <strong>License Number: {{licenseNumber}}</strong>
-              <span>Driver ID: {{driverId}}</span>
-            </div>
+      <div class="driver-info">
+        <h2>Driver</h2>
+        <h3>{{driverName}}</h3>
+        
+        <div class="driver-stats">
+          <div class="stat-group">
+            <strong>License: {{licenseNumber}}</strong>
+            <span>Driver ID: {{driverId}}</span>
           </div>
         </div>
       </div>
-      
-      <div class="dashboard-grid">
-        <div class="card">
-          <div class="card-header">
-            <h3>Trip History</h3>
-          </div>
-          
-          <div class="trip-card" *ngFor="let trip of tripHistory">
-            <div class="trip-icon">{{trip.icon}}</div>
-            <div class="trip-details">
-              <h4>{{trip.title}}</h4>
-              <div>{{trip.details}}</div>
+    </div>
+    
+    <!-- Dashboard Summary Cards -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <h3>Today's Earnings</h3>
+        <div class="value">₹0.00</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Trips</h3>
+        <div class="value">{{recentTrips.length || 0}}</div>
+      </div>
+      <div class="stat-card">
+        <h3>Average Rating</h3>
+        <div class="value">4.5</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Distance</h3>
+        <div class="value">0 km</div>
+      </div>
+    </div>
+    
+    <!-- Trip and Feedback Cards -->
+    <div class="dashboard-grid">
+      <!-- Recent Trips -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Recent Trips</h3>
+          <a (click)="navigateToAllTrips()" class="view-all-link">View All</a>
+        </div>
+        
+        <div *ngIf="loading" class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Loading trips...</p>
+        </div>
+        
+        <div *ngIf="error" class="error-message">
+          {{error}}
+        </div>
+        
+        <div *ngIf="!loading && !error && recentTrips.length === 0" class="empty-state">
+          <p>No recent trips found</p>
+        </div>
+        
+        <div *ngFor="let trip of recentTrips" class="trip-card">
+          <div class="trip-details">
+            <h4>{{trip.title}}</h4>
+            <div class="trip-info">{{trip.details}}</div>
+            <div class="trip-meta">
+              <span class="trip-status" [ngClass]="{
+                'status-completed': trip.status === 'COMPLETED',
+                'status-pending': trip.status === 'PENDING',
+                'status-confirmed': trip.status === 'CONFIRMED',
+                'status-cancelled': trip.status === 'CANCELLED'
+              }">{{trip.status}}</span>
+              <span *ngIf="trip.fare" class="trip-fare">₹{{trip.fare}}</span>
             </div>
-            <div class="status-dot">✓</div>
           </div>
+          <div class="status-indicator" [ngClass]="{
+            'completed': trip.status === 'COMPLETED',
+            'pending': trip.status === 'PENDING',
+            'confirmed': trip.status === 'CONFIRMED',
+            'cancelled': trip.status === 'CANCELLED'
+          }"></div>
         </div>
       </div>
       
-      <div class="dashboard-grid">
-        <div class="card">
-          <div class="card-header">
-            <h3>Feedback History</h3>
-          </div>
-          
-          <div class="trip-card" *ngFor="let feedback of feedbackHistory">
-            <div class="trip-icon">{{feedback.icon}}</div>
-            <div class="trip-details">
-              <h4>{{feedback.title}}</h4>
-              <div>{{feedback.details}}</div>
+      <!-- Feedback History -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Feedback History</h3>
+        </div>
+        
+        <div *ngIf="loading" class="loading-spinner">
+          <div class="spinner"></div>
+          <p>Loading feedback...</p>
+        </div>
+        
+        <div *ngIf="error" class="error-message">
+          {{error}}
+        </div>
+        
+        <div *ngIf="!loading && !error && feedbackTrips.length === 0" class="empty-state">
+          <p>No feedback received yet</p>
+        </div>
+        
+        <div *ngFor="let feedback of feedbackTrips" class="trip-card">
+          <div class="trip-details">
+            <h4>{{feedback.title}}</h4>
+            <div class="trip-info">{{feedback.details}}</div>
+            <div *ngIf="feedback.fare" class="trip-meta">
+              <span class="trip-fare">₹{{feedback.fare}}</span>
             </div>
-            <div class="status-dot">✓</div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>

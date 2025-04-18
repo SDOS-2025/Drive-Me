@@ -129,16 +129,16 @@ export class SettingsComponent implements OnInit {
         { label: 'Dashboard', route: '/driver-dashboard' },
         { label: 'Available Trips', route: '/available-trips' },
         { label: 'All Trips', route: '/all-trips' },
-        { label: 'Chat Support', route: '/chat-support' },
+        { label: 'Support', route: '/chat-support' },
         { label: 'Settings', active: true, route: '/settings' },
       ];
     } else {
       this.sidebarMenuItems = [
         { label: 'Dashboard', route: '/user-dashboard' },
-        { label: 'Book a Ride', route: '/find-driver' },
         { label: 'My Bookings', route: '/my-bookings' },
+        { label: 'Find Driver', route: '/find-driver' },
         { label: 'My Vehicles', route: '/my-vehicles' },
-        { label: 'Chat Support', route: '/chat-support' },
+        { label: 'Support', route: '/chat-support' },
         { label: 'Settings', active: true, route: '/settings' },
       ];
     }
