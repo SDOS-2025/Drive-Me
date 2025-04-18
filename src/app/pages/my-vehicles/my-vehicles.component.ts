@@ -35,9 +35,9 @@ export class MyVehiclesComponent implements OnInit {
     { label: 'Dashboard' , route: '/user-dashboard'},
     { label: 'My Bookings', route: '/my-bookings' },
     { label: 'Find Driver', route: '/find-driver' },
-    { label: 'My Vehicles', active: true },
-    { label: 'Support' },
-    { label: 'Settings', route: '/user-settings' },
+    { label: 'My Vehicles', active: true},
+    { label: 'Support', route: '/chat-support' },
+    { label: 'Settings', route: '/settings' },
   ];
 
   constructor(

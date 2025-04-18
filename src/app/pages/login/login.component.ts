@@ -19,7 +19,8 @@ export class LoginComponent {
   formMode: 'login' | 'signup' = 'login';
   errorMessage: string = '';
   loading: boolean = false;
-  returnUrl: string = '';
+  returnUrl: string = '/user-dashboard';
+  originalUrl: string | null = null; // Store the original URL for redirection
 
   user = {
     fullName: '',
@@ -39,10 +40,8 @@ export class LoginComponent {
     private route: ActivatedRoute
   ) {
     // Get return URL from route parameters or default to dashboard
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || 
-      (this.userType === 'driver' ? '/driver-dashboard' : 
-        this.userType === 'admin' ? '/admin-dashboard' : '/user-dashboard'
-      );
+    this.originalUrl = this.route.snapshot.queryParams['returnUrl'] || null;
+    this.updateReturnUrl();
   }
 
   selectUserType(type: 'driver' | 'regular' | 'admin') {
@@ -59,6 +58,18 @@ export class LoginComponent {
   setFormMode(mode: 'login' | 'signup') {
     this.formMode = mode;
     this.errorMessage = '';
+  }
+
+  updateReturnUrl() {
+    // If there's an original returnUrl from query params, use that
+    if (this.originalUrl) {
+      this.returnUrl = this.originalUrl;
+    } else {
+      // Otherwise, determine based on user type
+      const role = this.userType === 'regular' ? 'user' : this.userType;
+      this.returnUrl = role === 'driver' ? '/driver-dashboard' : 
+                     role === 'admin' ? '/admin-dashboard' : '/user-dashboard';
+    }
   }
 
   login() {

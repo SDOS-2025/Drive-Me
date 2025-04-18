@@ -45,14 +45,14 @@ export class UserDashboardComponent implements OnInit {
     { label: 'My Bookings', route: '/my-bookings' },
     { label: 'Find Driver', route: '/find-driver' },
     { label: 'My Vehicles', route: '/my-vehicles'},
-    { label: 'Support' },
-    { label: 'Settings', route: '/user-settings' },
+    { label: 'Support', route: '/chat-support' },
+    { label: 'Settings', route: '/settings' },
   ];
   
   stats = [
     { title: 'Total Rides', value: '0' },
     { title: 'Upcoming Rides', value: '0' },
-    { title: 'Total Spent', value: '$0' },
+    { title: 'Total Spent', value: '₹0' },
   ];
   
   // Keep original sample data for top drivers and activities
@@ -73,11 +73,9 @@ export class UserDashboardComponent implements OnInit {
   }
 
   loadDrivers(): void {
-    console.log('Loading drivers...');
     this.isLoading = true;
     this.driverService.getDriverList().subscribe({
       next: (drivers: any[]) => {
-        console.log('Drivers loaded successfully', drivers);
         this.topDrivers = drivers.map(driver => ({
           name: driver.fullName,
           number: driver.phone,
@@ -94,16 +92,13 @@ export class UserDashboardComponent implements OnInit {
   }
   
   loadUserData(): void {
-    console.log('Loading user data');
     const user = this.authService.currentUserValue;
     if (user && user.fullName) {
       this.userName = user.fullName.split(' ')[0];
     }
-    console.log('User name set to:', this.userName);
   } 
 
   loadBookings(): void {
-    console.log('Loading bookings...');
     this.isLoading = true;
     this.userBookingService.getUserBookings().subscribe({
       next: (bookings: any[]) => {
@@ -148,7 +143,6 @@ export class UserDashboardComponent implements OnInit {
 
   async loadStats() {
     try {
-      console.log('Loading stats...');
       const [all, confirmed, completed] = await Promise.all([
         this.userBookingService.getUserBookings().toPromise(),
         this.userBookingService.getConfirmedBookings().toPromise(),
@@ -175,7 +169,6 @@ export class UserDashboardComponent implements OnInit {
   }
   
   convertBookingsToActivities(bookings: BookingSummary[]): Activity[] {
-    console.log('Converting bookings to activities:', bookings);
     return bookings.map(booking => {
       let activity: Activity;
       const bookingDate = booking.createdAt ? new Date(booking.createdAt) : new Date();
