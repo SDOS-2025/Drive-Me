@@ -3,27 +3,25 @@ import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { DashboardNavbarComponent } from "../../components/dashboard-navbar/dashboard-navbar.component";
 import { AuthService } from '../../services/auth.service';
-
-interface AvailableTrip {
-  id: number;
-  icon: string;
-  origin: string;
-  destination: string;
-  date: string;
-  time: string;
-  estimatedDistance: string;
-  estimatedDuration: string;
-  fare: number;
-  passengerName: string;
-  passengerRating: number;
-  postedTime: string;
-}
+import { TripsService, AvailableTrip } from '../../services/trips.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-available-trips',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, DashboardNavbarComponent],
-  providers: [AuthService],
+  imports: [
+    CommonModule, 
+    SidebarComponent, 
+    DashboardNavbarComponent,
+    MatSnackBarModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatIconModule
+  ],
+  providers: [AuthService, TripsService],
   templateUrl: './available-trips.component.html',
   styleUrl: './available-trips.component.css'
 })
@@ -35,18 +33,22 @@ export class AvailableTripsComponent implements OnInit {
     { label: 'Dashboard', route: '/driver-dashboard' },
     { label: 'Available Trips', active: true, route: '/available-trips' },
     { label: 'All Trips', route: '/all-trips' },
-    { label: 'Notifications' },
-    { label: 'Chat Support' },
-    { label: 'Settings' },
-    { label: 'My Profile' },
+    { label: 'Support', route: '/chat-support' },
+    { label: 'Settings', route: '/settings' },
   ];
 
   availableTrips: AvailableTrip[] = [];
   filteredTrips: AvailableTrip[] = [];
   distanceFilter: string = 'all';
   searchQuery: string = '';
+  loading: boolean = false;
+  error: string | null = null;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private tripsService: TripsService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.loadDriverData();
@@ -57,108 +59,36 @@ export class AvailableTripsComponent implements OnInit {
     const driverDetails = localStorage.getItem('currentUser');
     if (driverDetails) {
       const driver = JSON.parse(driverDetails);
-      this.driverName = driver.fullName || 'John Doe';
-      this.driverId = driver.id || 1;
+      this.driverName = driver.fullName || driver.name || 'Driver';
+      this.driverId = driver.id || driver.driverId || 0;
     }
   }
 
   loadAvailableTrips(): void {
-    // In a real app, this would come from an API service
-    this.availableTrips = [
-      {
-        id: 1,
-        icon: '🏙️',
-        origin: 'Downtown Metro Station',
-        destination: 'International Airport',
-        date: '2025-04-16',
-        time: '13:30',
-        estimatedDistance: '18.5 km',
-        estimatedDuration: '25 min',
-        fare: 38.50,
-        passengerName: 'Alex Johnson',
-        passengerRating: 4.8,
-        postedTime: '5 min ago'
-      },
-      {
-        id: 2,
-        icon: '🏫',
-        origin: 'University Campus',
-        destination: 'Central Library',
-        date: '2025-04-16',
-        time: '15:00',
-        estimatedDistance: '5.2 km',
-        estimatedDuration: '12 min',
-        fare: 15.25,
-        passengerName: 'Sophia Wang',
-        passengerRating: 4.6,
-        postedTime: '12 min ago'
-      },
-      {
-        id: 3,
-        icon: '🏥',
-        origin: 'General Hospital',
-        destination: 'Golden Gate Apartments',
-        date: '2025-04-16',
-        time: '16:15',
-        estimatedDistance: '9.8 km',
-        estimatedDuration: '18 min',
-        fare: 22.40,
-        passengerName: 'Robert Chen',
-        passengerRating: 4.9,
-        postedTime: '23 min ago'
-      },
-      {
-        id: 4,
-        icon: '🛒',
-        origin: 'Grand Shopping Mall',
-        destination: 'Riverside Homes',
-        date: '2025-04-16',
-        time: '18:45',
-        estimatedDistance: '12.3 km',
-        estimatedDuration: '22 min',
-        fare: 28.70,
-        passengerName: 'Emma Davis',
-        passengerRating: 4.7,
-        postedTime: '30 min ago'
-      },
-      {
-        id: 5,
-        icon: '🏢',
-        origin: 'Business District Tower',
-        destination: 'Suburban Heights',
-        date: '2025-04-17',
-        time: '08:30',
-        estimatedDistance: '22.6 km',
-        estimatedDuration: '35 min',
-        fare: 45.90,
-        passengerName: 'James Wilson',
-        passengerRating: 4.5,
-        postedTime: '1 hour ago'
-      }
-    ];
+    this.loading = true;
+    this.error = null;
     
-    this.applyFilters();
+    this.tripsService.getAvailableTrips().subscribe({
+      next: (trips) => {
+        this.availableTrips = trips;
+        this.applyFilters();
+        this.loading = false;
+        
+        if (trips.length === 0) {
+          this.showNotification('No available trips at the moment. Check back later.', 'info');
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching available trips:', err);
+        this.error = 'Failed to load available trips. Please try again later.';
+        this.loading = false;
+        this.showNotification('Failed to load available trips. Please try again later.', 'error');
+      }
+    });
   }
 
   applyFilters(): void {
     this.filteredTrips = this.availableTrips.filter(trip => {
-      // Apply distance filter
-      if (this.distanceFilter !== 'all') {
-        const distance = parseFloat(trip.estimatedDistance.split(' ')[0]);
-        
-        if (this.distanceFilter === 'short' && distance >= 10) {
-          return false;
-        }
-        
-        if (this.distanceFilter === 'medium' && (distance < 10 || distance >= 20)) {
-          return false;
-        }
-        
-        if (this.distanceFilter === 'long' && distance < 20) {
-          return false;
-        }
-      }
-      
       // Apply search query
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
@@ -183,20 +113,51 @@ export class AvailableTripsComponent implements OnInit {
   }
 
   acceptTrip(tripId: number): void {
-    // In a real app, this would call an API to accept the trip
-    console.log(`Trip ${tripId} accepted by driver ${this.driverId}`);
-    // After accepting, you would typically reload trips or navigate
+    if (!this.driverId) {
+      this.showNotification('Driver information is missing. Please log in again.', 'error');
+      return;
+    }
     
-    // For demo, remove the trip from available list
-    this.availableTrips = this.availableTrips.filter(trip => trip.id !== tripId);
-    this.applyFilters();
-    
-    // Show temporary success message - you'd use a proper notification service in a real app
-    alert('Trip accepted successfully! The passenger will be notified.');
+    this.loading = true;
+    this.tripsService.acceptTrip(tripId, this.driverId).subscribe({
+      next: (response) => {
+        console.log(`Trip ${tripId} accepted by driver ${this.driverId}`, response);
+        // Remove the trip from available list
+        this.availableTrips = this.availableTrips.filter(trip => trip.id !== tripId);
+        this.applyFilters();
+        this.loading = false;
+        this.showNotification('Trip accepted successfully! The passenger will be notified.', 'success');
+      },
+      error: (err) => {
+        console.error('Error accepting trip:', err);
+        this.loading = false;
+        this.showNotification(
+          `Failed to accept trip: ${err.error?.message || 'Please try again later'}`, 
+          'error'
+        );
+      }
+    });
   }
 
   getEstimatedEarnings(fare: number): number {
     // Calculate driver's cut - typically 75-80% of the fare
     return fare * 0.8;
+  }
+
+  // Retry loading trips if there was an error
+  retryLoad(): void {
+    this.loadAvailableTrips();
+  }
+
+  // Show notification using MatSnackBar
+  showNotification(message: string, type: 'success' | 'error' | 'info'): void {
+    const duration = type === 'error' ? 8000 : 5000;
+    
+    this.snackBar.open(message, 'Close', {
+      duration: duration,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+      panelClass: ['notification', `notification-${type}`]
+    });
   }
 }

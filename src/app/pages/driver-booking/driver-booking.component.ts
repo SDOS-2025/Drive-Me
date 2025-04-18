@@ -247,7 +247,8 @@ export class DriverBookingComponent implements OnInit {
         dropoffLocation: this.tripDetailsForm.get('destination')?.value,
         // Format date and time for backend
         pickupDateTime: `${this.tripDetailsForm.get('pickupDate')?.value} ${this.tripDetailsForm.get('pickupTime')?.value}`,
-        fare: this.totalCost
+        fare: this.totalCost,
+        estimatedDuration: this.tripDetailsForm.get('estimatedDuration')?.value,
       };
 
       this.bookingService.createBooking(bookingRequest).subscribe({

@@ -10,6 +10,7 @@ export interface BookingRequest {
   dropoffLocation: string;
   pickupDateTime?: string;
   fare: number;
+  estimatedDuration?: number;
 }
 
 export interface BookingSummary {

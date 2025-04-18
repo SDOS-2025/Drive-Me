@@ -1,59 +1,40 @@
 <app-dashboard-navbar></app-dashboard-navbar>
 <div class="dashboard">
   <app-sidebar [menuItems]="sidebarMenuItems" [isDarkTheme]="true"></app-sidebar>
-  
+
   <div class="main-content">
+    <!-- Add this where you want to show the error state -->
+    <div *ngIf="error && !loading" class="error-container">
+      <div class="error-message">
+        <mat-icon color="warn">error</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+      <button mat-raised-button color="primary" (click)="retryLoad()">
+        <mat-icon>refresh</mat-icon> Try Again
+      </button>
+    </div>
+
+    <!-- Add this for loading state -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Loading available trips...</span>
+    </div>
     <div class="dashboard-header">
       <h2>Available Trips</h2>
-      
+
       <div class="search-bar">
         <i class="search-icon">🔍</i>
-        <input 
-          type="text" 
-          placeholder="Search locations or passengers" 
-          (input)="searchTrips($event)"
-        >
+        <input type="text" placeholder="Search locations or passengers" (input)="searchTrips($event)">
       </div>
     </div>
-    
-    <div class="filter-container">
-      <button 
-        [class.active]="distanceFilter === 'all'" 
-        (click)="filterByDistance('all')"
-      >
-        All Distances
-      </button>
-      <button 
-        [class.active]="distanceFilter === 'short'" 
-        (click)="filterByDistance('short')"
-      >
-        Short (< 10km)
-      </button>
-      <button 
-        [class.active]="distanceFilter === 'medium'" 
-        (click)="filterByDistance('medium')"
-      >
-        Medium (10-20km)
-      </button>
-      <button 
-        [class.active]="distanceFilter === 'long'" 
-        (click)="filterByDistance('long')"
-      >
-        Long (> 20km)
-      </button>
-    </div>
-    
+
     <div class="trips-available-count">
       <span>{{ filteredTrips.length }} trips available</span>
     </div>
-    
+
     <div class="available-trips-list">
       <div class="trip-card" *ngFor="let trip of filteredTrips">
         <div class="trip-header">
-          <div class="trip-icon">
-            <span>{{ trip.icon }}</span>
-          </div>
-          
           <div class="trip-route">
             <div class="origin">{{ trip.origin }}</div>
             <div class="route-line">
@@ -62,35 +43,25 @@
             </div>
             <div class="destination">{{ trip.destination }}</div>
           </div>
-          
+
           <div class="trip-posted-time">
             {{ trip.postedTime }}
           </div>
         </div>
-        
+
         <div class="trip-details">
           <div class="trip-info-section">
             <div class="trip-info-item">
               <div class="info-label">Date</div>
               <div class="info-value">{{ trip.date | date:'MMM d' }}</div>
             </div>
-            
+
             <div class="trip-info-item">
               <div class="info-label">Time</div>
               <div class="info-value">{{ trip.time }}</div>
             </div>
-            
-            <div class="trip-info-item">
-              <div class="info-label">Distance</div>
-              <div class="info-value">{{ trip.estimatedDistance }}</div>
-            </div>
-            
-            <div class="trip-info-item">
-              <div class="info-label">Duration</div>
-              <div class="info-value">{{ trip.estimatedDuration }}</div>
-            </div>
           </div>
-          
+
           <div class="passenger-details">
             <div class="passenger-name">
               <span class="passenger-icon">👤</span>
@@ -101,24 +72,24 @@
             </div>
           </div>
         </div>
-        
+
         <div class="trip-footer">
           <div class="fare-details">
             <div class="total-fare">
               <span class="fare-label">Total Fare:</span>
-              <span class="fare-value">${{ trip.fare.toFixed(2) }}</span>
+              <span class="fare-value">₹{{ trip.fare.toFixed(2) }}</span>
             </div>
             <div class="estimated-earnings">
-              Est. earnings: ${{ getEstimatedEarnings(trip.fare).toFixed(2) }}
+              Est. earnings: ₹{{ getEstimatedEarnings(trip.fare).toFixed(2) }}
             </div>
           </div>
-          
+
           <button class="accept-btn" (click)="acceptTrip(trip.id)">
             Accept Trip
           </button>
         </div>
       </div>
-      
+
       <div class="no-trips" *ngIf="filteredTrips.length === 0">
         <div class="no-trips-icon">🚫</div>
         <p>No available trips match your filters.</p>
