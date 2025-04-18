@@ -38,8 +38,7 @@ export class MyBookingsComponent implements OnInit {
     { label: 'Find Driver', route: '/find-driver' },
     { label: 'My Vehicles', route: '/my-vehicles' },
     { label: 'Support' },
-    { label: 'Settings' },
-    { label: 'My Profile' },
+    { label: 'Settings', route: '/user-settings' },
   ];
   
   constructor(private userBookingService: UserBookingService) {}

@@ -37,6 +37,7 @@ const routeConfig: Routes = [
     data: { requiredRole: 'driver' }
   },
   {
+<<<<<<< HEAD
     path: 'chat-support',
     component: ChatSupportComponent,
     canActivate: [authGuard],
@@ -44,6 +45,9 @@ const routeConfig: Routes = [
   },
   {
     path: 'settings',
+=======
+    path: 'driver-settings',
+>>>>>>> 1597b87c7604385e27b98e55396e171dedb9e4f3
     component: SettingsComponent,
     canActivate: [authGuard], 
     data: { requiredRole: ['driver', 'user'] } // Allow both user types
@@ -79,6 +83,15 @@ const routeConfig: Routes = [
     data: { requiredRole: 'user' }
   },
   {
+<<<<<<< HEAD
+=======
+    path: 'user-settings',
+    component: SettingsComponent, 
+    canActivate: [authGuard],
+    data: { requiredRole: 'user' }
+  },
+  {
+>>>>>>> 1597b87c7604385e27b98e55396e171dedb9e4f3
     path: 'admin-dashboard',
     component: AdminDashboardComponent,
     canActivate: [authGuard],
