@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -76,6 +78,7 @@ public class BookingController {
             booking.setPickupLocation((String) bookingRequest.get("pickupLocation"));
             booking.setDropoffLocation((String) bookingRequest.get("dropoffLocation"));
             booking.setPickUpDateTime((String) bookingRequest.get("pickupDateTime"));
+            booking.setEstimatedDuration(Integer.valueOf(bookingRequest.get("estimatedDuration").toString()));
 
             // Convert fare to BigDecimal
             Object fareObj = bookingRequest.get("fare");
@@ -295,6 +298,7 @@ public class BookingController {
                         .body(Map.of("error", "Cannot cancel booking with status " + booking.getStatus()));
             }
 
+            booking.getDriver().setStatus(Driver.DriverStatus.AVAILABLE); // Set driver status to available
             // Update booking status with reason
             String reason = request.getOrDefault("reason", "Cancelled by user");
             booking.cancelBooking(reason);
@@ -463,6 +467,137 @@ public class BookingController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Failed to fetch all bookings: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/driver")
+    public ResponseEntity<?> getDriverBookings() {
+        try {
+            // Get driver from authentication
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "Driver not authenticated"));
+            }
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String email = userDetails.getUsername();
+            Driver driver = driverRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Driver not found"));
+            // Get all bookings for the driver
+            List<Booking> bookings = bookingRepository.findByDriver(driver);
+
+            return ResponseEntity.ok(bookings.stream().map(booking -> {
+                Map<String, Object> summary = new HashMap<>();
+                summary.put("bookingId", booking.getBookingId());
+                summary.put("pickupLocation", booking.getPickupLocation());
+                summary.put("dropoffLocation", booking.getDropoffLocation());
+                summary.put("status", booking.getStatus());
+                summary.put("createdAt", booking.getCreatedAt().toString());
+                summary.put("fare", booking.getFare());
+                summary.put("pickupDateTime", booking.getPickupDateTime());
+                if (booking.getCustomer() != null) {
+                    summary.put("customerName", booking.getCustomer().getFullName());
+                }
+
+                if (booking.getVehicle() != null) {
+                    summary.put("vehicleModel", booking.getVehicle().getModel());
+                }
+
+                return summary;
+            }).collect(Collectors.toList()));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to fetch driver bookings: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<?> getPendingBookings() {
+        try {
+            // Get driver from authentication
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "Driver not authenticated"));
+            }
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String email = userDetails.getUsername();
+            Driver driver = driverRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Driver not found"));
+            // Get bookings with status pending and driver is assigned
+            List<Booking> bookings = bookingRepository.findByDriverAndStatus(driver, BookingStatus.PENDING);
+
+            return ResponseEntity.ok(bookings.stream().map(booking -> {
+                Map<String, Object> summary = new HashMap<>();
+                summary.put("bookingId", booking.getBookingId());
+                summary.put("pickupLocation", booking.getPickupLocation());
+                summary.put("dropoffLocation", booking.getDropoffLocation());
+                summary.put("status", booking.getStatus());
+                summary.put("createdAt", booking.getCreatedAt().toString());
+                summary.put("fare", booking.getFare());
+                summary.put("pickupDateTime", booking.getPickupDateTime());
+
+                if (booking.getCustomer() != null) {
+                    summary.put("customerName", booking.getCustomer().getFullName());
+                }
+
+                if (booking.getVehicle() != null) {
+                    summary.put("vehicleModel", booking.getVehicle().getModel());
+                }
+
+                return summary;
+            }).collect(Collectors.toList()));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to fetch pending bookings: " + e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/assign")
+    public ResponseEntity<?> assignDriverToBooking(
+            @PathVariable Long id) {
+
+        try {
+            // get driver from authentication
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "Driver not authenticated"));
+            }
+
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String email = userDetails.getUsername();
+            Driver driver = driverRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+            Optional<Booking> bookingOpt = bookingRepository.findById(id);
+            if (!bookingOpt.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Booking not found"));
+            }
+
+            Booking booking = bookingOpt.get();
+
+            // Assign driver to booking
+            booking.setStatus(Booking.BookingStatus.CONFIRMED);
+
+            // Update driver status
+            driver.setStatus(Driver.DriverStatus.BUSY);
+
+            // Save changes
+            driverRepository.save(driver);
+            bookingRepository.save(booking);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Booking assigned successfully",
+                    "bookingId", booking.getBookingId(),
+                    "driverId", driver.getDriverId(),
+                    "status", booking.getStatus().toString()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to assign driver to booking: " + e.getMessage()));
         }
     }
 }

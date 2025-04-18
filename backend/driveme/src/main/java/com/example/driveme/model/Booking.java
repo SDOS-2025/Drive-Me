@@ -69,6 +69,11 @@ public class Booking {
     @Column(name = "fare", precision = 10, scale = 2)
     private BigDecimal fare;
 
+    @NotNull(message = "Esimated duration is required")
+    @DecimalMin(value = "0.0", inclusive = true, message = "Estimated distance must be a positive number")
+    @Column(name = "estimated_duration_km")
+    private Integer estimatedDuration;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -168,6 +173,14 @@ public class Booking {
 
     public User getCustomer() {
         return customer;
+    }
+
+    public void setEstimatedDuration(Integer estimatedDuration) {
+        this.estimatedDuration = estimatedDuration;
+    }
+
+    public Integer getEstimatedDuration() {
+        return estimatedDuration;
     }
 
     public void setCustomer(User customer) {

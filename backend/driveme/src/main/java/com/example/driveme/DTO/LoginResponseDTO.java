@@ -3,6 +3,7 @@ package com.example.driveme.DTO;
 public class LoginResponseDTO {
     private String token;
     private Long userId;
+    private String refreshToken;
     private String fullName;
     private Long expiresIn;
     private String licenseNumber;
@@ -20,6 +21,14 @@ public class LoginResponseDTO {
     // Getters
     public String getToken() {
         return token;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public String getLicenseNumber() {

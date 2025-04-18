@@ -1,6 +1,8 @@
 package com.example.driveme.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,10 +22,12 @@ public class AuthenticationController {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
     
     private final AuthenticationService authenticationService;
+    private final UserDetailsService userDetailsService;
 
-    public AuthenticationController(JwtServices jwtService, AuthenticationService authenticationService) {
+    public AuthenticationController(JwtServices jwtService, AuthenticationService authenticationService, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.authenticationService = authenticationService;
+        this.userDetailsService = userDetailsService;
     }
 
     @PostMapping("/user/signup")
@@ -58,13 +62,47 @@ public class AuthenticationController {
         return ResponseEntity.ok(registerResponse);
     }
 
+    // Add this new refresh token endpoint
+    @PostMapping("/refresh-token")
+    public ResponseEntity<TokenRefreshResponse> refreshToken(@RequestBody TokenRefreshRequest request) {
+        String refreshToken = request.getRefreshToken();
+        
+        try {
+            // Extract username from refresh token
+            String username = jwtService.extractUsername(refreshToken);
+            
+            // Check if username exists and token is valid
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            
+            if (jwtService.isTokenValid(refreshToken, userDetails)) {
+                // Generate new access token
+                String newToken = jwtService.generateToken(userDetails);
+                
+                return ResponseEntity.ok(new TokenRefreshResponse(
+                        newToken,
+                        refreshToken,
+                        jwtService.getExpirationTime()
+                ));
+            }
+            
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            logger.error("Error refreshing token", e);
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @PostMapping("/user/login")
     public ResponseEntity<LoginResponseDTO> authenticate(@RequestBody LoginRequestDTO loginUserDto) {
         User authenticatedUser = authenticationService.authenticate(loginUserDto);
 
         String jwtToken = jwtService.generateToken(authenticatedUser);
+        String refreshToken = jwtService.generateRefreshToken(authenticatedUser);
 
-        LoginResponseDTO loginResponse = new LoginResponseDTO().setToken(jwtToken).setExpiresIn(jwtService.getExpirationTime());
+        LoginResponseDTO loginResponse = new LoginResponseDTO();
+        loginResponse.setToken(jwtToken);
+        loginResponse.setRefreshToken(refreshToken);
+        loginResponse.setExpiresIn(jwtService.getExpirationTime());
         loginResponse.setUserId(authenticatedUser.getUserId());
         loginResponse.setFullName(authenticatedUser.getFullName());
         logger.info("User authenticated successfully: " + loginResponse.getFullName() + " with email: " + authenticatedUser.getEmail());
@@ -77,8 +115,12 @@ public class AuthenticationController {
         Driver authenticatedDriver = authenticationService.authenticateDriver(loginUserDto);
 
         String jwtToken = jwtService.generateToken(authenticatedDriver);
+        String refreshToken = jwtService.generateRefreshToken(authenticatedDriver);
 
-        LoginResponseDTO loginResponse = new LoginResponseDTO().setToken(jwtToken).setExpiresIn(jwtService.getExpirationTime());
+        LoginResponseDTO loginResponse = new LoginResponseDTO();
+        loginResponse.setToken(jwtToken);
+        loginResponse.setRefreshToken(refreshToken);
+        loginResponse.setExpiresIn(jwtService.getExpirationTime());
         loginResponse.setUserId(authenticatedDriver.getDriverId());
         loginResponse.setFullName(authenticatedDriver.getName());
         loginResponse.setLicenseNumber(authenticatedDriver.getLicenseNumber());
@@ -91,7 +133,12 @@ public class AuthenticationController {
         User authenticatedAdmin = authenticationService.authenticateAdmin(loginUserDto);
 
         String jwtToken = jwtService.generateToken(authenticatedAdmin);
-        LoginResponseDTO loginResponse = new LoginResponseDTO().setToken(jwtToken).setExpiresIn(jwtService.getExpirationTime());
+        String refreshToken = jwtService.generateRefreshToken(authenticatedAdmin);
+
+        LoginResponseDTO loginResponse = new LoginResponseDTO();
+        loginResponse.setToken(jwtToken);
+        loginResponse.setRefreshToken(refreshToken);
+        loginResponse.setExpiresIn(jwtService.getExpirationTime());
         loginResponse.setUserId(authenticatedAdmin.getUserId());
         loginResponse.setFullName(authenticatedAdmin.getFullName());
         logger.info("Admin authenticated successfully: " + loginResponse.getFullName() + " with email: " + authenticatedAdmin.getEmail());
