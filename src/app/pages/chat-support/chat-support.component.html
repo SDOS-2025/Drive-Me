@@ -1,0 +1,99 @@
+<app-dashboard-navbar></app-dashboard-navbar>
+<div class="dashboard">
+  <app-sidebar [menuItems]="sidebarMenuItems" [isDarkTheme]="true"></app-sidebar>
+  
+  <div class="main-content">
+    <div class="support-container">
+      <div class="support-panel">
+        <div class="panel-header">
+          <h2>Common Issues</h2>
+        </div>
+        <div class="common-issues">
+          <div class="issue-card" *ngFor="let issue of commonIssues" (click)="selectCommonIssue(issue)">
+            <div class="issue-title">{{ issue.title }}</div>
+            <div class="issue-description">{{ issue.description }}</div>
+          </div>
+        </div>
+        <div class="panel-header">
+          <h2>Support Hours</h2>
+        </div>
+        <div class="support-hours">
+          <div class="hours-item">
+            <span class="day">Monday - Friday:</span>
+            <span class="time">9:00 AM - 9:00 PM</span>
+          </div>
+          <div class="hours-item">
+            <span class="day">Saturday:</span>
+            <span class="time">10:00 AM - 6:00 PM</span>
+          </div>
+          <div class="hours-item">
+            <span class="day">Sunday:</span>
+            <span class="time">12:00 PM - 5:00 PM</span>
+          </div>
+        </div>
+        <div class="emergency-contact">
+          <div class="emergency-title">
+            <span class="emergency-icon">⚠️</span>
+            Emergency Contact
+          </div>
+          <div class="emergency-number">1-800-DRIVEME</div>
+        </div>
+      </div>
+      
+      <div class="chat-container">
+        <div class="chat-header">
+          <div class="chat-title">
+            <div class="support-avatar">
+              <div class="support-avatar-image">💬</div>
+              <div class="status-indicator online"></div>
+            </div>
+            <div class="support-info">
+              <div class="support-name">Drive-Me Support</div>
+              <div class="support-status">Online</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="chat-messages" #chatContainer>
+          <div class="day-separator">
+            <span>Today</span>
+          </div>
+          
+          <div *ngFor="let message of messages" 
+               [ngClass]="{'message-item': true, 'user-message': message.sender === 'user', 'support-message': message.sender === 'support'}">
+            <div class="message-content">
+              {{ message.text }}
+            </div>
+            <div class="message-time">
+              {{ formatTime(message.timestamp) }}
+              <span *ngIf="message.sender === 'user'" class="message-status">
+                <!-- Status icons -->
+                <span *ngIf="message.status === 'sent'">✓</span>
+                <span *ngIf="message.status === 'delivered'">✓✓</span>
+                <span *ngIf="message.status === 'read'" class="status-read">✓✓</span>
+              </span>
+            </div>
+          </div>
+          
+          <div *ngIf="isTyping" class="typing-indicator">
+            <div class="typing-bubble"></div>
+            <div class="typing-bubble"></div>
+            <div class="typing-bubble"></div>
+          </div>
+        </div>
+        
+        <div class="chat-input">
+          <input 
+            type="text" 
+            placeholder="Type your message here..." 
+            [(ngModel)]="messageText"
+            (keyup.enter)="sendMessage()"
+          >
+          <button class="send-button" (click)="sendMessage()" [disabled]="!messageText.trim()">
+            <span class="send-icon">➤</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

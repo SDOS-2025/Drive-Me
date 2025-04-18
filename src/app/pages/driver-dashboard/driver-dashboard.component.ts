@@ -21,7 +21,7 @@ export class DriverDashboardComponent implements OnInit {
     { label: 'Dashboard', active: true, route: '/driver-dashboard' },
     { label: 'Available Trips', route: '/available-trips' },
     { label: 'All Trips', route: '/all-trips' },
-    { label: 'Chat Support' },
+    { label: 'Chat Support', route: '/chat-support' },
     { label: 'Settings', route: '/settings' },
   ];
   

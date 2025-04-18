@@ -12,6 +12,7 @@ import {AdminDashboardComponent} from "./pages/admin-dashboard/admin-dashboard.c
 import { AllTripsComponent } from "./pages/all-trips/all-trips.component";
 import { AvailableTripsComponent } from "./pages/available-trips/available-trips.component";
 import { SettingsComponent } from "./pages/settings/settings.component";
+import { ChatSupportComponent } from "./pages/chat-support/chat-support.component";
 
 const routeConfig: Routes = [
   { path: '', component: LandingComponent },
@@ -21,7 +22,8 @@ const routeConfig: Routes = [
     component: DriverDashboardComponent,
     canActivate: [authGuard],
     data: { requiredRole: 'driver' }
-  }, 
+  },
+   
   {
     path: 'all-trips',
     component: AllTripsComponent,
@@ -35,10 +37,16 @@ const routeConfig: Routes = [
     data: { requiredRole: 'driver' }
   },
   {
+    path: 'chat-support',
+    component: ChatSupportComponent,
+    canActivate: [authGuard],
+    data: { requiredRole: ['driver', 'user'] } // Allow both user types
+  },
+  {
     path: 'settings',
     component: SettingsComponent,
     canActivate: [authGuard], 
-    data: { requiredRole: 'driver' }
+    data: { requiredRole: ['driver', 'user'] } // Allow both user types
   },
   {
     path: 'user-dashboard', 
@@ -67,12 +75,6 @@ const routeConfig: Routes = [
   {
     path: 'find-driver',
     component: FindDriverComponent,
-    canActivate: [authGuard],
-    data: { requiredRole: 'user' }
-  },
-  {
-    path: 'settings',
-    component: SettingsComponent, 
     canActivate: [authGuard],
     data: { requiredRole: 'user' }
   },
