@@ -24,44 +24,40 @@
         All Trips
       </button>
       <button 
-        [class.active]="statusFilter === 'completed'" 
-        (click)="filterByStatus('completed')"
+        [class.active]="statusFilter === 'COMPLETED'" 
+        (click)="filterByStatus('COMPLETED')"
       >
         Completed
       </button>
       <button 
-        [class.active]="statusFilter === 'upcoming'" 
-        (click)="filterByStatus('upcoming')"
+        [class.active]="statusFilter === 'CONFIRMED'" 
+        (click)="filterByStatus('CONFIRMED')"
       >
         Upcoming
       </button>
       <button 
-        [class.active]="statusFilter === 'canceled'" 
-        (click)="filterByStatus('canceled')"
+        [class.active]="statusFilter === 'CANCELLED'" 
+        (click)="filterByStatus('CANCELLED')"
       >
-        Canceled
+        Cancelled
       </button>
     </div>
     
     <div class="trips-list">
       <div class="trip-item" *ngFor="let trip of filteredTrips">
-        <div class="trip-icon">
-          <span>{{ trip.icon }}</span>
-        </div>
-        
         <div class="trip-details">
           <div class="trip-route">
-            <div class="origin">{{ trip.origin }}</div>
+            <div class="origin">{{ trip.pickupLocation }}</div>
             <div class="route-line">
               <span class="arrow">→</span>
             </div>
-            <div class="destination">{{ trip.destination }}</div>
+            <div class="destination">{{ trip.dropOffLocation }}</div>
           </div>
           
           <div class="trip-info">
             <div class="passenger">
               <span class="label">Passenger:</span>
-              <span class="value">{{ trip.passengerName }}</span>
+              <span class="value">{{ trip.customerName }}</span>
             </div>
             <div class="date-time">
               <span class="label">Date:</span>
@@ -74,7 +70,7 @@
         
         <div class="trip-status-price">
           <div class="status" [ngClass]="getStatusClass(trip.status)">
-            {{ trip.status | titlecase }}
+            {{ formatStatus(trip.status) }}
           </div>
           <div class="price">${{ trip.fare.toFixed(2) }}</div>
           <div class="rating" *ngIf="trip.rating">

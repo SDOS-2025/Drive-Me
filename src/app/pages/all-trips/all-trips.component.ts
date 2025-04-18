@@ -3,17 +3,17 @@ import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { DashboardNavbarComponent } from "../../components/dashboard-navbar/dashboard-navbar.component";
 import { AuthService } from '../../services/auth.service';
+import { TripsService } from '../../services/trips.service';
 
 interface Trip {
   id: number;
-  icon: string;
-  origin: string;
-  destination: string;
+  pickupLocation: string;
+  dropOffLocation: string;
   date: string;
   time: string;
   status: string;
   fare: number;
-  passengerName: string;
+  customerName: string;
   rating?: number;
 }
 
@@ -33,10 +33,8 @@ export class AllTripsComponent implements OnInit {
     { label: 'Dashboard', route: '/driver-dashboard' },
     { label: 'Available Trips', route: '/available-trips' },
     { label: 'All Trips', active: true, route: '/all-trips' },
-    { label: 'Notifications' },
-    { label: 'Chat Support' },
-    { label: 'Settings' },
-    { label: 'My Profile' },
+    { label: 'Support', route: '/chat-support' },
+    { label: 'Settings', route: '/settings' },
   ];
 
   allTrips: Trip[] = [];
@@ -44,7 +42,7 @@ export class AllTripsComponent implements OnInit {
   statusFilter: string = 'all';
   searchQuery: string = '';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private tripsService: TripsService) {}
 
   ngOnInit(): void {
     this.loadDriverData();
@@ -61,67 +59,36 @@ export class AllTripsComponent implements OnInit {
   }
 
   loadTrips(): void {
-    this.allTrips = [
-      {
-        id: 1,
-        icon: '🏙️',
-        origin: 'Downtown',
-        destination: 'Airport',
-        date: '2025-04-10',
-        time: '09:30 AM',
-        status: 'completed',
-        fare: 35.50,
-        passengerName: 'Emily Johnson',
-        rating: 4.8
+    this.tripsService.getDriverBookings().subscribe(
+      (response) => {
+        console.log('Trip response:', response);
+        this.allTrips = response.map((trip: any) => {
+          // Parse date and time from pickupDateTime if it exists
+          let tripDate = '';
+          let tripTime = '';
+          
+          if (trip.pickupDateTime) {
+            const [date, time] = trip.pickupDateTime.split(' ');
+            tripDate = date;
+            tripTime = time;
+          }
+          
+          return {
+            ...trip,
+            date: tripDate,
+            time: tripTime,
+            status: trip.status || 'CONFIRMED',
+            customerName: trip.customerName || 'Anonymous',
+          };
+        });
+        
+        this.filteredTrips = [...this.allTrips]; // Initialize filtered trips
+        this.applyFilters();
       },
-      {
-        id: 2,
-        icon: '🏫',
-        origin: 'University Campus',
-        destination: 'Shopping Mall',
-        date: '2025-04-12',
-        time: '02:15 PM',
-        status: 'completed',
-        fare: 22.75,
-        passengerName: 'Michael Chen',
-        rating: 4.5
-      },
-      {
-        id: 3,
-        icon: '🏥',
-        origin: 'Hospital',
-        destination: 'Residential Area',
-        date: '2025-04-13',
-        time: '05:45 PM',
-        status: 'canceled',
-        fare: 18.20,
-        passengerName: 'Sarah Williams',
-      },
-      {
-        id: 4,
-        icon: '🏨',
-        origin: 'Hotel Grand',
-        destination: 'Conference Center',
-        date: '2025-04-14',
-        time: '10:00 AM',
-        status: 'upcoming',
-        fare: 15.80,
-        passengerName: 'Robert Davis',
-      },
-      {
-        id: 5,
-        icon: '🛒',
-        origin: 'Grocery Store',
-        destination: 'Apartment Complex',
-        date: '2025-04-15',
-        time: '06:30 PM',
-        status: 'upcoming',
-        fare: 12.40,
-        passengerName: 'Jennifer Lopez',
+      error => {
+        console.error('Error loading trips:', error);
       }
-    ];
-    
-    this.applyFilters();
+    );
   }
 
   applyFilters(): void {
@@ -134,9 +101,9 @@ export class AllTripsComponent implements OnInit {
       // Apply search query
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
-        return trip.origin.toLowerCase().includes(query) ||
-          trip.destination.toLowerCase().includes(query) ||
-          trip.passengerName.toLowerCase().includes(query);
+        return trip.pickupLocation.toLowerCase().includes(query) ||
+          trip.dropOffLocation.toLowerCase().includes(query) ||
+          trip.customerName.toLowerCase().includes(query);
       }
       
       return true;
@@ -155,11 +122,19 @@ export class AllTripsComponent implements OnInit {
   }
 
   getStatusClass(status: string): string {
-    switch (status) {
-      case 'completed': return 'status-completed';
-      case 'upcoming': return 'status-upcoming';
-      case 'canceled': return 'status-canceled';
-      default: return '';
+    switch (status.toUpperCase()) {
+      case 'COMPLETED': return 'status-completed';
+      case 'CONFIRMED': return 'status-upcoming';
+      case 'CANCELLED': return 'status-canceled';
+      default: return 'status-upcoming';
+    }
+  }
+  formatStatus(status: string): string {
+    switch (status.toUpperCase()) {
+      case 'COMPLETED': return 'Completed';
+      case 'CONFIRMED': return 'Upcoming';
+      case 'CANCELLED': return 'Cancelled';
+      default: return status;
     }
   }
 }
