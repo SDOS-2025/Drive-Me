@@ -4,9 +4,14 @@ import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { DashboardNavbarComponent } from "../../components/dashboard-navbar/dashboard-navbar.component";
 import { AuthService } from '../../services/auth.service';
 import { TripsService } from '../../services/trips.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 
 interface Trip {
   id: number;
+  bookingId: number;
   pickupLocation: string;
   dropOffLocation: string;
   date: string;
@@ -20,7 +25,15 @@ interface Trip {
 @Component({
   selector: 'app-all-trips',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, DashboardNavbarComponent],
+  imports: [
+    CommonModule, 
+    SidebarComponent, 
+    DashboardNavbarComponent,
+    MatSnackBarModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatIconModule
+  ],
   providers: [AuthService],
   templateUrl: './all-trips.component.html',
   styleUrl: './all-trips.component.css'
@@ -41,8 +54,14 @@ export class AllTripsComponent implements OnInit {
   filteredTrips: Trip[] = [];
   statusFilter: string = 'all';
   searchQuery: string = '';
+  loading: boolean = false;
+  processingTrip: number | null = null;
 
-  constructor(private authService: AuthService, private tripsService: TripsService) {}
+  constructor(
+    private authService: AuthService, 
+    private tripsService: TripsService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.loadDriverData();
@@ -59,8 +78,9 @@ export class AllTripsComponent implements OnInit {
   }
 
   loadTrips(): void {
-    this.tripsService.getDriverBookings().subscribe(
-      (response) => {
+    this.loading = true;
+    this.tripsService.getDriverBookings().subscribe({
+      next: (response) => {
         console.log('Trip response:', response);
         this.allTrips = response.map((trip: any) => {
           // Parse date and time from pickupDateTime if it exists
@@ -75,6 +95,8 @@ export class AllTripsComponent implements OnInit {
           
           return {
             ...trip,
+            id: trip.bookingId, // For compatibility with existing code
+            bookingId: trip.bookingId,
             date: tripDate,
             time: tripTime,
             status: trip.status || 'CONFIRMED',
@@ -84,11 +106,14 @@ export class AllTripsComponent implements OnInit {
         
         this.filteredTrips = [...this.allTrips]; // Initialize filtered trips
         this.applyFilters();
+        this.loading = false;
       },
-      error => {
-        console.error('Error loading trips:', error);
+      error: err => {
+        console.error('Error loading trips:', err);
+        this.showNotification('Failed to load trips. Please try again later.', 'error');
+        this.loading = false;
       }
-    );
+    });
   }
 
   applyFilters(): void {
@@ -129,6 +154,7 @@ export class AllTripsComponent implements OnInit {
       default: return 'status-upcoming';
     }
   }
+  
   formatStatus(status: string): string {
     switch (status.toUpperCase()) {
       case 'COMPLETED': return 'Completed';
@@ -136,5 +162,54 @@ export class AllTripsComponent implements OnInit {
       case 'CANCELLED': return 'Cancelled';
       default: return status;
     }
+  }
+  
+  // New method to complete a trip
+  completeTrip(trip: Trip): void {
+    if (trip.status === 'COMPLETED') {
+      this.showNotification('This trip is already completed.', 'info');
+      return;
+    }
+    
+    if (trip.status === 'CANCELLED') {
+      this.showNotification('Cannot complete a cancelled trip.', 'error');
+      return;
+    }
+    
+    // Set the processing state for this trip
+    this.processingTrip = trip.bookingId;
+    
+    this.tripsService.completeTrip(trip.bookingId).subscribe({
+      next: () => {
+        // Update the trip status locally
+        trip.status = 'COMPLETED';
+        
+        // Update the filtered trips as well
+        this.applyFilters();
+        
+        this.showNotification('Trip completed successfully!', 'success');
+        this.processingTrip = null;
+      },
+      error: (err) => {
+        console.error('Error completing trip:', err);
+        this.showNotification(
+          `Failed to complete trip: ${err.error?.message || 'Please try again later'}`, 
+          'error'
+        );
+        this.processingTrip = null;
+      }
+    });
+  }
+  
+  // Show notifications with MatSnackBar
+  showNotification(message: string, type: 'success' | 'error' | 'info'): void {
+    const duration = type === 'error' ? 8000 : 5000;
+    
+    this.snackBar.open(message, 'Close', {
+      duration: duration,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+      panelClass: ['notification', `notification-${type}`]
+    });
   }
 }

@@ -337,24 +337,6 @@ public class BookingController {
             // Handle state transitions based on business rules
             booking.setStatus(updatedStatus);
 
-            // If completing the trip, add distance and set completion time
-            if (updatedStatus == Booking.BookingStatus.COMPLETED) {
-                String distanceStr = request.get("distance");
-                if (distanceStr != null) {
-                    Double distance = Double.parseDouble(distanceStr);
-                    booking.completeTrip(distance);
-                } else {
-                    booking.completeTrip(0.0); // Default distance if not provided
-                }
-            }
-
-            // If moving to IN_PROGRESS, call startTrip
-            if (updatedStatus == Booking.BookingStatus.IN_PROGRESS) {
-                if (booking.getStatus() == Booking.BookingStatus.ARRIVED) {
-                    booking.startTrip();
-                }
-            }
-
             // If completing the trip, add distance, set completion time, and update ratings
             if (updatedStatus == Booking.BookingStatus.COMPLETED) {
                 String distanceStr = request.get("distance");
@@ -364,6 +346,8 @@ public class BookingController {
                 } else {
                     booking.completeTrip(0.0); // Default distance if not provided
                 }
+                booking.getDriver().setStatus(Driver.DriverStatus.AVAILABLE); // Set driver status to available
+                booking.getDriver().incrementTotalTrips(); // Increment total trips for driver
 
                 // Update average rating for driver and user
                 updateDriverRating(booking.getDriver());

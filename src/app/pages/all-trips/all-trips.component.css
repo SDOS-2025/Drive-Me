@@ -194,3 +194,132 @@
     border-radius: 8px;
     color: #666;
   }
+
+  /* Add these styles to your existing CSS file */
+
+/* Update the trip-item to include space for the button */
+.trip-item {
+  display: flex;
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+  position: relative;
+  align-items: center;
+}
+
+/* Style for the complete button */
+.complete-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  height: 36px;
+  margin-left: 15px;
+}
+
+.complete-btn:hover {
+  background-color: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.complete-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.complete-btn:disabled {
+  background-color: #9e9e9e;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Spinner for button loading state */
+.btn-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Update trip-status-price for better alignment with button */
+.trip-status-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-width: 100px;
+  margin-right: 15px;
+}
+
+/* Add responsive styles */
+@media (max-width: 768px) {
+  .trip-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .trip-status-price {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 15px;
+    margin-right: 0;
+  }
+  
+  .complete-btn {
+    margin-left: 0;
+    margin-top: 15px;
+    width: 100%;
+  }
+}
+
+/* Style for snackbar notifications */
+::ng-deep .notification {
+  color: white !important;
+  margin-bottom: 20px !important;
+  min-width: 300px !important;
+}
+
+::ng-deep .notification-success {
+  background-color: #4caf50 !important;
+}
+
+::ng-deep .notification-error {
+  background-color: #f44336 !important;
+}
+
+::ng-deep .notification-info {
+  background-color: #2196f3 !important;
+}
+
+::ng-deep .mat-simple-snackbar-action {
+  color: white !important;
+}
+
+::ng-deep .mat-simple-snackbar-action button {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+}
+
+::ng-deep .mat-simple-snackbar-action button:hover {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+}

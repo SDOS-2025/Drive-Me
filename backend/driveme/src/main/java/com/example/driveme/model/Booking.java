@@ -97,7 +97,7 @@ public class Booking {
     private List<Payment> payments = new ArrayList<>();
 
     public enum BookingStatus {
-        CONFIRMED, PENDING, CANCELLED, IN_PROGRESS, COMPLETED, ARRIVED
+        CONFIRMED, PENDING, CANCELLED, COMPLETED
     }
 
     // Constructors
@@ -120,17 +120,10 @@ public class Booking {
         this.fare = fare;
         this.status = BookingStatus.CONFIRMED;
     }
-
-    public void startTrip() {
-        if (this.status != BookingStatus.ARRIVED) {
-            throw new IllegalStateException("Driver must be ARRIVED to start trip");
-        }
-        this.status = BookingStatus.IN_PROGRESS;
-    }
     
     public void completeTrip(Double actualDistanceKm) {
-        if (this.status != BookingStatus.IN_PROGRESS) {
-            throw new IllegalStateException("Trip must be IN_PROGRESS to complete");
+        if (this.status != BookingStatus.CONFIRMED) {
+            throw new IllegalStateException("Trip must be CONFIRMED to complete");
         }
         this.status = BookingStatus.COMPLETED;
         this.completedAt = LocalDateTime.now();

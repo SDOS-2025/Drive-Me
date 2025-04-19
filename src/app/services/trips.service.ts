@@ -37,7 +37,7 @@ export class TripsService {
 
     getAvailableTrips(): Observable<AvailableTrip[]> {
         // This endpoint should return all pending bookings without an assigned driver
-        const header = this.getAuthHeaders(); 
+        const header = this.getAuthHeaders();
         console.log("Header:", header);
         return this.http.get<BookingResponse[]>(`${this.apiUrl}/bookings/pending`, { headers: header })
             .pipe(
@@ -53,6 +53,11 @@ export class TripsService {
     getDriverBookings(): Observable<any> {
         const header = this.getAuthHeaders();
         return this.http.get(`${this.apiUrl}/bookings/driver`, { headers: header });
+    }
+
+    completeTrip(tripId: number): Observable<any> {
+        const headers = this.getAuthHeaders();
+        return this.http.put(`${this.apiUrl}/bookings/${tripId}/status`, {status: "COMPLETED"}, { headers });
     }
 
     // Helper method to convert booking data format to trip format

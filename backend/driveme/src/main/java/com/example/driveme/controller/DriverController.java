@@ -59,7 +59,7 @@ public class DriverController {
             // Check if driver has any active booking
             List<Booking> activeBookings = bookingRepository.findByDriverAndStatusIn(
                 driver, 
-                List.of(Booking.BookingStatus.CONFIRMED, Booking.BookingStatus.IN_PROGRESS)
+                List.of(Booking.BookingStatus.CONFIRMED)
             );
             
             if (!activeBookings.isEmpty()) {
