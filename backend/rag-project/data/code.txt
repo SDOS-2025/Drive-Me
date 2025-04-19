@@ -1,0 +1,313 @@
+
+# **Drive-Me Application User Manual**
+
+## **Introduction**
+Drive-Me is a ride-booking platform that connects users with drivers for convenient transportation. The application supports three roles: **Users**, **Drivers**, and **Administrators**, each with specific functionalities.
+
+---
+
+## **Getting Started**
+
+### **System Requirements**
+- A modern web browser (e.g., Chrome, Firefox, Edge).
+- Internet connection.
+- For mobile users, a compatible smartphone.
+
+### **Account Creation**
+1. **User Signup**:
+   - Navigate to the signup page.
+   - Provide your full name, email, phone number, Aadhar card, and password.
+   - Submit the form to create your account.
+
+2. **Driver Signup**:
+   - Navigate to the driver signup page.
+   - Provide your full name, email, phone number, Aadhar card, license number, and password.
+   - Submit the form to register as a driver.
+
+3. **Admin Login**:
+   - Admin accounts are pre-configured. Use your credentials to log in.
+
+---
+
+## **Features**
+
+### **For Users**
+1. **Login**:
+   - Enter your email/phone and password to log in.
+   - A JWT token will be generated for secure access.
+
+2. **Book a Ride**:
+   - Provide pickup and drop-off locations.
+   - Select a vehicle type (e.g., Hatchback, Sedan, SUV).
+   - Confirm the booking.
+
+3. **View Bookings**:
+   - Access your booking history, including completed, canceled, and ongoing rides.
+
+4. **Rate Drivers**:
+   - After completing a trip, rate the driver and provide feedback.
+
+5. **Manage Vehicles**:
+   - Add or remove vehicles associated with your account.
+
+---
+
+### **For Drivers**
+1. **Login**:
+   - Enter your email/phone and password to log in.
+   - A JWT token will be generated for secure access.
+
+2. **Manage Availability**:
+   - Set your status to **Available**, **Busy**, or **Offline**.
+
+3. **View Bookings**:
+   - Access assigned bookings and their details.
+   - Start, complete, or cancel trips as needed.
+
+4. **View Ratings**:
+   - Check your average rating and feedback from users.
+
+---
+
+### **For Administrators**
+1. **Dashboard**:
+   - View statistics, including total users, drivers, and bookings.
+
+2. **Manage Users**:
+   - View, edit, or delete user accounts.
+   - Update user statuses (e.g., Active, Suspended).
+
+3. **Manage Drivers**:
+   - View, edit, or delete driver accounts.
+   - Update driver statuses (e.g., Active, Suspended).
+
+4. **Manage Bookings**:
+   - View all bookings with details like status, ratings, and feedback.
+
+5. **Delete Accounts**:
+   - Remove user or driver accounts if necessary.
+
+---
+
+## **Payment System**
+- Payments are processed using **Card**, **UPI**, or **Cash**.
+- Payment statuses include **Pending**, **Completed**, **Failed**, and **Refunded**.
+
+---
+
+## **Security**
+- All user data is secured using JWT-based authentication.
+- Passwords are encrypted using BCrypt.
+
+---
+
+## **Troubleshooting**
+1. **Forgot Password**:
+   - Use the "Forgot Password" option on the login page to reset your password.
+
+2. **Unable to Book a Ride**:
+   - Ensure your account is active and your payment method is valid.
+
+3. **Driver Not Found**:
+   - Check if drivers are available in your area.
+
+4. **Admin Issues**:
+   - Contact technical support for assistance with admin functionalities.
+
+---
+
+## **Contact Support**
+For any issues or queries, contact our support team at **support@driveme.com**.
+
+---
+
+This manual provides a high-level overview of the application's functionality. Let me know if you need more detailed instructions or additional sections.
+
+XenoRaj: write it in as much detail as possible
+
+GitHub Copilot: # **Drive-Me Application User Manual**
+
+## **Introduction**
+Welcome to **Drive-Me**, a platform designed to simplify your transportation needs by connecting users with professional drivers. Whether you need a driver for a one-way trip, a round trip, or just to drive your car, Drive-Me ensures a seamless experience. This manual provides detailed instructions for users, drivers, and administrators to navigate and utilize the application effectively.
+
+---
+
+## **Table of Contents**
+1. System Requirements
+2. Getting Started
+   - Account Creation
+   - Login
+3. Features
+   - For Users
+   - For Drivers
+   - For Administrators
+4. Chat Assistance
+5. Security
+6. Troubleshooting
+7. Contact Support
+
+---
+
+## **System Requirements**
+To use the Drive-Me application, ensure you meet the following requirements:
+- **Device**: Smartphone, tablet, or computer.
+- **Operating System**: Android, iOS, Windows, or macOS.
+- **Browser**: Latest version of Chrome, Firefox, Safari, or Edge.
+- **Internet Connection**: Stable internet connection for smooth operation.
+
+---
+
+## **Getting Started**
+
+### **Account Creation**
+1. **For Users**:
+   - Navigate to the **Signup** page.
+   - Fill in your details, including:
+     - Full Name
+     - Email Address
+     - Phone Number
+     - Aadhar Card Number (for identity verification)
+     - Password
+   - Submit the form to create your account.
+
+2. **For Drivers**:
+   - Navigate to the **Driver Signup** page.
+   - Provide the following details:
+     - Full Name
+     - Email Address
+     - Phone Number
+     - Aadhar Card Number
+     - Driver’s License Number
+     - Password
+   - Submit the form to register as a driver.
+
+3. **For Administrators**:
+   - Admin accounts are pre-configured. Use the provided credentials to log in.
+
+---
+
+### **Login**
+1. Navigate to the **Login** page.
+2. Enter your registered email or phone number and password.
+3. Click **Login** to access your dashboard.
+4. Authentication is secured using JWT (JSON Web Tokens).
+
+---
+
+## **Features**
+
+### **For Users**
+1. **Dashboard**:
+   - Access your personalized dashboard after logging in.
+   - View your profile, bookings, and payment history.
+
+2. **Book a Driver**:
+   - Navigate to the **Book a Driver** section.
+   - Enter the following details:
+     - Pickup Location
+     - Destination
+     - Date and Time
+     - Ride Type (One-way or Round Trip)
+   - Confirm your booking. A driver will be assigned based on availability.
+
+3. **My Bookings**:
+   - View all your bookings, including:
+     - Upcoming Trips
+     - Completed Trips
+     - Canceled Trips
+
+4. **Manage Vehicles**:
+   - Add or remove vehicles associated with your account in the **My Vehicles** section.
+
+5. **Rate Drivers**:
+   - After completing a trip, rate your driver and provide feedback.
+
+---
+
+### **For Drivers**
+1. **Dashboard**:
+   - Access your driver dashboard to view assigned trips and manage your availability.
+
+2. **Available Trips**:
+   - View a list of trips available for assignment in the **Available Trips** section.
+
+3. **All Trips**:
+   - Access a history of all trips you have completed or canceled.
+
+4. **Manage Availability**:
+   - Set your status to **Available**, **Busy**, or **Offline** to control trip assignments.
+
+5. **View Ratings**:
+   - Check your average rating and feedback from users.
+
+---
+
+### **For Administrators**
+1. **Admin Dashboard**:
+   - Access the admin dashboard to manage users, drivers, and bookings.
+
+2. **Manage Users**:
+   - View, edit, or delete user accounts.
+   - Update user statuses (e.g., Active, Suspended).
+
+3. **Manage Drivers**:
+   - View, edit, or delete driver accounts.
+   - Update driver statuses (e.g., Active, Suspended).
+
+4. **Manage Bookings**:
+   - View all bookings, including their status, user details, and driver assignments.
+
+5. **View All Trips**:
+   - Access a comprehensive list of all trips completed on the platform.
+
+---
+
+## **Chat Assistance**
+The application includes a chat feature powered by the **GeminiController**. This feature allows users to interact with a helpful assistant for guidance and support.
+
+### **How It Works**:
+1. Navigate to the **Chat** section.
+2. Enter your query or issue.
+3. The assistant will provide context-aware responses based on the Drive-Me platform's functionality.
+
+**Example Use Case**:
+- A user asks, "How do I book a driver?"
+- The assistant responds with step-by-step instructions.
+
+---
+
+## **Security**
+- **Authentication**: All accounts are secured using JWT-based authentication.
+- **Data Encryption**: Passwords are encrypted using industry-standard algorithms (e.g., BCrypt).
+- **Identity Verification**: Users and drivers must verify their identity using Aadhar card details.
+
+---
+
+## **Troubleshooting**
+
+### **Common Issues**:
+1. **Forgot Password**:
+   - Use the **Forgot Password** option on the login page to reset your password.
+
+2. **Unable to Book a Driver**:
+   - Ensure your account is active and your payment method is valid.
+   - Check if drivers are available in your area.
+
+3. **Driver Not Found**:
+   - Try adjusting your pickup location or time.
+
+4. **Admin Issues**:
+   - Contact technical support for assistance with admin functionalities.
+
+---
+
+## **Contact Support**
+For any issues or queries, contact our support team:
+- **Email**: support@driveme.com
+- **Phone**: +1-800-555-DRIVE
+- **Live Chat**: Available 24/7 in the application.
+
+---
+
+This manual provides a comprehensive guide to using the Drive-Me application. If you need further assistance or have suggestions for improvement, feel free to reach out to our support team.
+
