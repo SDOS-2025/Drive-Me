@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -334,24 +334,25 @@ public class BookingController {
                         .body(Map.of("error", "Invalid status value: " + newStatus));
             }
 
-            // Handle state transitions based on business rules
-            booking.setStatus(updatedStatus);
-
-            // If completing the trip, add distance, set completion time, and update ratings
+            // Handle completing the trip BEFORE changing the status
             if (updatedStatus == Booking.BookingStatus.COMPLETED) {
                 String distanceStr = request.get("distance");
-                if (distanceStr != null) {
-                    Double distance = Double.parseDouble(distanceStr);
-                    booking.completeTrip(distance);
-                } else {
-                    booking.completeTrip(0.0); // Default distance if not provided
-                }
-                booking.getDriver().setStatus(Driver.DriverStatus.AVAILABLE); // Set driver status to available
-                booking.getDriver().incrementTotalTrips(); // Increment total trips for driver
+                Double distance = (distanceStr != null) ? Double.parseDouble(distanceStr) : 0.0;
 
-                // Update average rating for driver and user
+                // Call completeTrip directly while status is still CONFIRMED
+                booking.completeTrip(distance);
+
+                // Set driver status to available and update metrics
+                if (booking.getDriver() != null) {
+                    booking.getDriver().setStatus(Driver.DriverStatus.AVAILABLE);
+                }
+
+                // Update average ratings
                 updateDriverRating(booking.getDriver());
                 updateUserRating(booking.getCustomer());
+            } else {
+                // For other status changes, just update the status
+                booking.setStatus(updatedStatus);
             }
 
             bookingRepository.save(booking);

@@ -7,10 +7,20 @@ public class RegisterRequestDTO {
     private String aadharCard;
     private String licenseNumber;
     private String password;
+    private boolean isSuperuser;
 
     // Getters and Setters
     public String getFullName() {
         return fullName;
+    }
+    
+    public RegisterRequestDTO setSuperuser(boolean isSuperuser) {
+        this.isSuperuser = isSuperuser;
+        return this;
+    }
+
+    public boolean isSuperuser() {
+        return isSuperuser;
     }
 
     public void setFullName(String fullName) {

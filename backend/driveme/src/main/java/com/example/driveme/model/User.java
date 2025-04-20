@@ -47,8 +47,6 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     private String phone;
 
-    @NotBlank(message = "isSuperuser is required")
-    @Pattern(regexp = "^(true|false)$", message = "isSuperuser must be true or false")
     @Column(name = "is_superuser")
     private boolean isSuperuser = false;
 
@@ -185,6 +183,15 @@ public class User implements UserDetails {
     public User setAadharCard(String aadharCard) {
         this.aadharCard = aadharCard;
         return this;
+    }
+
+    public User superUser(boolean isSuperuser) {
+        this.isSuperuser = isSuperuser;
+        return this;
+    }
+
+    public boolean getIsSuperuser() {
+        return isSuperuser;
     }
 
     public User setPassword(String password) {
