@@ -46,11 +46,24 @@ export class BookingService {
   }
   
   // Create a booking
-  createBooking(booking: BookingRequest): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.post<any>(`${this.apiUrl}/bookings`, booking, { headers });
-  }
+  createBooking(booking: BookingRequest, paymentScreenshot: File): Observable<any> {
+    const token = localStorage.getItem('token');
   
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+      // DO NOT set 'content-type' manually here
+    });
+  
+    const formData = new FormData();
+    formData.append('bookingRequest', new Blob(
+      [JSON.stringify(booking)],
+      { type: 'application/json' }
+    ));
+    formData.append('paymentScreenshot', paymentScreenshot);
+  
+    return this.http.post<any>(`${this.apiUrl}/bookings`, formData, { headers });
+  }
+   
   // Get all bookings for the current user
   getUserBookings(): Observable<BookingSummary[]> {
     const headers = this.getAuthHeaders();

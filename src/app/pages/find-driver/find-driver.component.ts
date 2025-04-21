@@ -28,9 +28,8 @@ export class FindDriverComponent implements OnInit {
     { label: 'My Bookings', route: '/my-bookings' },
     { label: 'Find Driver', active: true },
     { label: 'My Vehicles', route: '/my-vehicles' },
-    { label: 'Support' },
-    { label: 'Settings' },
-    { label: 'My Profile' },
+    { label: 'Support', route: '/chat-support' },
+    { label: 'Settings', route: '/settings' },
   ];
   
   constructor(private driverService: DriverService) {}

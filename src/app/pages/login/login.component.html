@@ -16,18 +16,19 @@
 
       <div *ngIf="formMode === 'login'" class="form-content">
         <h2>Sign in as {{ userType | titlecase }}</h2>
-        <input type="text" placeholder="Email or Phone" [(ngModel)]="user.emailOrPhone" />
-        <input type="password" placeholder="Password" [(ngModel)]="user.passwordLogin" />
+        <form (ngSubmit)="login()">
+          <input type="text" placeholder="Email or Phone" [(ngModel)]="user.emailOrPhone" name="emailOrPhone" />
+          <input type="password" placeholder="Password" [(ngModel)]="user.passwordLogin" name="password" />
 
-        <div class="remember-forgot">
-          <label class="remember-me">
-            <input type="checkbox" [(ngModel)]="user.rememberMe" />
-            Remember Me
-          </label>
-          <a href="#">Forgot Password?</a>
-        </div>
+          <div class="remember-forgot">
+            <label class="remember-me">
+              <input type="checkbox" [(ngModel)]="user.rememberMe" name="rememberMe" />
+              Remember Me
+            </label>
+          </div>
 
-        <button class="btn-dark" (click)="login()">Sign In</button>
+          <button type="submit" class="btn-dark">Sign In</button>
+        </form>
       </div>
 
       <div *ngIf="formMode === 'signup'" class="form-content">

@@ -161,7 +161,7 @@ export class UserDashboardComponent implements OnInit {
       if (completed) {
         // Calculate total spent from completed bookings
         const totalSpent = completed.reduce((sum: any, booking: { fare: any; }) => sum + booking.fare, 0);
-        this.stats[2].value = `$${totalSpent.toFixed(2)}`;
+        this.stats[2].value = `₹${totalSpent.toFixed(2)}`;
       }
     } catch (error) {
       console.error('Error loading stats:', error);

@@ -8,12 +8,12 @@
   <div *ngIf="!userId" class="auth-alert">
     <p><i class="fas fa-exclamation-circle"></i> Please <a routerLink="/login">log in</a> to book a driver</p>
   </div>
-  
+
   <div *ngIf="isLoading" class="loading-indicator">
     <div class="spinner"></div>
     <p>Processing your booking request...</p>
   </div>
-  
+
   <div *ngIf="errorMessage" class="error-alert">
     <p><i class="fas fa-exclamation-triangle"></i> {{errorMessage}}</p>
     <button class="btn btn-secondary" (click)="errorMessage = ''">Dismiss</button>
@@ -56,16 +56,20 @@
         <div class="form-row">
           <div class="form-group">
             <label for="pickupLocation">Pickup Location</label>
-            <input id="pickupLocation" type="text" class="form-control" formControlName="pickupLocation" placeholder="Enter pickup address">
-            <div class="error-message" *ngIf="tripControls['pickupLocation'].touched && tripControls['pickupLocation'].errors?.['required']">
+            <input id="pickupLocation" type="text" class="form-control" formControlName="pickupLocation"
+              placeholder="Enter pickup address">
+            <div class="error-message"
+              *ngIf="tripControls['pickupLocation'].touched && tripControls['pickupLocation'].errors?.['required']">
               Pickup location is required
             </div>
           </div>
 
           <div class="form-group">
             <label for="destination">Destination</label>
-            <input id="destination" type="text" class="form-control" formControlName="destination" placeholder="Enter destination address">
-            <div class="error-message" *ngIf="tripControls['destination'].touched && tripControls['destination'].errors?.['required']">
+            <input id="destination" type="text" class="form-control" formControlName="destination"
+              placeholder="Enter destination address">
+            <div class="error-message"
+              *ngIf="tripControls['destination'].touched && tripControls['destination'].errors?.['required']">
               Destination is required
             </div>
           </div>
@@ -75,7 +79,8 @@
           <div class="form-group">
             <label for="pickupDate">Pickup Date</label>
             <input id="pickupDate" type="date" class="form-control" formControlName="pickupDate" [min]="minDate">
-            <div class="error-message" *ngIf="tripControls['pickupDate'].touched && tripControls['pickupDate'].errors?.['required']">
+            <div class="error-message"
+              *ngIf="tripControls['pickupDate'].touched && tripControls['pickupDate'].errors?.['required']">
               Pickup date is required
             </div>
           </div>
@@ -83,7 +88,8 @@
           <div class="form-group">
             <label for="pickupTime">Pickup Time</label>
             <input id="pickupTime" type="time" class="form-control" formControlName="pickupTime">
-            <div class="error-message" *ngIf="tripControls['pickupTime'].touched && tripControls['pickupTime'].errors?.['required']">
+            <div class="error-message"
+              *ngIf="tripControls['pickupTime'].touched && tripControls['pickupTime'].errors?.['required']">
               Pickup time is required
             </div>
           </div>
@@ -92,11 +98,14 @@
         <div class="form-row">
           <div class="form-group">
             <label for="estimatedDuration">Estimated Duration (hours)</label>
-            <input id="estimatedDuration" type="number" class="form-control" formControlName="estimatedDuration" min="1">
-            <div class="error-message" *ngIf="tripControls['estimatedDuration'].touched && tripControls['estimatedDuration'].errors?.['required']">
+            <input id="estimatedDuration" type="number" class="form-control" formControlName="estimatedDuration"
+              min="1">
+            <div class="error-message"
+              *ngIf="tripControls['estimatedDuration'].touched && tripControls['estimatedDuration'].errors?.['required']">
               Duration is required
             </div>
-            <div class="error-message" *ngIf="tripControls['estimatedDuration'].touched && tripControls['estimatedDuration'].errors?.['min']">
+            <div class="error-message"
+              *ngIf="tripControls['estimatedDuration'].touched && tripControls['estimatedDuration'].errors?.['min']">
               Duration must be at least 1 hour
             </div>
           </div>
@@ -105,17 +114,15 @@
           <div class="form-row">
             <div class="form-group full-width">
               <label for="vehicleId">Select Your Vehicle</label>
-              <select 
-                id="vehicleId" 
-                class="form-control" 
-                formControlName="vehicleId"
+              <select id="vehicleId" class="form-control" formControlName="vehicleId"
                 (ngModelChange)="selectVehicle($event)">
                 <option value="">Select a vehicle</option>
                 <option *ngFor="let vehicle of userVehicles" [value]="vehicle.id">
                   {{vehicle.model}} ({{vehicle.carNumber}})
                 </option>
               </select>
-              <div class="error-message" *ngIf="tripControls['vehicleId'].touched && tripControls['vehicleId'].errors?.['required']">
+              <div class="error-message"
+                *ngIf="tripControls['vehicleId'].touched && tripControls['vehicleId'].errors?.['required']">
                 Please select a vehicle
               </div>
             </div>
@@ -125,7 +132,8 @@
         <div class="form-row">
           <div class="form-group full-width">
             <label for="additionalInfo">Additional Notes</label>
-            <textarea id="additionalInfo" class="form-control" formControlName="additionalInfo" placeholder="Any special requirements or information for your driver"></textarea>
+            <textarea id="additionalInfo" class="form-control" formControlName="additionalInfo"
+              placeholder="Any special requirements or information for your driver"></textarea>
           </div>
         </div>
 
@@ -138,16 +146,14 @@
     <!-- Step 2: Driver Selection -->
     <div class="form-step" *ngIf="currentStep === 2">
       <h2>Select Driver</h2>
-      
+
       <div *ngIf="availableDrivers.length === 0" class="no-drivers">
         <p>No drivers available for the selected date and time. Please try a different time.</p>
       </div>
 
       <div class="drivers-container">
-        <div *ngFor="let driver of availableDrivers" 
-              class="driver-card" 
-              [class.selected-driver]="selectedDriver?.id === driver.id"
-              (click)="selectDriver(driver.id)">
+        <div *ngFor="let driver of availableDrivers" class="driver-card"
+          [class.selected-driver]="selectedDriver?.id === driver.id" (click)="selectDriver(driver.id)">
           <div class="driver-header">
             <div class="driver-avatar">
               <span>{{driver.name.charAt(0)}}</span>
@@ -164,12 +170,13 @@
           </div>
           <div class="driver-details">
             <p><strong>Experience:</strong> {{driver.experience}} years</p>
-            <p><strong>Rate:</strong> ${{driver.hourlyRate}}/hour</p>
+            <p><strong>Rate:</strong> ₹{{driver.hourlyRate}}/hour</p>
           </div>
         </div>
       </div>
 
-      <div class="error-message selection-error" *ngIf="driverControls['driverId'].touched && driverControls['driverId'].errors?.['required']">
+      <div class="error-message selection-error"
+        *ngIf="driverControls['driverId'].touched && driverControls['driverId'].errors?.['required']">
         Please select a driver
       </div>
 
@@ -180,9 +187,10 @@
     </div>
 
     <!-- Step 3: Payment -->
+    <!-- Replace the existing payment form section with this UPI payment section -->
     <div class="form-step" *ngIf="currentStep === 3">
       <h2>Payment</h2>
-      
+
       <div class="booking-summary">
         <h3>Booking Summary</h3>
         <div *ngIf="selectedDriver" class="summary-content">
@@ -206,76 +214,82 @@
             <span>Duration:</span>
             <span>{{tripDetailsForm.get('estimatedDuration')?.value}} hours</span>
           </div>
-          <!-- Include selected vehicle in the booking summary -->
-<div class="summary-row" *ngIf="selectedVehicle">
-  <span>Vehicle:</span>
-  <span>{{selectedVehicle.model}} ({{selectedVehicle.carNumber}})</span>
-</div>
+          <div class="summary-row" *ngIf="selectedVehicle">
+            <span>Vehicle:</span>
+            <span>{{selectedVehicle.model}} ({{selectedVehicle.carNumber}})</span>
+          </div>
           <div class="summary-row total">
             <span>Total Cost:</span>
-            <span>${{totalCost}}</span>
+            <span>₹{{totalCost}}</span>
           </div>
         </div>
       </div>
 
       <form [formGroup]="paymentForm">
-        <h3>Payment Details</h3>
-        <div class="form-row">
+        <h3>UPI Payment</h3>
+        <div class="upi-payment-container">
+          <div class="upi-qr-section">
+            <div class="qr-code-container">
+              <!-- Show QR code if available, otherwise show loading or error message -->
+              <img 
+                *ngIf="upiQrCodeSrc" 
+                [src]="upiQrCodeSrc" 
+                alt="UPI QR Code" 
+                class="qr-code-image">
+              
+              <div *ngIf="!upiQrCodeSrc" class="qr-code-placeholder">
+                <div class="qr-loading">Generating payment QR code...</div>
+              </div>
+              
+              <p>Scan with any UPI app to pay</p>
+            </div>
+            
+            <div class="upi-details">
+              <p><strong>UPI ID:</strong> harshmistry159&#64;okhdfcbank</p>
+              <p><strong>Amount:</strong> ₹{{totalCost}}</p>
+              <p><strong>Reference:</strong> {{bookingReference}}</p>
+              
+              <!-- Add a click-to-pay option for mobile users -->
+              <a 
+                *ngIf="upiDeepLink" 
+                [href]="upiDeepLink" 
+                class="upi-pay-button" 
+                target="_blank">
+                Click to Pay via UPI App
+              </a>
+            </div>
+          </div>
+          <div class="payment-confirmation">
+            <label class="payment-confirmation-checkbox">
+              <input type="checkbox" formControlName="paymentConfirmed">
+              I confirm that I have completed the payment
+            </label>
+            <div class="error-message"
+              *ngIf="paymentControls['paymentConfirmed'].touched && !paymentControls['paymentConfirmed'].value">
+              Please confirm payment to continue
+            </div>
+          </div>
+          
           <div class="form-group full-width">
-            <label for="cardholderName">Cardholder Name</label>
-            <input id="cardholderName" type="text" class="form-control" formControlName="cardholderName">
-            <div class="error-message" *ngIf="paymentControls['cardholderName'].touched && paymentControls['cardholderName'].errors?.['required']">
-              Cardholder name is required
+            <label for="paymentScreenshot">Upload Payment Screenshot</label>
+            <input 
+              id="paymentScreenshot" 
+              type="file" 
+              class="form-control" 
+              (change)="onFileSelected($event)" 
+              accept="image/*">
+            <div class="error-message" *ngIf="fileError">
+              {{ fileError }}
             </div>
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group full-width">
-            <label for="cardNumber">Card Number</label>
-            <input id="cardNumber" type="text" class="form-control" formControlName="cardNumber" placeholder="1234 5678 9012 3456" maxlength="16">
-            <div class="error-message" *ngIf="paymentControls['cardNumber'].touched && paymentControls['cardNumber'].errors?.['required']">
-              Card number is required
-            </div>
-            <div class="error-message" *ngIf="paymentControls['cardNumber'].touched && paymentControls['cardNumber'].errors?.['pattern']">
-              Please enter a valid 16-digit card number
-            </div>
-          </div>
-        </div>
-
-        <div class="form-row card-details">
-          <div class="form-group">
-            <label for="expiryDate">Expiry Date (MM/YY)</label>
-            <input id="expiryDate" type="text" class="form-control" formControlName="expiryDate" placeholder="MM/YY" maxlength="5">
-            <div class="error-message" *ngIf="paymentControls['expiryDate'].touched && paymentControls['expiryDate'].errors?.['required']">
-              Expiry date is required
-            </div>
-            <div class="error-message" *ngIf="paymentControls['expiryDate'].touched && paymentControls['expiryDate'].errors?.['pattern']">
-              Please use format MM/YY
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="cvv">CVV</label>
-            <input id="cvv" type="password" class="form-control" formControlName="cvv" maxlength="4">
-            <div class="error-message" *ngIf="paymentControls['cvv'].touched && paymentControls['cvv'].errors?.['required']">
-              CVV is required
-            </div>
-            <div class="error-message" *ngIf="paymentControls['cvv'].touched && paymentControls['cvv'].errors?.['pattern']">
-              Please enter a valid CVV
-            </div>
-          </div>
-        </div>
-
-          <div class="form-actions">
-            <button class="btn btn-secondary" (click)="prevStep()">Back</button>
-            <button 
-              type="button" 
-              class="btn btn-primary"
-              (click)="submitBooking()" 
-              [disabled]="!isPaymentValid() || isLoading">
-              {{ isLoading ? 'Processing...' : 'Confirm Booking' }}
-            </button>
+        <div class="form-actions">
+          <button class="btn btn-secondary" (click)="prevStep()">Back</button>
+          <button type="button" class="btn btn-primary" (click)="submitBooking()"
+            [disabled]="!isPaymentValid() || isLoading || !isFileUploaded()">
+            {{ isLoading ? 'Processing...' : 'Confirm Booking' }}
+          </button>
         </div>
       </form>
     </div>

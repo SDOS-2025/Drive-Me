@@ -8,6 +8,7 @@ import { DriverService } from '../../services/driver.service';
 import { BookingRequest, BookingService } from '../../services/bookings.service';
 import { VehicleService, BackendVehicle } from '../../services/vehicle.service';
 import { Router } from '@angular/router';
+import * as QRCode from 'qrcode';
 
 interface Driver {
   id: number;
@@ -35,6 +36,17 @@ interface Driver {
   providers: [BookingService, AuthService, DriverService, VehicleService],
 })
 export class DriverBookingComponent implements OnInit {
+
+  // Add these properties to your component class
+  upiQrCodeSrc: string = '';
+  upiDeepLink: string = '';
+  bookingReference: string = '';
+
+  // Payment confirmation
+  fileError: string = '';
+  selectedFile: File = new File([], '');
+
+  //Form Details
   bookingForm!: FormGroup;
   tripDetailsForm!: FormGroup;
   driverSelectionForm!: FormGroup;
@@ -50,7 +62,7 @@ export class DriverBookingComponent implements OnInit {
   drivers: Driver[] = [];
   availableDrivers: Driver[] = [];
   selectedDriver: Driver | null = null;
-  
+
   // User's vehicles
   userVehicles: BackendVehicle[] = [];
   selectedVehicle: BackendVehicle | null = null;
@@ -70,6 +82,62 @@ export class DriverBookingComponent implements OnInit {
     console.log('Component constructor called');
   }
 
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+
+      // Validate file type (must be an image)
+      if (!file.type.startsWith('image/')) {
+        this.fileError = 'Please upload a valid image file.';
+        return;
+      }
+
+      // Validate file size (e.g., max 5MB)
+      const maxSizeInMB = 5;
+      if (file.size > maxSizeInMB * 1024 * 1024) {
+        this.fileError = `File size must not exceed ${maxSizeInMB} MB.`;
+        return;
+      }
+
+      this.fileError = '';
+      this.selectedFile = file;
+    }
+  }
+  generateUpiQrCode(): void {
+    if (!this.totalCost) {
+      return;
+    }
+
+    // Create a unique reference ID for this booking
+    this.bookingReference = `DRIVEME${this.userId}${new Date().getTime().toString().slice(-6)}`;
+
+    // Calculate the amount in INR
+    const amountInr = Math.round(this.totalCost);
+
+    // Create UPI deep link
+    this.upiDeepLink = `upi://pay?pa=harshmistry159@okhdfcbank&pn=DriveMe&am=${amountInr}&cu=INR&tn=${this.bookingReference}`;
+
+    // Generate QR code
+    QRCode.toDataURL(this.upiDeepLink, {
+      errorCorrectionLevel: 'H',
+      margin: 1,
+      width: 250,
+      color: {
+        dark: '#18004c',  // Use your app's primary color
+        light: '#ffffff'
+      }
+    })
+      .then(url => {
+        this.upiQrCodeSrc = url;
+      })
+      .catch(err => {
+        console.error('Error generating QR code:', err);
+        this.errorMessage = 'Failed to generate payment QR code';
+      });
+  }
+
+
   ngOnInit(): void {
     console.log('ngOnInit called');
     try {
@@ -82,7 +150,7 @@ export class DriverBookingComponent implements OnInit {
       // Set min date to today
       const today = new Date();
       this.minDate = today.toISOString().split('T')[0];
-      
+
       // Form subscriptions
       if (this.tripDetailsForm) {
         this.tripDetailsForm.valueChanges.subscribe(() => {
@@ -117,7 +185,7 @@ export class DriverBookingComponent implements OnInit {
         console.log('User vehicles filtered:', this.userVehicles);
         console.log('User ID for filtering:', this.userId);
         this.isLoading = false;
-        
+
         // If there's only one vehicle, automatically select it
         if (this.userVehicles.length === 1) {
           this.selectVehicle(this.userVehicles[0].id);
@@ -144,10 +212,10 @@ export class DriverBookingComponent implements OnInit {
           name: driver.name,
           rating: 4.5,
           experience: 3, // Default if not available from API
-          hourlyRate: 25, // Default if not available from API
+          hourlyRate: 150, // Default if not available from API
           available: driver.status === 'AVAILABLE'
         }));
-        
+
         // Filter available drivers
         this.updateAvailableDrivers();
         this.isLoading = false;
@@ -156,7 +224,7 @@ export class DriverBookingComponent implements OnInit {
         console.error('Error fetching drivers', error);
         this.errorMessage = 'Failed to load drivers. Please try again.';
         this.isLoading = false;
-        
+
         // Fallback to sample data if API fails
         this.updateAvailableDrivers();
       }
@@ -180,12 +248,9 @@ export class DriverBookingComponent implements OnInit {
       driverId: [null, Validators.required]
     });
 
-    // Payment form
+    // Payment form - simplified for UPI payment
     this.paymentForm = this.fb.group({
-      cardholderName: ['', Validators.required],
-      cardNumber: ['', [Validators.required, Validators.pattern('^[0-9]{16}$')]],
-      expiryDate: ['', [Validators.required, Validators.pattern('^(0[1-9]|1[0-2])\/[0-9]{2}$')]],
-      cvv: ['', [Validators.required, Validators.pattern('^[0-9]{3,4}$')]]
+      paymentConfirmed: [false, Validators.requiredTrue]
     });
 
     // Combined booking form
@@ -209,18 +274,18 @@ export class DriverBookingComponent implements OnInit {
 
   selectVehicle(vehicleId: any): void {
     console.log('selectVehicle called with ID:', vehicleId);
-    
+
     if (!vehicleId) {
       console.log('No vehicle ID provided, clearing selection');
       this.selectedVehicle = null;
       return;
     }
-    
+
     // Convert string to number if needed
     const id = typeof vehicleId === 'string' ? parseInt(vehicleId, 10) : vehicleId;
     console.log('Looking for vehicle with ID:', id);
     console.log('Available vehicles:', this.userVehicles);
-    
+
     this.selectedVehicle = this.userVehicles.find(v => v.id === id) || null;
     console.log('Found and selected vehicle:', this.selectedVehicle);
   }
@@ -229,8 +294,10 @@ export class DriverBookingComponent implements OnInit {
     if (this.selectedDriver && this.tripDetailsForm.get('estimatedDuration')?.valid) {
       const hours = this.tripDetailsForm.get('estimatedDuration')?.value;
       this.totalCost = this.selectedDriver.hourlyRate * hours;
+      this.generateUpiQrCode(); // Generate QR code whenever cost is calculated
     } else {
       this.totalCost = 0;
+      this.upiQrCodeSrc = ''; // Clear QR code if no valid driver or duration
     }
   }
 
@@ -251,7 +318,7 @@ export class DriverBookingComponent implements OnInit {
         estimatedDuration: this.tripDetailsForm.get('estimatedDuration')?.value,
       };
 
-      this.bookingService.createBooking(bookingRequest).subscribe({
+      this.bookingService.createBooking(bookingRequest, this.selectedFile).subscribe({
         next: (bookingResponse) => {
           console.log('Booking created:', bookingResponse);
           this.bookingSuccess = true;
@@ -287,6 +354,7 @@ export class DriverBookingComponent implements OnInit {
       this.currentStep++;
     } else if (this.currentStep === 2 && this.driverSelectionForm.valid) {
       this.currentStep++;
+      this.generateUpiQrCode();
     }
   }
 
@@ -335,6 +403,10 @@ export class DriverBookingComponent implements OnInit {
   }
 
   isPaymentValid(): boolean {
-    return this.paymentForm.valid;
+    return this.paymentForm.get('paymentConfirmed')?.value === true;
+  }
+
+  isFileUploaded(): boolean {
+    return this.selectedFile && this.selectedFile.size > 0;
   }
 }

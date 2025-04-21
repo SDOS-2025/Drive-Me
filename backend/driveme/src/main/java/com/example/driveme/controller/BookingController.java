@@ -1,10 +1,14 @@
 package com.example.driveme.controller;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +23,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.driveme.model.Booking;
 import com.example.driveme.model.Booking.BookingStatus;
 import com.example.driveme.model.Driver;
+import com.example.driveme.model.Payment;
 import com.example.driveme.model.User;
 import com.example.driveme.model.Vehicle;
 import com.example.driveme.repository.BookingRepository;
@@ -49,7 +56,9 @@ public class BookingController {
 
     @SuppressWarnings("unchecked")
     @PostMapping
-    public ResponseEntity<?> createBooking(@RequestBody Map<String, Object> bookingRequest) {
+    public ResponseEntity<?> createBooking(
+            @RequestPart("bookingRequest") Map<String, Object> bookingRequest,
+            @RequestPart("paymentScreenshot") MultipartFile paymentScreenshot) {
         try {
             // Extract IDs from the request
             Map<String, Object> customerMap = (Map<String, Object>) bookingRequest.get("customer");
@@ -79,6 +88,18 @@ public class BookingController {
             booking.setDropoffLocation((String) bookingRequest.get("dropoffLocation"));
             booking.setPickUpDateTime((String) bookingRequest.get("pickupDateTime"));
             booking.setEstimatedDuration(Integer.valueOf(bookingRequest.get("estimatedDuration").toString()));
+
+            // Save the payment screenshot to a directory
+            String uploadDir = "uploads/payment-screenshots/";
+            String fileName = UUID.randomUUID().toString() + "_" + paymentScreenshot.getOriginalFilename();
+            Path filePath = Paths.get(uploadDir, fileName);
+            Files.createDirectories(filePath.getParent());
+            Files.write(filePath, paymentScreenshot.getBytes());
+
+            Payment payment = new Payment();
+            payment.setBooking(booking);
+            payment.setAmount(new BigDecimal(bookingRequest.get("fare").toString()));
+            payment.setPaymentScreenshot(fileName);
 
             // Convert fare to BigDecimal
             Object fareObj = bookingRequest.get("fare");
