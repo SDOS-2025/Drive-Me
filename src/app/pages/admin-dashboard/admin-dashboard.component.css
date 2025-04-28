@@ -378,3 +378,74 @@
     max-width: 200px;
   }
 }
+/* Add these styles to the existing CSS file */
+
+/* Booking status badges */
+.status-badge.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.confirmed {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.status-badge.in_progress {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-badge.completed {
+  background-color: #d1fae5;
+  color: #047857;
+}
+
+.status-badge.cancelled {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Booking details styling */
+.booking-details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-row {
+  display: flex;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 0.75rem;
+}
+
+.detail-label {
+  font-weight: 600;
+  width: 40%;
+  color: #4b5563;
+}
+
+.detail-value {
+  width: 60%;
+}
+
+.payment-screenshot {
+  margin-top: 1.5rem;
+}
+
+.payment-screenshot h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  color: #18004c;
+}
+
+.screenshot-img {
+  max-width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.action-btn.view:hover {
+  background-color: #f0f9ff;
+}

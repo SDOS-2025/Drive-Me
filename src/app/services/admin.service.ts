@@ -40,7 +40,7 @@ export class AdminService {
 
     updateDriver(driverId: number, driverData: any): Observable<any> {
         const headers = this.getAuthHeaders();
-        return this.http.put(`${this.apiUrl}/admin/update-driver/${driverId}`,  driverData, { headers });
+        return this.http.put(`${this.apiUrl}/admin/update-driver/${driverId}`, driverData, { headers });
     }
 
     deleteDriver(driverId: number): Observable<any> {
@@ -59,12 +59,26 @@ export class AdminService {
         return this.http.get(`${this.apiUrl}/admin/bookings/${bookingId}`, { headers });
     }
 
+    getImageUrl(filename: string): Observable<any> {
+        const token = localStorage.getItem('token');
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${token}`
+        });
+        return this.http.get(`${this.apiUrl}/admin/payment-screenshots/${filename}`, { headers, responseType: 'blob' });
+    }
+    // Add this to the admin.service.ts file
+    updateBookingStatus(bookingId: number, status: string): Observable<any> {
+        const headers = this.getAuthHeaders();
+        const body = { status};
+        return this.http.put(`${this.apiUrl}/admin/bookings/${bookingId}/status`, body, { headers });
+    }
+
     private getAuthHeaders(): HttpHeaders {
         const token = localStorage.getItem('token');
         console.log('token', token);
         return new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
         });
-      }
+    }
 }

@@ -101,6 +101,8 @@ public class BookingController {
             payment.setAmount(new BigDecimal(bookingRequest.get("fare").toString()));
             payment.setPaymentScreenshot(fileName);
 
+            booking.setPayments(List.of(payment));
+
             // Convert fare to BigDecimal
             Object fareObj = bookingRequest.get("fare");
             BigDecimal fare;
