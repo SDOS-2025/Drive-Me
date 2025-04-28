@@ -42,16 +42,15 @@
             <div class="settings-card-body">
               <div class="profile-info">
                 <div class="user-avatar">
-                  {{userName.charAt(0)}}
+                  <img [src]="userAvatar" alt="User Avatar" class="avatar">
                 </div>
                 <div class="user-details">
                   <div class="user-name">{{userName}}</div>
-                  <div class="user-email">{{userEmail}}</div>
-                  <div class="user-type">{{userType | titlecase}}</div>
+                  <div class="user-id">User ID: {{userId}}</div>
                 </div>
               </div>
               <div class="form-action">
-                <button class="btn-secondary">Edit Profile</button>
+                <button class="btn-secondary" (click)="openEditProfileModal()">Edit Profile</button>
               </div>
             </div>
           </div>
@@ -153,6 +152,89 @@
           </div>
         </div>
         
+<div class="modal-backdrop" *ngIf="showEditProfileModal" (click)="closeEditProfileModal()"></div>
+<div class="modal" *ngIf="showEditProfileModal">
+  <div class="modal-header">
+    <h2>Edit Profile</h2>
+    <button class="close-btn" (click)="closeEditProfileModal()">&times;</button>
+  </div>
+  
+  <div class="modal-body">
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+      <!-- Profile Picture Upload -->
+      <div class="profile-picture-upload">
+        <div class="current-picture">
+          <img [src]="profileImagePreview || userAvatar" alt="Profile Picture" class="preview-image">
+        </div>
+        
+        <div class="upload-controls">
+          <label for="profile-picture-upload" class="upload-btn">
+            <span class="upload-icon">📷</span> Change Photo
+          </label>
+          <input 
+            type="file" 
+            id="profile-picture-upload" 
+            accept="image/*"
+            (change)="onProfilePictureSelected($event)"
+            style="display: none;">
+          
+          <button 
+            type="button" 
+            class="remove-photo-btn" 
+            *ngIf="profileImagePreview"
+            (click)="removeProfilePicture()">
+            Remove
+          </button>
+        </div>
+        
+        <div class="error-message" *ngIf="profilePictureError">
+          {{ profilePictureError }}
+        </div>
+      </div>
+      
+      <!-- Personal Information -->
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input 
+          type="text" 
+          id="fullName" 
+          formControlName="fullName"
+          class="form-control"
+          placeholder="Enter your full name">
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email"
+          class="form-control"
+          placeholder="Enter your email address">
+      </div>
+      
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input 
+          type="tel" 
+          id="phone" 
+          formControlName="phone"
+          class="form-control"
+          placeholder="Enter your phone number">
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeEditProfileModal()">Cancel</button>
+        <button 
+          type="submit" 
+          class="btn-primary" 
+          [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
         <!-- Privacy Settings -->
         <div class="settings-section" *ngIf="activeTab === 'privacy'">
           <h3>Privacy Settings</h3>
@@ -282,18 +364,6 @@
             </div>
           </div>
           
-          <div class="settings-card">
-            <div class="settings-card-header">
-              <h4>Two-Factor Authentication</h4>
-            </div>
-            <div class="settings-card-body">
-              <p class="setting-description">Enable two-factor authentication to add an extra layer of security to your account.</p>
-              <div class="form-action">
-                <button class="btn-secondary">Enable 2FA</button>
-              </div>
-            </div>
-          </div>
-          
           <div class="settings-card danger-zone">
             <div class="settings-card-header">
               <h4>Account Actions</h4>
@@ -311,7 +381,7 @@
         </div>
       </div>
     </div>
-    
+    <!-- Profile Edit Modal -->
     <div class="settings-footer" *ngIf="activeTab !== 'security'">
       <button class="btn-primary" (click)="saveSettings()">Save Settings</button>
     </div>

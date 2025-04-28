@@ -42,6 +42,9 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
+    private String profilePicturePath = "backend/driveme/src/main/resources/images/default-image.jpg";
+
     @NotBlank(message = "Phone number is required")
     @Pattern(regexp = "^\\d{10}$", message = "Phone number must be 10 digits")
     @Column(unique = true, nullable = false)
@@ -160,6 +163,15 @@ public class User implements UserDetails {
 
     public String getEmail() {
         return email;
+    }
+
+    public User setProfilePicturePath(String profilePicturePath) {
+        this.profilePicturePath = profilePicturePath;
+        return this;
+    }
+
+    public String getProfilePicturePath() {
+        return profilePicturePath;
     }
 
     public User setEmail(String email) {

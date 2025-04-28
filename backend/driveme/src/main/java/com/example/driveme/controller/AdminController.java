@@ -387,7 +387,7 @@ public class AdminController {
     // Get screenshot
     @GetMapping("/payment-screenshots/{filename}")
     public ResponseEntity<Resource> getScreenshot(@PathVariable String filename) throws MalformedURLException {
-        Path filePath = Paths.get("D:/Programming/Git/Drive-Me/uploads/payment-screenshots").resolve(filename)
+        Path filePath = Paths.get("uploads/payment-screenshots").resolve(filename)
                 .normalize();
         Resource resource = new UrlResource(filePath.toUri());
 
