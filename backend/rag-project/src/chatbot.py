@@ -18,7 +18,7 @@ def chat():
         return jsonify({'error': 'No message provided'}), 400
 
     response = rag_model.generate_response(user_input, False)
-    return jsonify({'response': response})
+    return jsonify({'response': response}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

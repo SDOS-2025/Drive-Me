@@ -58,30 +58,27 @@
           <div class="day-separator">
             <span>Today</span>
           </div>
-          
+        
           <div *ngFor="let message of messages" 
                [ngClass]="{'message-item': true, 'user-message': message.sender === 'user', 'support-message': message.sender === 'support'}">
-            <div class="message-content">
-              {{ message.text }}
-            </div>
+            <div class="message-content" [innerHTML]="message.renderedText"></div>
             <div class="message-time">
               {{ formatTime(message.timestamp) }}
               <span *ngIf="message.sender === 'user'" class="message-status">
-                <!-- Status icons -->
                 <span *ngIf="message.status === 'sent'">✓</span>
                 <span *ngIf="message.status === 'delivered'">✓✓</span>
                 <span *ngIf="message.status === 'read'" class="status-read">✓✓</span>
               </span>
             </div>
           </div>
-          
+        
           <div *ngIf="isTyping" class="typing-indicator">
             <div class="typing-bubble"></div>
             <div class="typing-bubble"></div>
             <div class="typing-bubble"></div>
           </div>
         </div>
-        
+
         <div class="chat-input">
           <input 
             type="text" 

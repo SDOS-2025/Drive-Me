@@ -29,6 +29,37 @@ export class UserBookingService {
 
   constructor(private http: HttpClient) { }
 
+  // Get User's profile details
+  getUserProfile(): Observable<UserDetails> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<UserDetails>(`${this.apiUrl}/users/my-profile`, { headers });
+  }
+
+  // Get profile picture
+  getProfilePicture(filename: String): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get(`${this.apiUrl}/users/my-profile/profile/${filename}`, { headers, responseType: 'blob' });
+  }
+
+  // Update User's profile
+  updateUserProfile(userData: any, profilePicture: File): Observable<any> {
+    const headers = {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+
+    const formData = new FormData();
+    formData.append('userDetails', new Blob(
+      [JSON.stringify(userData)],
+      { type: 'application/json' }
+    ));
+
+    if (profilePicture) {
+      formData.append('profilePicture', profilePicture);
+    }
+
+    return this.http.put<any>(`${this.apiUrl}/users/my-profile/update`, userData, { headers });
+  }
+
   // Get all bookings for the current user
   getUserBookings(): Observable<BookingSummary[]> {
     const headers = this.getAuthHeaders();

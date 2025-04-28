@@ -240,7 +240,7 @@
   }
   
   .message-content {
-    padding: 12px 15px;
+    padding: 12px 25px;
     border-radius: 18px;
     line-height: 1.4;
   }
@@ -370,7 +370,7 @@
   }
   
   /* Responsive design */
-  @media (max-width: 768px) {
+  /* @media (max-width: 768px) {
     .support-container {
       flex-direction: column;
       height: auto;
@@ -390,4 +390,54 @@
     .message-item {
       max-width: 85%;
     }
+  } */
+  .message-content {
+    word-wrap: break-word;
+    line-height: 1.5;
+  }
+  
+  .message-content p {
+    margin: 0 0 8px;
+  }
+  
+  .message-content ul,
+  .message-content ol {
+    margin: 8px 0;
+    padding-left: 30px; /* Increase padding to indent the list properly */
+  }
+  
+  .message-content li {
+    margin-bottom: 4px;
+    padding-left: 5px; /* Add padding to the left of the list item text */
+    position: relative; /* Ensure proper positioning for nested lists */
+  }
+  
+  .message-content ol li {
+    list-style-position: outside; /* Ensure the number is outside the text block */
+  }
+  
+  .message-content strong {
+    font-weight: bold;
+  }
+  
+  .message-content em {
+    font-style: italic;
+  }
+  
+  .message-content a {
+    color: #007bff;
+    text-decoration: underline;
+  }
+  
+  .message-content code {
+    background-color: #f4f4f4;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+  
+  .message-content pre {
+    background-color: #f4f4f4;
+    padding: 8px;
+    border-radius: 4px;
+    overflow-x: auto;
   }
