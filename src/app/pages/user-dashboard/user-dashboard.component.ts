@@ -29,16 +29,16 @@ export class UserDashboardComponent implements OnInit {
   userName: string = 'Sarah';
   isLoading: boolean = false;
   errorMessage: string = '';
-  
+
   // All bookings from the backend
   allBookings: BookingSummary[] = [];
-  
+
   // Upcoming/Active bookings (PENDING or CONFIRMED)
   upcomingBookings: BookingSummary[] = [];
-  
+
   // Past bookings (COMPLETED or CANCELLED)
   pastBookings: BookingSummary[] = [];
-  
+
   // Tabs for switching between booking views
   activeTab: 'upcoming' | 'past' | 'all' = 'upcoming';
 
@@ -46,20 +46,20 @@ export class UserDashboardComponent implements OnInit {
     { label: 'Dashboard', active: true },
     { label: 'My Bookings', route: '/my-bookings' },
     { label: 'Find Driver', route: '/find-driver' },
-    { label: 'My Vehicles', route: '/my-vehicles'},
+    { label: 'My Vehicles', route: '/my-vehicles' },
     { label: 'Support', route: '/chat-support' },
     { label: 'Settings', route: '/settings' },
   ];
-  
+
   stats = [
     { title: 'Total Rides', value: '0' },
     { title: 'Upcoming Rides', value: '0' },
     { title: 'Total Spent', value: '₹0' },
   ];
-  
+
   // Keep original sample data for top drivers and activities
-  topDrivers = [ {name: 'John Doe', number: '1234567890', icon: "👤"} ];
-  
+  topDrivers = [{ name: 'John Doe', number: '1234567890', icon: "👤" }];
+
   recentActivities: Activity[] = []
 
   showReviewModal: boolean = false;
@@ -69,14 +69,14 @@ export class UserDashboardComponent implements OnInit {
   reviewSubmitted: boolean = false;
   reviewError: string = '';
   isSubmittingReview: boolean = false;
-  
+
   constructor(
     private userBookingService: UserBookingService,
     private authService: AuthService,
     private driverService: DriverService,
     private ngZone: NgZone
-  ) {}
-  
+  ) { }
+
   ngOnInit(): void {
     this.loadUserData();
     this.loadBookings();
@@ -102,13 +102,13 @@ export class UserDashboardComponent implements OnInit {
       }
     });
   }
-  
+
   loadUserData(): void {
     const user = this.authService.currentUserValue;
     if (user && user.fullName) {
       this.userName = user.fullName.split(' ')[0];
     }
-  } 
+  }
 
   loadBookings(): void {
     this.isLoading = true;
@@ -129,17 +129,17 @@ export class UserDashboardComponent implements OnInit {
         this.recentActivities = activities.sort((a, b) => {
           return new Date(b.date!).getTime() - new Date(a.date!).getTime();
         }).slice(0, 3); // Limit to 5 recent activities
-        
+
         // Filter upcoming bookings (PENDING or CONFIRMED)
-        this.upcomingBookings = bookings.filter((booking: { status: string; }) => 
+        this.upcomingBookings = bookings.filter((booking: { status: string; }) =>
           booking.status === 'PENDING' || booking.status === 'CONFIRMED'
         );
-        
+
         // Filter past bookings (COMPLETED or CANCELLED)
-        this.pastBookings = bookings.filter((booking: { status: string; }) => 
+        this.pastBookings = bookings.filter((booking: { status: string; }) =>
           booking.status === 'COMPLETED' || booking.status === 'CANCELLED'
         );
-        
+
         // Update stats
         this.updateStats(bookings);
         this.isLoading = false;
@@ -151,7 +151,7 @@ export class UserDashboardComponent implements OnInit {
         this.isLoading = false;
       }
     });
-  } 
+  }
 
   async loadStats() {
     try {
@@ -160,16 +160,16 @@ export class UserDashboardComponent implements OnInit {
         this.userBookingService.getConfirmedBookings().toPromise(),
         this.userBookingService.getCompletedBookings().toPromise()
       ]);
-      
+
       // Update stats with real data
       if (all) {
         this.stats[0].value = all.length.toString();
       }
-      
+
       if (confirmed) {
         this.stats[1].value = confirmed.length.toString();
       }
-      
+
       if (completed) {
         // Calculate total spent from completed bookings
         const totalSpent = completed.reduce((sum: any, booking: { fare: any; }) => sum + booking.fare, 0);
@@ -179,17 +179,17 @@ export class UserDashboardComponent implements OnInit {
       console.error('Error loading stats:', error);
     }
   }
-  
+
   convertBookingsToActivities(bookings: BookingSummary[]): Activity[] {
     return bookings.map(booking => {
       let activity: Activity;
       const bookingDate = booking.createdAt ? new Date(booking.createdAt) : new Date();
-      const formattedDate = bookingDate.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+      const formattedDate = bookingDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
       });
-      
+
       switch (booking.status) {
         case 'COMPLETED':
           activity = {
@@ -199,7 +199,7 @@ export class UserDashboardComponent implements OnInit {
             bookingId: booking.bookingId
           };
           break;
-        
+
         case 'CONFIRMED':
           activity = {
             title: 'Upcoming Trip',
@@ -208,7 +208,7 @@ export class UserDashboardComponent implements OnInit {
             bookingId: booking.bookingId
           };
           break;
-          
+
         case 'CANCELLED':
           activity = {
             title: 'Cancelled Booking',
@@ -217,7 +217,7 @@ export class UserDashboardComponent implements OnInit {
             bookingId: booking.bookingId
           };
           break;
-          
+
         case 'PAID':
           activity = {
             title: 'Payment Completed',
@@ -226,7 +226,7 @@ export class UserDashboardComponent implements OnInit {
             bookingId: booking.bookingId
           };
           break;
-          
+
         default:
           activity = {
             title: 'Booking Created',
@@ -235,7 +235,7 @@ export class UserDashboardComponent implements OnInit {
             bookingId: booking.bookingId
           };
       }
-      
+
       return activity;
     });
   }
@@ -244,38 +244,38 @@ export class UserDashboardComponent implements OnInit {
     this.upcomingBookings = this.allBookings.filter(
       booking => booking.status === 'PENDING' || booking.status === 'CONFIRMED'
     );
-    
+
     this.pastBookings = this.allBookings.filter(
       booking => booking.status === 'COMPLETED' || booking.status === 'CANCELLED'
     );
   }
-  
+
   // Method to clear error messages
   clearError(): void {
     this.errorMessage = '';
   }
-  
+
   updateStats(bookings: BookingSummary[]): void {
     // Update total rides
     this.stats[0].value = bookings.length.toString();
-    
+
     // Update upcoming rides
     this.stats[1].value = this.upcomingBookings.length.toString();
-    
+
     // Calculate total spent
     const totalSpent = bookings
       .filter(booking => booking.status === 'COMPLETED')
       .reduce((sum, booking) => sum + booking.fare, 0);
     this.stats[2].value = `$${totalSpent}`;
   }
-  
+
   setActiveTab(tab: 'upcoming' | 'past' | 'all'): void {
     console.log('Setting active tab to:', tab);
     this.activeTab = tab;
   }
-  
+
   getStatusColor(status: string): string {
-    switch(status) {
+    switch (status) {
       case 'CONFIRMED': return '#28a745'; // Green
       case 'PENDING': return '#ffc107';   // Yellow
       case 'CANCELLED': return '#dc3545'; // Red
@@ -283,9 +283,9 @@ export class UserDashboardComponent implements OnInit {
       default: return '#6c757d';
     }
   }
-  
+
   getStatusIcon(status: string): string {
-    switch(status) {
+    switch (status) {
       case 'CONFIRMED': return '✓';      // Checkmark
       case 'PENDING': return '⏱';        // Clock
       case 'CANCELLED': return '✗';      // X
@@ -293,7 +293,7 @@ export class UserDashboardComponent implements OnInit {
       default: return '❓';
     }
   }
-  
+
   cancelBooking(bookingId: number): void {
     console.log('Attempting to cancel booking ID:', bookingId);
     if (confirm('Are you sure you want to cancel this booking?')) {
@@ -312,7 +312,7 @@ export class UserDashboardComponent implements OnInit {
       });
     }
   }
-  
+
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -324,103 +324,70 @@ export class UserDashboardComponent implements OnInit {
     });
   }
 
-// Update the testReviewModal method
 
-testReviewModal(): void {
-  console.log('Testing review modal');
-  // Create a sample booking object that matches BookingSummary interface
-  const testBooking: BookingSummary = {
-    bookingId: 999,
-    driverId: 2,
-    driverName: 'Test Driver',
-    pickupLocation: 'Test Pickup',
-    dropoffLocation: 'Test Destination',
-    pickupTime: new Date().toISOString(),
-    status: 'COMPLETED',
-    fare: 100,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-  
-  // Use NgZone to ensure Angular detects the change
-  this.ngZone.run(() => {
-    this.selectedBooking = testBooking;
-    this.showReviewModal = true;
+  // Add these console logs to the openReviewModal method
+  openReviewModal(booking: BookingSummary): void {
+    console.log('openReviewModal called with booking:', booking);
+    this.selectedBooking = booking;
     this.reviewSubmitted = false;
     this.rating = 0;
     this.reviewComment = '';
     this.reviewError = '';
-    
-    // Force log to console
-    console.log('%c MODAL TEST: showReviewModal set to ' + this.showReviewModal, 'background: #222; color: #bada55; font-size: 16px');
-    
-    // Also try window.alert for debugging
-    window.alert('Modal test triggered. showReviewModal = ' + this.showReviewModal);
-  });
-}
-  // Add these console logs to the openReviewModal method
-openReviewModal(booking: BookingSummary): void {
-  console.log('openReviewModal called with booking:', booking);
-  this.selectedBooking = booking;
-  this.reviewSubmitted = false;
-  this.rating = 0;
-  this.reviewComment = '';
-  this.reviewError = '';
-  this.showReviewModal = true;
-  console.log('showReviewModal set to:', this.showReviewModal);
-}
-
-// Add logging to closeReviewModal
-closeReviewModal(event: Event): void {
-  console.log('closeReviewModal called, event target:', (event.target as HTMLElement).className);
-  // Only close if clicking on backdrop or close button
-  if (
-    (event.target as HTMLElement).className === 'review-modal-backdrop' || 
-    (event.target as HTMLElement).className === 'review-modal-close'
-  ) {
-    this.showReviewModal = false;
-    this.selectedBooking = null;
-    console.log('Modal closed, showReviewModal set to:', this.showReviewModal);
+    this.showReviewModal = true;
+    console.log('showReviewModal set to:', this.showReviewModal);
   }
-}
 
-// Add logging to setRating
-setRating(value: number): void {
-  console.log('setRating called with value:', value);
-  this.rating = value;
-}
-
-// Add logging to submitReview
-submitReview(): void {
-  console.log('submitReview called, rating:', this.rating, 'comment:', this.reviewComment);
-  
-  if (this.rating === 0) {
-    this.reviewError = 'Please select a rating before submitting';
-    console.log('Rating validation failed');
-    return;
-  }
-  
-  if (!this.selectedBooking) {
-    this.reviewError = 'Unable to identify booking for review';
-    console.log('No booking selected');
-    return;
-  }
-  
-  this.isSubmittingReview = true;
-  console.log('Submitting review...');
-  
-  // Simulated API call
-  setTimeout(() => {
-    console.log('Review submission completed');
-    this.isSubmittingReview = false;
-    this.reviewSubmitted = true;
-    
-    // After showing success message for 2 seconds, close the modal
-    setTimeout(() => {
-      console.log('Closing modal after successful submission');
+  // Add logging to closeReviewModal
+  closeReviewModal(event: Event): void {
+    console.log('closeReviewModal called, event target:', (event.target as HTMLElement).className);
+    // Only close if clicking on backdrop or close button
+    if (
+      (event.target as HTMLElement).className === 'review-modal-backdrop' ||
+      (event.target as HTMLElement).className === 'review-modal-close'
+    ) {
       this.showReviewModal = false;
       this.selectedBooking = null;
-    }, 2000);
-  }, 1000);
-}
+      console.log('Modal closed, showReviewModal set to:', this.showReviewModal);
+    }
+  }
+
+  // Add logging to setRating
+  setRating(value: number): void {
+    console.log('setRating called with value:', value);
+    this.rating = value;
+  }
+
+  // Add logging to submitReview
+  submitReview(): void {
+    console.log('submitReview called, rating:', this.rating, 'comment:', this.reviewComment);
+
+    if (this.rating === 0) {
+      this.reviewError = 'Please select a rating before submitting';
+      console.log('Rating validation failed');
+      return;
+    }
+
+    if (!this.selectedBooking) {
+      this.reviewError = 'Unable to identify booking for review';
+      console.log('No booking selected');
+      return;
+    }
+
+    this.isSubmittingReview = true;
+    console.log('Submitting review...');
+
+    // Simulated API call
+    setTimeout(() => {
+      console.log('Review submission completed');
+      this.isSubmittingReview = false;
+      this.reviewSubmitted = true;
+
+      // After showing success message for 2 seconds, close the modal
+      setTimeout(() => {
+        console.log('Closing modal after successful submission');
+        this.showReviewModal = false;
+        this.selectedBooking = null;
+      }, 2000);
+    }, 1000);
+  }
 }

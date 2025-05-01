@@ -7,21 +7,6 @@
       <h2>Welcome, {{userName}}!</h2>
     </div>
     
-    <!-- Add this right at the top of your dashboard-content -->
-    <div style="margin: 20px 0; padding: 20px; background-color: #f8f9fa; border-radius: 8px; text-align: center;">
-      <h3>Testing Tools</h3>
-      <button 
-        style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;"
-        (click)="testReviewModal()">
-        TEST REVIEW MODAL
-      </button>
-    </div>
-    <!-- Test Button for Modal -->
-    <div style="margin-bottom: 20px;">
-      <button class="btn btn-primary" (click)="testReviewModal()">
-        Test Review Modal
-      </button>
-    </div>
     
     <!-- Loading and Error Messages -->
     <div *ngIf="isLoading" class="loading-indicator">
