@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { DashboardNavbarComponent } from "../../components/dashboard-navbar/dashboard-navbar.component";
@@ -7,6 +7,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { UserBookingService, BookingSummary } from '../../services/user.service';
 import { DriverService } from '../../services/driver.service';
 import { AuthService } from '../../services/auth.service';
+import { FormsModule } from '@angular/forms';
+
 
 interface Activity {
   title: string;
@@ -18,7 +20,7 @@ interface Activity {
 @Component({
   selector: 'app-user-dashboard',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, DashboardNavbarComponent, RouterModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, SidebarComponent, DashboardNavbarComponent, RouterModule, HttpClientModule],
   providers: [UserBookingService, DriverService],
   templateUrl: './user-dashboard.component.html',
   styleUrls: ['./user-dashboard.component.css']
@@ -59,10 +61,20 @@ export class UserDashboardComponent implements OnInit {
   topDrivers = [ {name: 'John Doe', number: '1234567890', icon: "👤"} ];
   
   recentActivities: Activity[] = []
+
+  showReviewModal: boolean = false;
+  selectedBooking: BookingSummary | null = null;
+  rating: number = 0;
+  reviewComment: string = '';
+  reviewSubmitted: boolean = false;
+  reviewError: string = '';
+  isSubmittingReview: boolean = false;
+  
   constructor(
     private userBookingService: UserBookingService,
     private authService: AuthService,
-    private driverService: DriverService
+    private driverService: DriverService,
+    private ngZone: NgZone
   ) {}
   
   ngOnInit(): void {
@@ -311,4 +323,104 @@ export class UserDashboardComponent implements OnInit {
       minute: '2-digit'
     });
   }
+
+// Update the testReviewModal method
+
+testReviewModal(): void {
+  console.log('Testing review modal');
+  // Create a sample booking object that matches BookingSummary interface
+  const testBooking: BookingSummary = {
+    bookingId: 999,
+    driverId: 2,
+    driverName: 'Test Driver',
+    pickupLocation: 'Test Pickup',
+    dropoffLocation: 'Test Destination',
+    pickupTime: new Date().toISOString(),
+    status: 'COMPLETED',
+    fare: 100,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  // Use NgZone to ensure Angular detects the change
+  this.ngZone.run(() => {
+    this.selectedBooking = testBooking;
+    this.showReviewModal = true;
+    this.reviewSubmitted = false;
+    this.rating = 0;
+    this.reviewComment = '';
+    this.reviewError = '';
+    
+    // Force log to console
+    console.log('%c MODAL TEST: showReviewModal set to ' + this.showReviewModal, 'background: #222; color: #bada55; font-size: 16px');
+    
+    // Also try window.alert for debugging
+    window.alert('Modal test triggered. showReviewModal = ' + this.showReviewModal);
+  });
+}
+  // Add these console logs to the openReviewModal method
+openReviewModal(booking: BookingSummary): void {
+  console.log('openReviewModal called with booking:', booking);
+  this.selectedBooking = booking;
+  this.reviewSubmitted = false;
+  this.rating = 0;
+  this.reviewComment = '';
+  this.reviewError = '';
+  this.showReviewModal = true;
+  console.log('showReviewModal set to:', this.showReviewModal);
+}
+
+// Add logging to closeReviewModal
+closeReviewModal(event: Event): void {
+  console.log('closeReviewModal called, event target:', (event.target as HTMLElement).className);
+  // Only close if clicking on backdrop or close button
+  if (
+    (event.target as HTMLElement).className === 'review-modal-backdrop' || 
+    (event.target as HTMLElement).className === 'review-modal-close'
+  ) {
+    this.showReviewModal = false;
+    this.selectedBooking = null;
+    console.log('Modal closed, showReviewModal set to:', this.showReviewModal);
+  }
+}
+
+// Add logging to setRating
+setRating(value: number): void {
+  console.log('setRating called with value:', value);
+  this.rating = value;
+}
+
+// Add logging to submitReview
+submitReview(): void {
+  console.log('submitReview called, rating:', this.rating, 'comment:', this.reviewComment);
+  
+  if (this.rating === 0) {
+    this.reviewError = 'Please select a rating before submitting';
+    console.log('Rating validation failed');
+    return;
+  }
+  
+  if (!this.selectedBooking) {
+    this.reviewError = 'Unable to identify booking for review';
+    console.log('No booking selected');
+    return;
+  }
+  
+  this.isSubmittingReview = true;
+  console.log('Submitting review...');
+  
+  // Simulated API call
+  setTimeout(() => {
+    console.log('Review submission completed');
+    this.isSubmittingReview = false;
+    this.reviewSubmitted = true;
+    
+    // After showing success message for 2 seconds, close the modal
+    setTimeout(() => {
+      console.log('Closing modal after successful submission');
+      this.showReviewModal = false;
+      this.selectedBooking = null;
+    }, 2000);
+  }, 1000);
+}
 }

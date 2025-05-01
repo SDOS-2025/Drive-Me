@@ -4,13 +4,16 @@ import { Observable } from 'rxjs';
 
 export interface BookingSummary {
   bookingId: number;
+  userId?: number; // Add this as optional with the ? symbol
+  driverId: number;
+  driverName: string;
   pickupLocation: string;
   dropoffLocation: string;
-  createdAt: string;
+  pickupTime: string;
   status: string;
   fare: number;
-  driverName?: string;
-  vehicleModel?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UserDetails {

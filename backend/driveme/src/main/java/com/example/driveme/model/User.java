@@ -50,8 +50,8 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     private String phone;
 
-    @Column(name = "is_superuser")
-    private boolean isSuperuser = false;
+    @Column(name = "is_superuser", nullable = false)
+    private Boolean superuser = false;
 
     @NotBlank(message = "Aadhar card is required")
     @Pattern(regexp = "^\\d{12}$", message = "Aadhar card must be 12 digits")
@@ -60,7 +60,7 @@ public class User implements UserDetails {
 
     // Add rating
     @Column(name = "average_rating" )
-    private double averageRating = 0.0;
+    private Double averageRating = 0.0;
 
     @NotBlank(message = "Password is required")
     @Column(name = "password_hash", nullable = false)
@@ -139,11 +139,11 @@ public class User implements UserDetails {
         return userId;
     }
 
-    public void setAverageRating(double averageRating) {
+    public void setAverageRating(Double averageRating) {
         this.averageRating = averageRating;
     }
 
-    public double getAverageRating() {
+    public Double getAverageRating() {
         return averageRating;
     }
 
@@ -197,13 +197,16 @@ public class User implements UserDetails {
         return this;
     }
 
-    public User superUser(boolean isSuperuser) {
-        this.isSuperuser = isSuperuser;
-        return this;
+    public Boolean getSuperuser() {
+        return superuser;
     }
-
-    public boolean getIsSuperuser() {
-        return isSuperuser;
+    
+    public void setSuperuser(Boolean superuser) {
+        this.superuser = superuser;
+    }
+    
+    public boolean isSuperuser() {
+        return Boolean.TRUE.equals(superuser);
     }
 
     public User setPassword(String password) {
@@ -261,12 +264,12 @@ public class User implements UserDetails {
         return bookings;
     }
 
-    public void setSuperuser(boolean isSuperuser) {
-        this.isSuperuser = isSuperuser;
+    public void setSuperuser(boolean superuser) {
+        this.superuser = superuser;
     }
 
-    public boolean isSuperuser() {
-        return isSuperuser;
+    public boolean superuser() {
+        return superuser;
     }
 
     // Pre-update callback
