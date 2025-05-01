@@ -1,0 +1,505 @@
+/* Base Styles */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 30px;
+  }
+  
+  .section-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 50px;
+    color: #18004c;
+    position: relative;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #18004c, #3a1f78);
+    border-radius: 2px;
+  }
+  
+  /* Features Showcase Section */
+  .features-showcase {
+    padding: 100px 0;
+    background: linear-gradient(180deg, #ffffff 0%, #f7f7fa 100%);
+    position: relative;
+  }
+  
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 40px;
+    margin-top: 60px;
+    perspective: 1000px;
+  }
+  
+  .feature-card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px 30px;
+    box-shadow: 0 10px 30px rgba(24, 0, 76, 0.08);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 20px 40px rgba(24, 0, 76, 0.15);
+    border-color: rgba(24, 0, 76, 0.1);
+  }
+  
+  .feature-icon {
+    width: 100px;
+    height: 100px;
+    background: rgba(24, 0, 76, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    position: relative;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 5px 15px rgba(24, 0, 76, 0.1);
+  }
+  
+  .feature-card:hover .feature-icon {
+    transform: scale(1.1);
+    background: rgba(24, 0, 76, 0.1);
+    box-shadow: 0 8px 20px rgba(24, 0, 76, 0.2);
+  }
+  
+  .feature-icon img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+  }
+  
+  .feature-card h3 {
+    font-size: 1.8rem;
+    margin: 0 0 15px;
+    color: #18004c;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 15px;
+  }
+  
+  .feature-card h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 3px;
+    background-color: #18004c;
+    transition: width 0.3s ease;
+  }
+  
+  .feature-card:hover h3::after {
+    width: 60px;
+  }
+  
+  .feature-card p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #666;
+    margin: 0;
+  }
+  
+  /* How It Works Section */
+  .how-it-works {
+    padding: 100px 0;
+    background: linear-gradient(180deg, #f7f7fa 0%, #ffffff 100%);
+    position: relative;
+  }
+  
+  .steps-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 60px;
+    flex-wrap: wrap;
+    gap: 40px;
+  }
+  
+  .step {
+    position: relative;
+    flex: 1;
+    min-width: 300px;
+    max-width: 350px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+  
+  .step:hover {
+    transform: translateY(-10px);
+  }
+  
+  /* Connector line between steps */
+  .steps-container .step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    top: 30px;
+    right: -20%;
+    width: 40%;
+    height: 4px;
+    background: linear-gradient(90deg, #18004c, #3a1f78);
+    z-index: 0;
+    opacity: 0.3;
+    display: none;
+  }
+  
+  @media (min-width: 992px) {
+    .steps-container .step:not(:last-child)::before {
+      display: block;
+    }
+  }
+  
+  .step-number {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #18004c, #3a1f78);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 10px 20px rgba(24, 0, 76, 0.2);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    border: 4px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .step:hover .step-number {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 15px 30px rgba(24, 0, 76, 0.3);
+    background: linear-gradient(135deg, #3a1f78, #18004c);
+  }
+  
+  .step-number::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #18004c;
+    z-index: -1;
+    opacity: 0.2;
+    transform: scale(1);
+    transition: transform 0.5s ease;
+  }
+  
+  .step:hover .step-number::after {
+    animation: pulse 1.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.2;
+    }
+    50% {
+      transform: scale(1.6);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+  
+  .step-content {
+    width: 100%;
+  }
+  
+  .step-content h3 {
+    font-size: 1.6rem;
+    color: #18004c;
+    margin: 0 0 15px;
+    font-weight: 600;
+  }
+  
+  .step-content p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #666;
+    margin: 0 0 25px;
+  }
+  
+  .step-image-container {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    transition: all 0.4s ease;
+    position: relative;
+  }
+  
+  .step:hover .step-image-container {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
+  }
+  
+  .step-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  .step:hover .step-image {
+    transform: scale(1.1);
+  }
+  
+  /* CTA Banner Section */
+  .cta-banner {
+    background: url('/assets/cta-bg.jpg') center/cover no-repeat;
+    padding: 100px 0;
+    position: relative;
+    overflow: hidden;
+    color: white;
+  }
+  
+  .cta-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(24, 0, 76, 0.85) 0%, rgba(58, 31, 120, 0.9) 100%);
+    z-index: 1;
+  }
+  
+  .cta-banner .container {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+  }
+  
+  .cta-content {
+    flex: 1;
+  }
+  
+  .cta-content h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .cta-content p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin: 0 0 30px;
+    opacity: 0.9;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  }
+  
+  .btn-primary {
+    background: white;
+    color: #18004c;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 15px 30px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: inline-block;
+    text-decoration: none;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    background: #f8f8f8;
+  }
+  
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg, 
+      rgba(255, 255, 255, 0) 0%, 
+      rgba(255, 255, 255, 0.4) 50%, 
+      rgba(255, 255, 255, 0) 100%
+    );
+    transition: left 0.6s ease;
+  }
+  
+  .btn-primary:hover::after {
+    left: 100%;
+  }
+  
+  .cta-image {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .cta-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    transition: all 0.5s ease;
+    transform: perspective(1000px) rotateY(5deg);
+  }
+  
+  .cta-image:hover img {
+    transform: perspective(1000px) rotateY(-5deg);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  }
+  
+  /* Additional Animations */
+  @keyframes float {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes shine {
+    0% {
+      left: -100%;
+      opacity: 0;
+    }
+    20% {
+      left: 100%;
+      opacity: 0.5;
+    }
+    100% {
+      left: 100%;
+      opacity: 0;
+    }
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 992px) {
+    .section-title {
+      font-size: 2.4rem;
+    }
+    
+    .cta-banner .container {
+      flex-direction: column;
+      gap: 30px;
+    }
+    
+    .cta-content, .cta-image {
+      text-align: center;
+      justify-content: center;
+    }
+    
+    .cta-image img {
+      max-width: 80%;
+      transform: none !important;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 2rem;
+    }
+    
+    .features-grid {
+      gap: 30px;
+    }
+    
+    .feature-card {
+      padding: 30px 20px;
+    }
+    
+    .feature-icon {
+      width: 80px;
+      height: 80px;
+    }
+    
+    .feature-icon img {
+      width: 50px;
+      height: 50px;
+    }
+    
+    .feature-card h3 {
+      font-size: 1.6rem;
+    }
+    
+    .feature-card p {
+      font-size: 1rem;
+    }
+    
+    .steps-container {
+      justify-content: center;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .section-title {
+      font-size: 1.8rem;
+    }
+    
+    .features-showcase, .how-it-works {
+      padding: 70px 0;
+    }
+    
+    .feature-card h3 {
+      font-size: 1.4rem;
+    }
+    
+    .step-content h3 {
+      font-size: 1.4rem;
+    }
+    
+    .cta-content h2 {
+      font-size: 1.8rem;
+    }
+    
+    .cta-content p {
+      font-size: 1.1rem;
+    }
+    
+    .btn-primary {
+      font-size: 1rem;
+      padding: 12px 24px;
+    }
+  }
