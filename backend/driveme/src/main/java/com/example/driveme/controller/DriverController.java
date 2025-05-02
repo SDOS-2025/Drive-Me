@@ -55,6 +55,7 @@ public class DriverController {
             status.put("name", driver.getName());
             status.put("phone", driver.getPhone());
             status.put("status", driver.getStatus());
+            status.put("averageRating", driver.getAverageRating());
             
             // Check if driver has any active booking
             List<Booking> activeBookings = bookingRepository.findByDriverAndStatusIn(

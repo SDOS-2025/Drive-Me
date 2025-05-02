@@ -72,7 +72,7 @@
               <span class="status-icon">{{getStatusIcon(booking.status)}}</span>
               {{booking.status}}
             </span>
-            <div class="booking-price">${{booking.fare}}</div>
+            <div class="booking-price">₹{{booking.fare}}</div>
             <button 
               *ngIf="booking.status === 'PENDING' || booking.status === 'CONFIRMED'" 
               class="btn btn-cancel"
@@ -100,7 +100,7 @@
               <span class="status-icon">{{getStatusIcon(booking.status)}}</span>
               {{booking.status}}
             </span>
-            <div class="booking-price">${{booking.fare}}</div>
+            <div class="booking-price">₹{{booking.fare}}</div>
             <button class="btn btn-review" (click)="openReviewModal(booking)">Leave Review</button>
           </div>
         </div>
@@ -145,7 +145,7 @@
               <span class="status-icon">{{getStatusIcon(booking.status)}}</span>
               {{booking.status}}
             </span>
-            <div class="booking-price">${{booking.fare}}</div>
+            <div class="booking-price">₹{{booking.fare}}</div>
             <button 
               *ngIf="booking.status === 'PENDING' || booking.status === 'CONFIRMED'" 
               class="btn btn-cancel"
@@ -154,8 +154,9 @@
             </button>
             <button 
               *ngIf="booking.status === 'COMPLETED'" 
-              class="btn btn-review">
-              Review
+              class="btn btn-review"
+              (click)="openReviewModal(booking)">
+              Leave Review
             </button>
           </div>
         </div>

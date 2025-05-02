@@ -88,13 +88,14 @@ export class FindDriverComponent implements OnInit {
     // Implement redirection to booking form with the driver ID
   }
   
-  getRatingStars(rating: number): string {
+  getRatingStars(rating: number | undefined): string {
     // Convert rating to stars (e.g., 4.5 becomes "★★★★½")
+    if (rating === undefined) return 'No rating';
     const fullStars = Math.floor(rating);
     const halfStar = rating % 1 >= 0.5;
     
     let stars = '★'.repeat(fullStars);
-    if (halfStar) stars += '½';
+    if (halfStar) stars += '⯪';
     
     return stars;
   }

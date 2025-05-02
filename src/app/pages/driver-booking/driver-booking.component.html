@@ -160,16 +160,19 @@
             </div>
             <div class="driver-info">
               <h3>{{driver.name}}</h3>
+              <!-- ...existing code... -->
               <div class="rating">
                 <span class="stars">
-                  <span *ngFor="let star of getStars(driver.rating)" class="star">★</span>
+                  <span *ngFor="let star of getStars(driver.rating)" class="star">
+                    {{star === 'No rating' ? star : (star === '★' ? '★' : (star === '½' ? '⯪' : '☆'))}}
+                  </span>
                 </span>
                 <span>{{driver.rating}}</span>
               </div>
+              <!-- ...existing code... -->
             </div>
           </div>
           <div class="driver-details">
-            <p><strong>Experience:</strong> {{driver.experience}} years</p>
             <p><strong>Rate:</strong> ₹{{driver.hourlyRate}}/hour</p>
           </div>
         </div>
@@ -231,30 +234,22 @@
           <div class="upi-qr-section">
             <div class="qr-code-container">
               <!-- Show QR code if available, otherwise show loading or error message -->
-              <img 
-                *ngIf="upiQrCodeSrc" 
-                [src]="upiQrCodeSrc" 
-                alt="UPI QR Code" 
-                class="qr-code-image">
-              
+              <img *ngIf="upiQrCodeSrc" [src]="upiQrCodeSrc" alt="UPI QR Code" class="qr-code-image">
+
               <div *ngIf="!upiQrCodeSrc" class="qr-code-placeholder">
                 <div class="qr-loading">Generating payment QR code...</div>
               </div>
-              
+
               <p>Scan with any UPI app to pay</p>
             </div>
-            
+
             <div class="upi-details">
               <p><strong>UPI ID:</strong> harshmistry159&#64;okhdfcbank</p>
               <p><strong>Amount:</strong> ₹{{totalCost}}</p>
               <p><strong>Reference:</strong> {{bookingReference}}</p>
-              
+
               <!-- Add a click-to-pay option for mobile users -->
-              <a 
-                *ngIf="upiDeepLink" 
-                [href]="upiDeepLink" 
-                class="upi-pay-button" 
-                target="_blank">
+              <a *ngIf="upiDeepLink" [href]="upiDeepLink" class="upi-pay-button" target="_blank">
                 Click to Pay via UPI App
               </a>
             </div>
@@ -269,14 +264,10 @@
               Please confirm payment to continue
             </div>
           </div>
-          
+
           <div class="form-group full-width">
             <label for="paymentScreenshot">Upload Payment Screenshot</label>
-            <input 
-              id="paymentScreenshot" 
-              type="file" 
-              class="form-control" 
-              (change)="onFileSelected($event)" 
+            <input id="paymentScreenshot" type="file" class="form-control" (change)="onFileSelected($event)"
               accept="image/*">
             <div class="error-message" *ngIf="fileError">
               {{ fileError }}

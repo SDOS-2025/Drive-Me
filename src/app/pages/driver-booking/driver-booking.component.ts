@@ -14,7 +14,6 @@ interface Driver {
   id: number;
   name: string;
   rating: number;
-  experience: number;
   specialties?: string[];
   hourlyRate: number;
   available: boolean;
@@ -210,11 +209,11 @@ export class DriverBookingComponent implements OnInit {
         this.drivers = data.map(driver => ({
           id: driver.driverId,
           name: driver.name,
-          rating: 4.5,
-          experience: 3, // Default if not available from API
+          rating: driver.averageRating || 0,
           hourlyRate: 150, // Default if not available from API
           available: driver.status === 'AVAILABLE'
         }));
+        console.log('Drivers loaded:', this.drivers);
 
         // Filter available drivers
         this.updateAvailableDrivers();
@@ -376,8 +375,30 @@ export class DriverBookingComponent implements OnInit {
   }
 
   // Utility for star rating display
-  getStars(rating: number): number[] {
-    return Array(Math.floor(rating)).fill(0);
+  getStars(rating: number): string[] {
+    if (rating === undefined || isNaN(rating)) return ['No rating'];
+    
+    const result: string[] = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+    
+    // Add full stars
+    for (let i = 0; i < fullStars; i++) {
+      result.push('★');
+    }
+    
+    // Add half star if needed
+    if (hasHalfStar) {
+      result.push('½');
+    }
+    
+    // Fill the rest with empty stars to make a total of 5 stars
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    for (let i = 0; i < emptyStars; i++) {
+      result.push('☆');
+    }
+    
+    return result;
   }
 
   // For easy access to form controls in the template

@@ -29,6 +29,7 @@ export interface DriverTrip {
   status: string;
   createdAt: string;
   fare: number;
+  averageRating?: number;
   customerName?: string;
   customerPhone?: string;
 }

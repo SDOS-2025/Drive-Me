@@ -60,7 +60,7 @@ export class UserBookingService {
       formData.append('profilePicture', profilePicture);
     }
 
-    return this.http.put<any>(`${this.apiUrl}/users/my-profile/update`, userData, { headers });
+    return this.http.put<any>(`${this.apiUrl}/users/my-profile/update`, formData, { headers });
   }
 
   // Get all bookings for the current user
