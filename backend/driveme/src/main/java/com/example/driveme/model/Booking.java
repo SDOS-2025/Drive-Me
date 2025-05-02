@@ -122,6 +122,10 @@ public class Booking {
     }
     
     public void completeTrip(Double actualDistanceKm) {
+        if (this.status == BookingStatus.COMPLETED)
+        {
+            return;
+        }
         if (this.status != BookingStatus.CONFIRMED) {
             throw new IllegalStateException("Trip must be CONFIRMED to complete");
         }

@@ -10,10 +10,10 @@
 }
 
 .main-content {
-  flex: 1;
-  padding: 20px;
-  background-color: #f5f5f5;
+  margin-left: 300px; /* Same width as the sidebar */
+  padding: 1rem;
 }
+
 
 .dashboard-header {
   display: flex;

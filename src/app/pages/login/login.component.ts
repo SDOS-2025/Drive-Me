@@ -90,8 +90,8 @@ export class LoginComponent {
     .then(() => {
       this.router.navigate([this.returnUrl]);
     })
-    .catch((error: HttpErrorResponse) => {
-      this.errorMessage = error.error?.message || 'Login failed. Please check your credentials.';
+    .catch((error: any) => {
+      this.errorMessage = error || 'Login failed. Please check your credentials.';
       console.error('Login error:', error);
     })
     .finally(() => {
@@ -102,6 +102,27 @@ export class LoginComponent {
   signup() {
     this.loading = true;
     this.errorMessage = '';
+
+    if (this.user.phone.length !== 10) {
+      this.errorMessage = 'Phone number must be 10 digits.';
+      this.loading = false;
+      return;
+    }
+    else if (this.user.aadharCard.length !== 12) {
+      this.errorMessage = 'Aadhar card number must be 12 digits.';
+      this.loading = false;
+      return;
+    }
+    else if (this.user.password.length < 8) {
+      this.errorMessage = 'Password must be at least 8 characters long.';
+      this.loading = false;
+      return;
+    }
+    else if (this.userType === 'driver' && !this.user.licenseNumber) {
+      this.errorMessage = 'License number is required for drivers.';
+      this.loading = false;
+      return;
+    }
 
     const signupPayload: {
       fullName: string;
@@ -131,7 +152,7 @@ export class LoginComponent {
         this.errorMessage = 'Account created successfully! Please login.';
       })
       .catch((error: HttpErrorResponse) => {
-        this.errorMessage = 'Signup failed. Please try again.';
+        this.errorMessage = error.error?.message || 'Signup failed. Please try again.';
         console.error('Signup error:', error);
       })
       .finally(() => {

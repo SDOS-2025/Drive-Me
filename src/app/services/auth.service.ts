@@ -65,9 +65,10 @@ export class AuthService {
     })
     .then(response => {
       if (!response.ok) {
-        throw new Error('Login failed');
-      }
-      return response.json();
+        return response.json().then((err: any) => {
+          throw new Error(err.message || 'Login failed');
+        });
+      } return response.json();
     })
     .then(data => {
       // Create user object from response
