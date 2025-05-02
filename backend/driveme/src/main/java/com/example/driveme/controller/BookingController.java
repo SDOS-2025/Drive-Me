@@ -338,7 +338,15 @@ public class BookingController {
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<?> updateBookingStatus(@PathVariable Long id, @RequestBody Map<String, String> request) {
+    public ResponseEntity<?> updateBookingStatus(@PathVariable Long id, @RequestBody Map<String, String> request,
+            Authentication authentication) {
+        
+        
+        // Check if the user is authenticated
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "User not authenticated"));
+        }
         try {
             String newStatus = request.get("status");
             if (newStatus == null) {
@@ -360,10 +368,14 @@ public class BookingController {
             // Handle completing the trip BEFORE changing the status
             if (updatedStatus == Booking.BookingStatus.COMPLETED) {
                 String distanceStr = request.get("distance");
+                String feedback = request.get("feedback");
                 Double distance = (distanceStr != null) ? Double.parseDouble(distanceStr) : 0.0;
-
+                Integer driverRating = request.get("driverRating") != null ?
+                        Integer.parseInt(request.get("driverRating")) : null;
                 // Call completeTrip directly while status is still CONFIRMED
                 booking.completeTrip(distance);
+                booking.setDriverRating(driverRating);
+                booking.setDriverFeedback(feedback);
 
                 // Set driver status to available and update metrics
                 if (booking.getDriver() != null) {
@@ -372,7 +384,6 @@ public class BookingController {
 
                 // Update average ratings
                 updateDriverRating(booking.getDriver());
-                updateUserRating(booking.getCustomer());
             } else {
                 // For other status changes, just update the status
                 booking.setStatus(updatedStatus);
@@ -414,31 +425,6 @@ public class BookingController {
             double averageRating = totalRating / ratedBookingsCount;
             driver.setAverageRating(averageRating);
             driverRepository.save(driver);
-        }
-    }
-
-    private void updateUserRating(User user) {
-        if (user == null)
-            return;
-
-        List<Booking> completedBookings = bookingRepository.findByCustomerAndStatus(
-                user, Booking.BookingStatus.COMPLETED);
-
-        // Calculate new average rating
-        double totalRating = 0;
-        int ratedBookingsCount = 0;
-
-        for (Booking booking : completedBookings) {
-            if (booking.getCustomerRating() != null) {
-                totalRating += booking.getCustomerRating();
-                ratedBookingsCount++;
-            }
-        }
-
-        if (ratedBookingsCount > 0) {
-            double averageRating = totalRating / ratedBookingsCount;
-            user.setAverageRating(averageRating);
-            userRepository.save(user);
         }
     }
 

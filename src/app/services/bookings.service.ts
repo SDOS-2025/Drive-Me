@@ -106,6 +106,19 @@ export class BookingService {
     
     return this.http.put<any>(`${this.apiUrl}/bookings/${bookingId}/status`, payload, { headers });
   }
+
+  // Update review
+  updateReview(bookingId: number, rating: number, review: string): Observable<any> {
+    const headers = this.getAuthHeaders();
+    if (review === '') {
+      review = 'No review provided';
+    }
+    const payload = { 
+      status: "COMPLETED",
+      driverRating: rating, 
+      feedback: review };
+    return this.http.put<any>(`${this.apiUrl}/bookings/${bookingId}/status`, payload, { headers });
+  }
   
   // Get all bookings (admin operation)
   getAllBookings(): Observable<BookingSummary[]> {

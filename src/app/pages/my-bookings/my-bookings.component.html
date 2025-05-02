@@ -101,7 +101,7 @@
               {{booking.status}}
             </span>
             <div class="booking-price">${{booking.fare}}</div>
-            <button class="btn btn-review">Leave Review</button>
+            <button class="btn btn-review" (click)="openReviewModal(booking)">Leave Review</button>
           </div>
         </div>
       </div>
@@ -162,4 +162,69 @@
       </div>
     </div>
   </main>
+<!-- Review Modal (outside of main content, directly under the <body>) -->
+  <div class="review-modal-backdrop" *ngIf="showReviewModal" style="display: flex !important">
+    <div class="review-modal">
+      <!-- Modal Header -->
+      <div class="review-modal-header">
+        <h2>Rate Your Experience</h2>
+        <button class="review-modal-close" (click)="closeReviewModal($event)">&times;</button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="review-modal-body">
+        <!-- If review is not submitted yet -->
+        <div *ngIf="!reviewSubmitted">
+          <!-- Driver Info -->
+          <div class="driver-details">
+            <div class="driver-avatar">👤</div>
+            <div>
+              <div class="driver-name">{{selectedBooking?.driverName || 'Your Driver'}}</div>
+              <div class="trip-details">{{selectedBooking?.pickupLocation}} → {{selectedBooking?.dropoffLocation}}</div>
+            </div>
+          </div>
+          
+          <!-- Star Rating -->
+          <div class="stars-container">
+            <label>How would you rate your experience?</label>
+            <div class="stars">
+              <span 
+                *ngFor="let star of [1, 2, 3, 4, 5]" 
+                class="star" 
+                [class.filled]="star <= rating" 
+                (click)="setRating(star)">
+                ★
+              </span>
+            </div>
+          </div>
+          
+          <!-- Review Comment -->
+          <div class="review-comment">
+            <label for="review-text">Share your feedback (optional)</label>
+            <textarea 
+              id="review-text" 
+              placeholder="Tell us about your experience..." 
+              [(ngModel)]="reviewComment">
+            </textarea>
+            <div *ngIf="reviewError" class="error-text">{{reviewError}}</div>
+          </div>
+        </div>
+        
+        <!-- Success message after submission -->
+        <div *ngIf="reviewSubmitted" class="review-success">
+          <div class="review-success-icon">✓</div>
+          <h3>Thank you for your feedback!</h3>
+          <p>Your review has been submitted successfully.</p>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="review-modal-footer" *ngIf="!reviewSubmitted">
+        <button class="btn btn-secondary" (click)="closeReviewModal($event)">Cancel</button>
+        <button class="btn btn-primary" [disabled]="rating === 0 || isSubmittingReview" (click)="submitReview()">
+          {{isSubmittingReview ? 'Submitting...' : 'Submit Review'}}
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { UserBookingService, BookingSummary } from '../../services/user.service';
 import { DriverService } from '../../services/driver.service';
+import { BookingService } from '../../services/bookings.service';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 
@@ -74,7 +75,7 @@ export class UserDashboardComponent implements OnInit {
     private userBookingService: UserBookingService,
     private authService: AuthService,
     private driverService: DriverService,
-    private ngZone: NgZone
+    private bookingService: BookingService,
   ) { }
 
   ngOnInit(): void {
@@ -368,26 +369,26 @@ export class UserDashboardComponent implements OnInit {
     }
 
     if (!this.selectedBooking) {
-      this.reviewError = 'Unable to identify booking for review';
-      console.log('No booking selected');
+      console.error('No booking selected for review submission');
       return;
     }
 
     this.isSubmittingReview = true;
-    console.log('Submitting review...');
-
-    // Simulated API call
-    setTimeout(() => {
-      console.log('Review submission completed');
-      this.isSubmittingReview = false;
-      this.reviewSubmitted = true;
-
-      // After showing success message for 2 seconds, close the modal
-      setTimeout(() => {
-        console.log('Closing modal after successful submission');
+    this.bookingService.updateReview(this.selectedBooking.bookingId, this.rating, this.reviewComment).subscribe({
+      next: () => {
+        console.log('Review submitted successfully');
+        this.reviewSubmitted = true;
+        this.isSubmittingReview = false;
         this.showReviewModal = false;
         this.selectedBooking = null;
-      }, 2000);
-    }, 1000);
+        // Refresh bookings
+        this.loadBookings();
+      },
+      error: (error: any) => {
+        console.error('Error submitting review', error);
+        this.reviewError = 'Unable to submit review. Please try again later.';
+        this.isSubmittingReview = false;
+      }
+    });
   }
 }

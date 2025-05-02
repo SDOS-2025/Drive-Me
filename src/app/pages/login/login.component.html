@@ -1,17 +1,28 @@
+<!-- Update the existing HTML structure with these modifications -->
 <div class="page-wrapper">
   <app-navbar></app-navbar>
 
   <main class="login-container">
     <div class="user-type-selection">
-      <button [ngClass]="{ 'btn-selected': userType === 'driver' }" (click)="selectUserType('driver')">Drivers</button>
-      <button [ngClass]="{ 'btn-selected': userType === 'regular' }" (click)="selectUserType('regular')">Regular Users</button>
-      <button [ngClass]="{ 'btn-selected': userType === 'admin' }" (click)="selectUserType('admin')">Admin</button>
+      <button [ngClass]="{ 'btn-selected': userType === 'driver' }" (click)="selectUserType('driver')">
+        Drivers
+      </button>
+      <button [ngClass]="{ 'btn-selected': userType === 'regular' }" (click)="selectUserType('regular')">
+        Regular Users
+      </button>
+      <button [ngClass]="{ 'btn-selected': userType === 'admin' }" (click)="selectUserType('admin')">
+        Admin
+      </button>
     </div>
 
     <div class="auth-card">
       <div class="form-switch">
         <button [ngClass]="{ 'active-tab': formMode === 'login' }" (click)="setFormMode('login')">Login</button>
         <button *ngIf="userType !== 'admin'" [ngClass]="{ 'active-tab': formMode === 'signup' }" (click)="setFormMode('signup')">Sign Up</button>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
       </div>
 
       <div *ngIf="formMode === 'login'" class="form-content">
@@ -25,21 +36,24 @@
               <input type="checkbox" [(ngModel)]="user.rememberMe" name="rememberMe" />
               Remember Me
             </label>
+            <a href="javascript:void(0)">Forgot Password?</a>
           </div>
 
-          <button type="submit" class="btn-dark">Sign In</button>
+          <button type="submit" class="btn-dark" [ngClass]="{'loading': loading}">{{ loading ? 'Signing In...' : 'Sign In' }}</button>
         </form>
       </div>
 
       <div *ngIf="formMode === 'signup'" class="form-content">
         <h2>Sign up as {{ userType | titlecase }}</h2>
-        <input type="text" placeholder="Full Name" [(ngModel)]="user.fullName" />
-        <input type="email" placeholder="Email" [(ngModel)]="user.email" />
-        <input type="text" placeholder="Phone" [(ngModel)]="user.phone" />
-        <input type="text" placeholder="Aadhar Card Number" [(ngModel)]="user.aadharCard" />
-        <input *ngIf="userType === 'driver'" type="text" placeholder="License Number" [(ngModel)]="user.licenseNumber" />
-        <input type="password" placeholder="Password" [(ngModel)]="user.password" />
-        <button class="btn-dark" (click)="signup()">Sign Up</button>
+        <form (ngSubmit)="signup()">
+          <input type="text" placeholder="Full Name" [(ngModel)]="user.fullName" name="fullName" />
+          <input type="email" placeholder="Email" [(ngModel)]="user.email" name="email" />
+          <input type="text" placeholder="Phone" [(ngModel)]="user.phone" name="phone" />
+          <input type="text" placeholder="Aadhar Card Number" [(ngModel)]="user.aadharCard" name="aadharCard" />
+          <input *ngIf="userType === 'driver'" type="text" placeholder="License Number" [(ngModel)]="user.licenseNumber" name="licenseNumber" />
+          <input type="password" placeholder="Password" [(ngModel)]="user.password" name="password" />
+          <button type="submit" class="btn-dark" [ngClass]="{'loading': loading}">{{ loading ? 'Creating Account...' : 'Sign Up' }}</button>
+        </form>
       </div>
     </div>
   </main>
@@ -47,23 +61,17 @@
   <footer>
     <div class="newsletter">
       <h3>Subscribe to our newsletter</h3>
-      <input type="email" placeholder="Input your email" />
-      <button class="btn-light">Subscribe</button>
+      <div style="display: flex; gap: 15px;">
+        <input type="email" placeholder="Enter your email" />
+        <button class="btn-light">Subscribe</button>
+      </div>
     </div>
+    
     <div class="footer-links">
-      <a href="#">Pricing</a>
       <a href="#">About us</a>
       <a href="#">Features</a>
       <a href="#">Help Center</a>
       <a href="#">Contact us</a>
-      <a href="#">FAQs</a>
-      <a href="#">Careers</a>
-    </div>
-    <div class="social-icons">
-      <i class="fa fa-twitter"></i>
-      <i class="fa fa-facebook"></i>
-      <i class="fa fa-linkedin"></i>
-      <i class="fa fa-youtube"></i>
     </div>
   </footer>
 </div>
