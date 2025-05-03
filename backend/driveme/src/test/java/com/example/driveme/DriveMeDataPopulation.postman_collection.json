@@ -1,0 +1,1138 @@
+{
+  "info": {
+    "name": "DriveMe Data Population",
+    "_postman_id": "f7a9b3e2-8c9a-4f2b-9e6c-7f8d1d2e3f4a",
+    "description": "Postman collection to populate DriveMe database with users, drivers, vehicles, and bookings",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register Users",
+      "item": [
+        {
+          "name": "Register Admin User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var response = pm.response.json();",
+                  "if (response.userId) {",
+                  "    var users = pm.collectionVariables.get('users') || [];",
+                  "    users.push({",
+                  "        id: response.userId,",
+                  "        email: 'admin@driveme.com',",
+                  "        password: 'Admin@123'",
+                  "    });",
+                  "    pm.collectionVariables.set('users', users);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Admin User\",\n  \"email\": \"admin@driveme.com\",\n  \"phone\": \"9876543210\",\n  \"aadharCard\": \"123456789012\",\n  \"password\": \"Admin@123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/user/signup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "user", "signup"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Regular Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var response = pm.response.json();",
+                  "if (response.userId) {",
+                  "    var users = pm.collectionVariables.get('users') || [];",
+                  "    var currentUser = pm.variables.get('currentUser');",
+                  "    users.push({",
+                  "        id: response.userId,",
+                  "        email: currentUser.email,",
+                  "        password: currentUser.password",
+                  "    });",
+                  "    pm.collectionVariables.set('users', users);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{{user_data}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/user/signup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "user", "signup"]
+            }
+          },
+          "response": [],
+          "_postman_isSubFolder": true,
+          "description": "Run this request multiple times with different user data",
+          "pre-request": {
+            "script": {
+              "exec": [
+                "var usersData = [",
+                "    { fullName: 'Priya Sharma', email: 'priya@example.com', phone: '9876543211', aadharCard: '123456789013', password: 'Password@123' },",
+                "    { fullName: 'Rahul Patel', email: 'rahul@example.com', phone: '9876543212', aadharCard: '123456789014', password: 'Password@123' },",
+                "    { fullName: 'Anjali Gupta', email: 'anjali@example.com', phone: '9876543213', aadharCard: '123456789015', password: 'Password@123' },",
+                "    { fullName: 'Vivek Singh', email: 'vivek@example.com', phone: '9876543214', aadharCard: '123456789016', password: 'Password@123' },",
+                "    { fullName: 'Deepika Verma', email: 'deepika@example.com', phone: '9876543215', aadharCard: '123456789017', password: 'Password@123' }",
+                "];",
+                "var currentIndex = pm.collectionVariables.get('userIndex') || 0;",
+                "if (currentIndex < usersData.length) {",
+                "    pm.variables.set('currentUser', usersData[currentIndex]);",
+                "    pm.variables.set('user_data', JSON.stringify(usersData[currentIndex]));",
+                "    pm.collectionVariables.set('userIndex', parseInt(currentIndex) + 1);",
+                "} else {",
+                "    pm.collectionVariables.set('userIndex', 0);",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login Users",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var response = pm.response.json();",
+              "if (response.token) {",
+              "    var users = pm.collectionVariables.get('users');",
+              "    var currentUser = pm.variables.get('currentUserLogin');",
+              "    var userIndex = users.findIndex(u => u.email === currentUser.email);",
+              "    if (userIndex !== -1) {",
+              "        users[userIndex].token = response.token;",
+              "        users[userIndex].id = response.userId;",
+              "        pm.collectionVariables.set('users', users);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{{login_data}}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/user/login",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "user", "login"]
+        }
+      },
+      "response": [],
+      "pre-request": {
+        "script": {
+          "exec": [
+            "var users = pm.collectionVariables.get('users') || [];",
+            "var loginIndex = pm.collectionVariables.get('loginIndex') || 0;",
+            "if (loginIndex < users.length) {",
+            "    pm.variables.set('currentUserLogin', users[loginIndex]);",
+            "    pm.variables.set('login_data', JSON.stringify({",
+            "        emailOrPhone: users[loginIndex].email,",
+            "        password: users[loginIndex].password",
+            "    }));",
+            "    pm.collectionVariables.set('loginIndex', parseInt(loginIndex) + 1);",
+            "} else {",
+            "    pm.collectionVariables.set('loginIndex', 0);",
+            "}"
+          ],
+          "type": "text/javascript"
+        }
+      }
+    },
+    {
+      "name": "Register Drivers",
+      "item": [
+        {
+          "name": "Register Driver",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var response = pm.response.json();",
+                  "if (response.userId) {",
+                  "    var drivers = pm.collectionVariables.get('drivers') || [];",
+                  "    var currentDriver = pm.variables.get('currentDriver');",
+                  "    drivers.push({",
+                  "        id: response.userId,",
+                  "        email: currentDriver.email,",
+                  "        password: currentDriver.password",
+                  "    });",
+                  "    pm.collectionVariables.set('drivers', drivers);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{{driver_data}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/driver/signup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "driver", "signup"]
+            }
+          },
+          "response": [],
+          "pre-request": {
+            "script": {
+              "exec": [
+                "var driversData = [",
+                "    { fullName: 'Vikram Malhotra', email: 'vikram@driver.com', phone: '8765432101', aadharCard: '987654321012', licenseNumber: 'DL12345678', password: 'Driver@123' },",
+                "    { fullName: 'Rajesh Kumar', email: 'rajesh@driver.com', phone: '8765432102', aadharCard: '987654321013', licenseNumber: 'DL23456789', password: 'Driver@123' },",
+                "    { fullName: 'Sunil Sharma', email: 'sunil@driver.com', phone: '8765432103', aadharCard: '987654321014', licenseNumber: 'DL34567890', password: 'Driver@123' },",
+                "    { fullName: 'Amit Joshi', email: 'amit@driver.com', phone: '8765432104', aadharCard: '987654321015', licenseNumber: 'DL45678901', password: 'Driver@123' },",
+                "    { fullName: 'Nitin Mehta', email: 'nitin@driver.com', phone: '8765432105', aadharCard: '987654321016', licenseNumber: 'DL56789012', password: 'Driver@123' }",
+                "];",
+                "var driverIndex = pm.collectionVariables.get('driverIndex') || 0;",
+                "if (driverIndex < driversData.length) {",
+                "    pm.variables.set('currentDriver', driversData[driverIndex]);",
+                "    pm.variables.set('driver_data', JSON.stringify(driversData[driverIndex]));",
+                "    pm.collectionVariables.set('driverIndex', parseInt(driverIndex) + 1);",
+                "} else {",
+                "    pm.collectionVariables.set('driverIndex', 0);",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login Drivers",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var response = pm.response.json();",
+              "if (response.token) {",
+              "    var drivers = pm.collectionVariables.get('drivers');",
+              "    var currentDriver = pm.variables.get('currentDriverLogin');",
+              "    var driverIndex = drivers.findIndex(d => d.email === currentDriver.email);",
+              "    if (driverIndex !== -1) {",
+              "        drivers[driverIndex].token = response.token;",
+              "        drivers[driverIndex].id = response.userId;",
+              "        pm.collectionVariables.set('drivers', drivers);",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{{driver_login_data}}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/driver/login",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "driver", "login"]
+        }
+      },
+      "response": [],
+      "pre-request": {
+        "script": {
+          "exec": [
+            "var drivers = pm.collectionVariables.get('drivers') || [];",
+            "var driverLoginIndex = pm.collectionVariables.get('driverLoginIndex') || 0;",
+            "if (driverLoginIndex < drivers.length) {",
+            "    pm.variables.set('currentDriverLogin', drivers[driverLoginIndex]);",
+            "    pm.variables.set('driver_login_data', JSON.stringify({",
+            "        emailOrPhone: drivers[driverLoginIndex].email,",
+            "        password: drivers[driverLoginIndex].password",
+            "    }));",
+            "    pm.collectionVariables.set('driverLoginIndex', parseInt(driverLoginIndex) + 1);",
+            "} else {",
+            "    pm.collectionVariables.set('driverLoginIndex', 0);",
+            "}"
+          ],
+          "type": "text/javascript"
+        }
+      }
+    },
+    {
+      "name": "Add Vehicles",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var response = pm.response.json();",
+              "if (pm.response.code === 201) {",
+              "    var vehicles = pm.collectionVariables.get('vehicles') || [];",
+              "    var currentVehicle = pm.variables.get('currentVehicle');",
+              "    vehicles.push({",
+              "        id: vehicles.length + 1,",
+              "        user_id: currentVehicle.user_id,",
+              "        model: currentVehicle.model,",
+              "        registration_number: currentVehicle.registration_number",
+              "    });",
+              "    pm.collectionVariables.set('vehicles', vehicles);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{{vehicle_data}}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/users/add-vehicle",
+          "host": ["{{base_url}}"],
+          "path": ["users", "add-vehicle"]
+        }
+      },
+      "response": [],
+      "pre-request": {
+        "script": {
+          "exec": [
+            "var vehiclesData = [",
+            "    { user_id: '{{users[1].id}}', model: 'Honda City', registration_number: 'MH02AB1234', car_number: 'MH02AB1234', vehicle_type: 'SEDAN', color: 'White' },",
+            "    { user_id: '{{users[1].id}}', model: 'Maruti Swift', registration_number: 'MH02CD5678', car_number: 'MH02CD5678', vehicle_type: 'HATCHBACK', color: 'Red' },",
+            "    { user_id: '{{users[2].id}}', model: 'Toyota Fortuner', registration_number: 'DL01PQ7890', car_number: 'DL01PQ7890', vehicle_type: 'SUV', color: 'Black' },",
+            "    { user_id: '{{users[3].id}}', model: 'Hyundai Creta', registration_number: 'KA01RS2345', car_number: 'KA01RS2345', vehicle_type: 'SUV', color: 'Silver' },",
+            "    { user_id: '{{users[4].id}}', model: 'Tata Nexon', registration_number: 'UP80TU6789', car_number: 'UP80TU6789', vehicle_type: 'SUV', color: 'Blue' },",
+            "    { user_id: '{{users[5].id}}', model: 'Honda Civic', registration_number: 'GJ01VW1290', car_number: 'GJ01VW1290', vehicle_type: 'SEDAN', color: 'Grey' },",
+            "    { user_id: '{{users[2].id}}', model: 'Maruti Baleno', registration_number: 'DL10XY3456', car_number: 'DL10XY3456', vehicle_type: 'HATCHBACK', color: 'White' },",
+            "    { user_id: '{{users[3].id}}', model: 'Kia Seltos', registration_number: 'KA05ZA7890', car_number: 'KA05ZA7890', vehicle_type: 'SUV', color: 'Red' }",
+            "];",
+            "var users = pm.collectionVariables.get('users') || [];",
+            "var vehicleIndex = pm.collectionVariables.get('vehicleIndex') || 0;",
+            "if (vehicleIndex < vehiclesData.length) {",
+            "    var vehicle = vehiclesData[vehicleIndex];",
+            "    var user = users.find(u => u.id === vehicle.user_id);",
+            "    if (user) {",
+            "        pm.variables.set('user_token', user.token);",
+            "        pm.variables.set('currentVehicle', vehicle);",
+            "        pm.variables.set('vehicle_data', JSON.stringify({",
+            "            userId: vehicle.user_id,",
+            "            model: vehicle.model,",
+            "            registrationNumber: vehicle.registration_number,",
+            "            carNumber: vehicle.car_number,",
+            "            vehicleType: vehicle.vehicle_type,",
+            "            manufactureYear: 2020,",
+            "            color: vehicle.color",
+            "        }));",
+            "        pm.collectionVariables.set('vehicleIndex', parseInt(vehicleIndex) + 1);",
+            "    }",
+            "} else {",
+            "    pm.collectionVariables.set('vehicleIndex', 0);",
+            "}"
+          ],
+          "type": "text/javascript"
+        }
+      }
+    },
+    {
+      "name": "Create Completed Bookings",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var response = pm.response.json();",
+              "if (response.bookingId) {",
+              "    var bookings = pm.collectionVariables.get('bookings') || [];",
+              "    bookings.push({",
+              "        id: response.bookingId,",
+              "        status: 'PENDING',",
+              "        user_id: pm.variables.get('currentBooking').user_id",
+              "    });",
+              "    pm.collectionVariables.set('bookings', bookings);",
+              "    pm.collectionVariables.set('lastBookingId', response.bookingId);",
+              "    postman.setNextRequest('Update Booking to CONFIRMED');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "bookingRequest",
+              "value": "{{booking_request}}",
+              "type": "text"
+            },
+            {
+              "key": "paymentScreenshot",
+              "type": "file",
+              "src": "payment.jpg"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/bookings",
+          "host": ["{{base_url}}"],
+          "path": ["bookings"]
+        }
+      },
+      "response": [],
+      "pre-request": {
+        "script": {
+          "exec": [
+            "var users = pm.collectionVariables.get('users') || [];",
+            "var drivers = pm.collectionVariables.get('drivers') || [];",
+            "var vehicles = pm.collectionVariables.get('vehicles') || [];",
+            "var bookingIndex = pm.collectionVariables.get('completedBookingIndex') || 0;",
+            "var userIndex = Math.floor(bookingIndex / 3) + 1;",
+            "if (userIndex < users.length) {",
+            "    var user = users[userIndex];",
+            "    var userVehicles = vehicles.filter(v => v.user_id === user.id);",
+            "    if (userVehicles.length > 0) {",
+            "        var driver = drivers[Math.floor(Math.random() * drivers.length)];",
+            "        var vehicle = userVehicles[Math.floor(Math.random() * userVehicles.length)];",
+            "        var daysAgo = Math.floor(Math.random() * 21) + 10;",
+            "        var pickupDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).toISOString().slice(0, 16);",
+            "        var locations = [",
+            "            ['Andheri East, Mumbai', 'Bandra West, Mumbai'],",
+            "            ['Connaught Place, Delhi', 'Noida Sector 62'],",
+            "            ['Indiranagar, Bangalore', 'Electronic City, Bangalore'],",
+            "            ['Hazratganj, Lucknow', 'Gomti Nagar, Lucknow'],",
+            "            ['Navrangpura, Ahmedabad', 'Ahmedabad Airport']",
+            "        ];",
+            "        var location = locations[Math.floor(Math.random() * locations.length)];",
+            "        var fare = Math.floor(Math.random() * 801) + 200;",
+            "        var booking = {",
+            "            user_id: user.id,",
+            "            user_token: user.token,",
+            "            driver_id: driver.id,",
+            "            vehicle_id: vehicle.id,",
+            "            pickup_location: location[0],",
+            "            dropoff_location: location[1],",
+            "            pickup_date_time: pickupDate,",
+            "            fare: fare",
+            "        };",
+            "        pm.variables.set('currentBooking', booking);",
+            "        pm.variables.set('user_token', user.token);",
+            "        pm.variables.set('booking_request', JSON.stringify({",
+            "            customer: { id: user.id },",
+            "            driver: { driver_id: driver.id },",
+            "            vehicle: { id: vehicle.id },",
+            "            pickupLocation: booking.pickup_location,",
+            "            dropoffLocation: booking.dropoff_location,",
+            "            pickupDateTime: booking.pickup_date_time,",
+            "            fare: booking.fare,",
+            "            estimatedDuration: 3",
+            "        }));",
+            "        pm.collectionVariables.set('completedBookingIndex', parseInt(bookingIndex) + 1);",
+            "    }",
+            "} else {",
+            "    pm.collectionVariables.set('completedBookingIndex', 0);",
+            "}"
+          ],
+          "type": "text/javascript"
+        }
+      }
+    },
+    {
+      "name": "Update Booking to CONFIRMED",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    postman.setNextRequest('Update Booking to COMPLETED');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"status\": \"CONFIRMED\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/bookings/{{lastBookingId}}/status",
+          "host": ["{{base_url}}"],
+          "path": ["bookings", "{{lastBookingId}}", "status"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Booking to COMPLETED",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var bookings = pm.collectionVariables.get('bookings');",
+              "    var bookingIndex = bookings.findIndex(b => b.id === pm.collectionVariables.get('lastBookingId'));",
+              "    if (bookingIndex !== -1) {",
+              "        bookings[bookingIndex].status = 'COMPLETED';",
+              "        pm.collectionVariables.set('bookings', bookings);",
+              "    }",
+              "    postman.setNextRequest('Rate Completed Booking');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"status\": \"COMPLETED\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/bookings/{{lastBookingId}}/status",
+          "host": ["{{base_url}}"],
+          "path": ["bookings", "{{lastBookingId}}", "status"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Rate Completed Booking",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    postman.setNextRequest('Create Completed Bookings');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{{rating_data}}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/bookings/{{lastBookingId}}/rate",
+          "host": ["{{base_url}}"],
+          "path": ["bookings", "{{lastBookingId}}", "rate"]
+        }
+      },
+      "response": [],
+      "pre-request": {
+        "script": {
+          "exec": [
+            "var feedbackOptions = [",
+            "    'Very professional and punctual',",
+            "    'Excellent driving skills',",
+            "    'Very safe and comfortable ride',",
+            "    'Good service, would recommend',",
+            "    'Outstanding experience'",
+            "];",
+            "var rating = Math.floor(Math.random() * 2) + 4;",
+            "var feedback = feedbackOptions[Math.floor(Math.random() * feedbackOptions.length)];",
+            "pm.variables.set('rating_data', JSON.stringify({",
+            "    rating: rating,",
+            "    feedback: feedback",
+            "}));"
+          ],
+          "type": "text/javascript"
+        }
+      }
+    },
+    {
+      "name": "Create Ongoing Bookings",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var response = pm.response.json();",
+              "if (response.bookingId) {",
+              "    var bookings = pm.collectionVariables.get('bookings') || [];",
+              "    bookings.push({",
+              "        id: response.bookingId,",
+              "        status: 'PENDING',",
+              "        user_id: pm.variables.get('currentBooking').user_id",
+              "    });",
+              "    pm.collectionVariables.set('bookings', bookings);",
+              "    pm.collectionVariables.set('lastBookingId', response.bookingId);",
+              "    postman.setNextRequest('Update Booking to CONFIRMED (Ongoing)');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "bookingRequest",
+              "value": "{{booking_request}}",
+              "type": "text"
+            },
+            {
+              "key": "paymentScreenshot",
+              "type": "file",
+              "src": "payment.jpg"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/bookings",
+          "host": ["{{base_url}}"],
+          "path": ["bookings"]
+        }
+      },
+      "response": [],
+      "pre-request": {
+        "script": {
+          "exec": [
+            "var users = pm.collectionVariables.get('users') || [];",
+            "var drivers = pm.collectionVariables.get('drivers') || [];",
+            "var vehicles = pm.collectionVariables.get('vehicles') || [];",
+            "var ongoingBookingIndex = pm.collectionVariables.get('ongoingBookingIndex') || 0;",
+            "if (ongoingBookingIndex < users.length - 1) {",
+            "    var user = users[ongoingBookingIndex + 1];",
+            "    var userVehicles = vehicles.filter(v => v.user_id === user.id);",
+            "    if (userVehicles.length > 0) {",
+            "        var driver = drivers[Math.floor(Math.random() * drivers.length)];",
+            "        var vehicle = userVehicles[Math.floor(Math.random() * userVehicles.length)];",
+            "        var pickupDate = new Date().toISOString().slice(0, 16);",
+            "        var locations = [",
+            "            ['Juhu Beach, Mumbai', 'Chhatrapati Shivaji Terminus'],",
+            "            ['India Gate, Delhi', 'Delhi University North Campus'],",
+            "            ['Cubbon Park, Bangalore', 'Bangalore Palace'],",
+            "            ['Chowk, Lucknow', 'Ambedkar Memorial Park'],",
+            "            ['Kankaria Lake, Ahmedabad', 'Science City, Ahmedabad']",
+            "        ];",
+            "        var location = locations[Math.floor(Math.random() * locations.length)];",
+            "        var fare = Math.floor(Math.random() * 501) + 300;",
+            "        var booking = {",
+            "            user_id: user.id,",
+            "            user_token: user.token,",
+            "            driver_id: driver.id,",
+            "            vehicle_id: vehicle.id,",
+            "            pickup_location: location[0],",
+            "            dropoff_location: location[1],",
+            "            pickup_date_time: pickupDate,",
+            "            fare: fare",
+            "        };",
+            "        pm.variables.set('currentBooking', booking);",
+            "        pm.variables.set('user_token', user.token);",
+            "        pm.variables.set('booking_request', JSON.stringify({",
+            "            customer: { id: user.id },",
+            "            driver: { driver_id: driver.id },",
+            "            vehicle: { id: vehicle.id },",
+            "            pickupLocation: booking.pickup_location,",
+            "            dropoffLocation: booking.dropoff_location,",
+            "            pickupDateTime: booking.pickup_date_time,",
+            "            fare: booking.fare,",
+            "            estimatedDuration: 3",
+            "        }));",
+            "        pm.collectionVariables.set('ongoingBookingIndex', parseInt(ongoingBookingIndex) + 1);",
+            "    }",
+            "} else {",
+            "    pm.collectionVariables.set('ongoingBookingIndex', 0);",
+            "}"
+          ],
+          "type": "text/javascript"
+        }
+      }
+    },
+    {
+      "name": "Update Booking to CONFIRMED (Ongoing)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var bookings = pm.collectionVariables.get('bookings');",
+              "    var bookingIndex = bookings.findIndex(b => b.id === pm.collectionVariables.get('lastBookingId'));",
+              "    if (bookingIndex !== -1) {",
+              "        bookings[bookingIndex].status = 'CONFIRMED';",
+              "        pm.collectionVariables.set('bookings', bookings);",
+              "    }",
+              "    postman.setNextRequest('Create Ongoing Bookings');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"status\": \"CONFIRMED\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/bookings/{{lastBookingId}}/status",
+          "host": ["{{base_url}}"],
+          "path": ["bookings", "{{lastBookingId}}", "status"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Pending Bookings",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var response = pm.response.json();",
+              "if (response.bookingId) {",
+              "    var bookings = pm.collectionVariables.get('bookings') || [];",
+              "    bookings.push({",
+              "        id: response.bookingId,",
+              "        status: 'PENDING',",
+              "        user_id: pm.variables.get('currentBooking').user_id",
+              "    });",
+              "    pm.collectionVariables.set('bookings', bookings);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "bookingRequest",
+              "value": "{{booking_request}}",
+              "type": "text"
+            },
+            {
+              "key": "paymentScreenshot",
+              "type": "file",
+              "src": "payment.jpg"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/bookings",
+          "host": ["{{base_url}}"],
+          "path": ["bookings"]
+        }
+      },
+      "response": [],
+      "pre-request": {
+        "script": {
+          "exec": [
+            "var users = pm.collectionVariables.get('users') || [];",
+            "var vehicles = pm.collectionVariables.get('vehicles') || [];",
+            "var pendingBookingIndex = pm.collectionVariables.get('pendingBookingIndex') || 0;",
+            "var locations = [",
+            "    ['Lower Parel, Mumbai', 'Mumbai Airport'],",
+            "    ['Saket, Delhi', 'Red Fort, Delhi'],",
+            "    ['JP Nagar, Bangalore', 'Bangalore Airport']",
+            "];",
+            "if (pendingBookingIndex < locations.length) {",
+            "    var userIndex = Math.floor(Math.random() * (users.length - 1)) + 1;",
+            "    var user = users[userIndex];",
+            "    var userVehicles = vehicles.filter(v => v.user_id === user.id);",
+            "    if (userVehicles.length > 0) {",
+            "        var vehicle = userVehicles[Math.floor(Math.random() * userVehicles.length)];",
+            "        var tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16);",
+            "        var fare = Math.floor(Math.random() * 601) + 400;",
+            "        var booking = {",
+            "            user_id: user.id,",
+            "            user_token: user.token,",
+            "            vehicle_id: vehicle.id,",
+            "            pickup_location: locations[pendingBookingIndex][0],",
+            "            dropoff_location: locations[pendingBookingIndex][1],",
+            "            pickup_date_time: tomorrow,",
+            "            fare: fare",
+            "        };",
+            "        pm.variables.set('currentBooking', booking);",
+            "        pm.variables.set('user_token', user.token);",
+            "        pm.variables.set('booking_request', JSON.stringify({",
+            "            customer: { id: user.id },",
+            "            vehicle: { id: vehicle.id },",
+            "            pickupLocation: booking.pickup_location,",
+            "            dropoffLocation: booking.dropoff_location,",
+            "            pickupDateTime: booking.pickup_date_time,",
+            "            fare: booking.fare,",
+            "            estimatedDuration: 3",
+            "        }));",
+            "        pm.collectionVariables.set('pendingBookingIndex', parseInt(pendingBookingIndex) + 1);",
+            "    }",
+            "} else {",
+            "    pm.collectionVariables.set('pendingBookingIndex', 0);",
+            "}"
+          ],
+          "type": "text/javascript"
+        }
+      }
+    },
+    {
+      "name": "Create Cancelled Bookings",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var response = pm.response.json();",
+              "if (response.bookingId) {",
+              "    var bookings = pm.collectionVariables.get('bookings') || [];",
+              "    bookings.push({",
+              "        id: response.bookingId,",
+              "        status: 'PENDING',",
+              "        user_id: pm.variables.get('currentBooking').user_id",
+              "    });",
+              "    pm.collectionVariables.set('bookings', bookings);",
+              "    pm.collectionVariables.set('lastBookingId', response.bookingId);",
+              "    postman.setNextRequest('Update Booking to CONFIRMED (Cancelled)');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "bookingRequest",
+              "value": "{{booking_request}}",
+              "type": "text"
+            },
+            {
+              "key": "paymentScreenshot",
+              "type": "file",
+              "src": "payment.jpg"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/bookings",
+          "host": ["{{base_url}}"],
+          "path": ["bookings"]
+        }
+      },
+      "response": [],
+      "pre-request": {
+        "script": {
+          "exec": [
+            "var users = pm.collectionVariables.get('users') || [];",
+            "var drivers = pm.collectionVariables.get('drivers') || [];",
+            "var vehicles = pm.collectionVariables.get('vehicles') || [];",
+            "var cancelledBookingIndex = pm.collectionVariables.get('cancelledBookingIndex') || 0;",
+            "var userIndex = Math.floor(cancelledBookingIndex / 2) + 1;",
+            "if (userIndex < users.length) {",
+            "    var user = users[userIndex];",
+            "    var userVehicles = vehicles.filter(v => v.user_id === user.id);",
+            "    if (userVehicles.length > 0) {",
+            "        var driver = drivers[Math.floor(Math.random() * drivers.length)];",
+            "        var vehicle = userVehicles[Math.floor(Math.random() * userVehicles.length)];",
+            "        var daysAgo = Math.floor(Math.random() * 11) + 5;",
+            "        var pickupDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000).toISOString().slice(0, 16);",
+            "        var locations = [",
+            "            ['Goregaon, Mumbai', 'Vashi, Navi Mumbai'],",
+            "            ['Vasant Kunj, Delhi', 'Ghaziabad'],",
+            "            ['Jayanagar, Bangalore', 'Yelahanka'],",
+            "            ['Indira Nagar, Lucknow', 'Barabanki'],",
+            "            ['Vastrapur, Ahmedabad', 'Rajkot']",
+            "        ];",
+            "        var location = locations[Math.floor(Math.random() * locations.length)];",
+            "        var fare = Math.floor(Math.random() * 1501) + 500;",
+            "        var booking = {",
+            "            user_id: user.id,",
+            "            user_token: user.token,",
+            "            driver_id: driver.id,",
+            "            vehicle_id: vehicle.id,",
+            "            pickup_location: location[0],",
+            "            dropoff_location: location[1],",
+            "            pickup_date_time: pickupDate,",
+            "            fare: fare",
+            "        };",
+            "        pm.variables.set('currentBooking', booking);",
+            "        pm.variables.set('user_token', user.token);",
+            "        pm.variables.set('booking_request', JSON.stringify({",
+            "            customer: { id: user.id },",
+            "            driver: { driver_id: driver.id },",
+            "            vehicle: { id: vehicle.id },",
+            "            pickupLocation: booking.pickup_location,",
+            "            dropoffLocation: booking.dropoff_location,",
+            "            pickupDateTime: booking.pickup_date_time,",
+            "            fare: booking.fare,",
+            "            estimatedDuration: 3",
+            "        }));",
+            "        pm.collectionVariables.set('cancelledBookingIndex', parseInt(cancelledBookingIndex) + 1);",
+            "    }",
+            "} else {",
+            "    pm.collectionVariables.set('cancelledBookingIndex', 0);",
+            "}"
+          ],
+          "type": "text/javascript"
+        }
+      }
+    },
+    {
+      "name": "Update Booking to CONFIRMED (Cancelled)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    postman.setNextRequest('Update Booking to CANCELLED');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"status\": \"CONFIRMED\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/bookings/{{lastBookingId}}/status",
+          "host": ["{{base_url}}"],
+          "path": ["bookings", "{{lastBookingId}}", "status"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Booking to CANCELLED",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var bookings = pm.collectionVariables.get('bookings');",
+              "    var bookingIndex = bookings.findIndex(b => b.id === pm.collectionVariables.get('lastBookingId'));",
+              "    if (bookingIndex !== -1) {",
+              "        bookings[bookingIndex].status = 'CANCELLED';",
+              "        pm.collectionVariables.set('bookings', bookings);",
+              "    }",
+              "    postman.setNextRequest('Create Cancelled Bookings');",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{user_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"status\": \"CANCELLED\" }",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/bookings/{{lastBookingId}}/status",
+          "host": ["{{base_url}}"],
+          "path": ["bookings", "{{lastBookingId}}", "status"]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "users",
+      "value": []
+    },
+    {
+      "key": "drivers",
+      "value": []
+    },
+    {
+      "key": "vehicles",
+      "value": []
+    },
+    {
+      "key": "bookings",
+      "value": []
+    }
+  ]
+}
