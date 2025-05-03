@@ -1,4 +1,4 @@
-package com.SDOS.driveme.model;
+package com.sdos.driveme.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

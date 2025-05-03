@@ -1,4 +1,4 @@
-package com.SDOS.driveme.DTO;
+package com.sdos.driveme.DTO;
 
 public class LoginRequestDTO {
     private String emailOrPhone;

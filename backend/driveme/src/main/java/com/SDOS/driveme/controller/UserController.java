@@ -1,4 +1,4 @@
-package com.SDOS.driveme.controller;
+package com.sdos.driveme.controller;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -35,12 +35,12 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.SDOS.driveme.DTO.VehicleRequestDTO;
-import com.SDOS.driveme.DTO.VehicleResponseDTO;
-import com.SDOS.driveme.model.User;
-import com.SDOS.driveme.model.Vehicle;
-import com.SDOS.driveme.repository.UserRepository;
-import com.SDOS.driveme.repository.VehicleRepository;
+import com.sdos.driveme.DTO.VehicleRequestDTO;
+import com.sdos.driveme.DTO.VehicleResponseDTO;
+import com.sdos.driveme.model.User;
+import com.sdos.driveme.model.Vehicle;
+import com.sdos.driveme.repository.UserRepository;
+import com.sdos.driveme.repository.VehicleRepository;
 
 @RestController
 @RequestMapping("/users")

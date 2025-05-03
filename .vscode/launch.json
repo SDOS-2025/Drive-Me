@@ -21,7 +21,7 @@
             "type": "java",
             "name": "DrivemeApplication",
             "request": "launch",
-            "mainClass": "com.example.driveme.DrivemeApplication",
+            "mainClass": "com.sdos.driveme.DrivemeApplication",
             "projectName": "driveme"
         }
     ]

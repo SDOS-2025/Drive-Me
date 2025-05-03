@@ -1,4 +1,4 @@
-package com.SDOS.driveme;
+package com.sdos.driveme;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +15,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.SDOS.driveme.JwtAuth.JwtAuthenticationFilter;
+import com.sdos.driveme.JwtAuth.JwtAuthenticationFilter;
 
 import jakarta.servlet.http.HttpServletResponse;
 

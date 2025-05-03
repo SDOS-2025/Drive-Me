@@ -1,4 +1,4 @@
-package com.SDOS.driveme.JwtAuth;
+package com.sdos.driveme.JwtAuth;
 
 import java.util.Arrays;
 
@@ -12,8 +12,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.SDOS.driveme.repository.DriverRepository;
-import com.SDOS.driveme.repository.UserRepository;
+import com.sdos.driveme.repository.DriverRepository;
+import com.sdos.driveme.repository.UserRepository;
 
 @Configuration
 public class ApplicationConfiguration {

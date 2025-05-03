@@ -1,4 +1,4 @@
-package com.SDOS.driveme.model;
+package com.sdos.driveme.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;

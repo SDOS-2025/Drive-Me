@@ -1,4 +1,4 @@
-package com.SDOS.driveme.controller;
+package com.sdos.driveme.controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.SDOS.driveme.DTO.RegisterResponseDTO;
-import com.SDOS.driveme.model.Booking;
-import com.SDOS.driveme.model.Driver;
-import com.SDOS.driveme.repository.BookingRepository;
-import com.SDOS.driveme.repository.DriverRepository;
+import com.sdos.driveme.DTO.RegisterResponseDTO;
+import com.sdos.driveme.model.Booking;
+import com.sdos.driveme.model.Driver;
+import com.sdos.driveme.repository.BookingRepository;
+import com.sdos.driveme.repository.DriverRepository;
 
 @RestController
 @RequestMapping("/driver")

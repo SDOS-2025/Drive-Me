@@ -1,4 +1,4 @@
-package com.SDOS.driveme.controller;
+package com.sdos.driveme.controller;
 
 import java.net.MalformedURLException;
 import java.nio.file.Path;
@@ -23,12 +23,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.SDOS.driveme.model.Booking;
-import com.SDOS.driveme.model.Driver;
-import com.SDOS.driveme.model.User;
-import com.SDOS.driveme.repository.BookingRepository;
-import com.SDOS.driveme.repository.DriverRepository;
-import com.SDOS.driveme.repository.UserRepository;
+import com.sdos.driveme.model.Booking;
+import com.sdos.driveme.model.Driver;
+import com.sdos.driveme.model.User;
+import com.sdos.driveme.repository.BookingRepository;
+import com.sdos.driveme.repository.DriverRepository;
+import com.sdos.driveme.repository.UserRepository;
 
 @RestController
 @RequestMapping("/admin")
@@ -280,14 +280,7 @@ public class AdminController {
             details.put("pickupDateTime", booking.getPickupDateTime());
 
             // Add ratings if available
-            if (booking.getCustomerRating() != null) {
                 details.put("driverRating", booking.getDriverRating());
-            }
-
-            if (booking.getDriverRating() != null) {
-                details.put("userRating", booking.getCustomerRating());
-            }
-
             // Add user and driver info
             if (booking.getCustomer() != null) {
                 details.put("customerId", booking.getCustomer().getUserId());
@@ -338,9 +331,7 @@ public class AdminController {
         details.put("completedAt", booking.getCompletedAt());
         details.put("fare", booking.getFare());
         details.put("driverRating", booking.getDriverRating());
-        details.put("customerRating", booking.getCustomerRating());
         details.put("driverFeedback", booking.getDriverFeedback());
-        details.put("customerFeedback", booking.getCustomerFeedback());
 
         // Add customer details
         if (booking.getCustomer() != null) {

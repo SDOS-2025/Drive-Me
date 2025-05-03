@@ -1,4 +1,4 @@
-package com.SDOS.driveme.services;
+package com.sdos.driveme.services;
 
 import java.util.ArrayList;
 import java.util.List;

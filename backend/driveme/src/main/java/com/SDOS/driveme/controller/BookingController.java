@@ -1,4 +1,4 @@
-package com.SDOS.driveme.controller;
+package com.sdos.driveme.controller;
 
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -27,16 +27,16 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.SDOS.driveme.model.Booking;
-import com.SDOS.driveme.model.Driver;
-import com.SDOS.driveme.model.Payment;
-import com.SDOS.driveme.model.User;
-import com.SDOS.driveme.model.Vehicle;
-import com.SDOS.driveme.model.Booking.BookingStatus;
-import com.SDOS.driveme.repository.BookingRepository;
-import com.SDOS.driveme.repository.DriverRepository;
-import com.SDOS.driveme.repository.UserRepository;
-import com.SDOS.driveme.repository.VehicleRepository;
+import com.sdos.driveme.model.Booking;
+import com.sdos.driveme.model.Driver;
+import com.sdos.driveme.model.Payment;
+import com.sdos.driveme.model.User;
+import com.sdos.driveme.model.Vehicle;
+import com.sdos.driveme.model.Booking.BookingStatus;
+import com.sdos.driveme.repository.BookingRepository;
+import com.sdos.driveme.repository.DriverRepository;
+import com.sdos.driveme.repository.UserRepository;
+import com.sdos.driveme.repository.VehicleRepository;
 
 @RestController
 @RequestMapping("/bookings")

@@ -1,4 +1,4 @@
-package com.SDOS.driveme.Exception;
+package com.sdos.driveme.Exception;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.SDOS.driveme.DTO.ErrorResponseDTO;
+import com.sdos.driveme.DTO.ErrorResponseDTO;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

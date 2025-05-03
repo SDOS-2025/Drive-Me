@@ -1,4 +1,4 @@
-package com.SDOS.driveme.model;
+package com.sdos.driveme.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

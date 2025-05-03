@@ -1,4 +1,4 @@
-package com.SDOS.driveme.Exception;
+package com.sdos.driveme.Exception;
 
 public class UserException extends RuntimeException {
     public UserException(String message) {

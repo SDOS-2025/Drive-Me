@@ -1,4 +1,4 @@
-package com.SDOS.driveme.JwtAuth;
+package com.sdos.driveme.JwtAuth;
 
 import java.io.IOException;
 

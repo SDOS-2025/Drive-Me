@@ -1,4 +1,4 @@
-package com.SDOS.driveme.controller;
+package com.sdos.driveme.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.SDOS.driveme.DTO.ErrorResponseDTO;
-import com.SDOS.driveme.DTO.LoginRequestDTO;
-import com.SDOS.driveme.DTO.LoginResponseDTO;
-import com.SDOS.driveme.DTO.RegisterRequestDTO;
-import com.SDOS.driveme.DTO.RegisterResponseDTO;
-import com.SDOS.driveme.DTO.TokenRefreshRequest;
-import com.SDOS.driveme.DTO.TokenRefreshResponse;
-import com.SDOS.driveme.Exception.AuthenticationException;
-import com.SDOS.driveme.Exception.InvalidTokenException;
-import com.SDOS.driveme.Exception.UserException;
-import com.SDOS.driveme.JwtAuth.JwtServices;
-import com.SDOS.driveme.model.Driver;
-import com.SDOS.driveme.model.User;
-import com.SDOS.driveme.services.AuthenticationService;
+import com.sdos.driveme.DTO.ErrorResponseDTO;
+import com.sdos.driveme.DTO.LoginRequestDTO;
+import com.sdos.driveme.DTO.LoginResponseDTO;
+import com.sdos.driveme.DTO.RegisterRequestDTO;
+import com.sdos.driveme.DTO.RegisterResponseDTO;
+import com.sdos.driveme.DTO.TokenRefreshRequest;
+import com.sdos.driveme.DTO.TokenRefreshResponse;
+import com.sdos.driveme.Exception.AuthenticationException;
+import com.sdos.driveme.Exception.InvalidTokenException;
+import com.sdos.driveme.Exception.UserException;
+import com.sdos.driveme.JwtAuth.JwtServices;
+import com.sdos.driveme.model.Driver;
+import com.sdos.driveme.model.User;
+import com.sdos.driveme.services.AuthenticationService;
 
 import jakarta.validation.Valid;
 

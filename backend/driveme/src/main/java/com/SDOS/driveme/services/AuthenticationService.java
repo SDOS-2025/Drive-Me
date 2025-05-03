@@ -1,4 +1,4 @@
-package com.SDOS.driveme.services;
+package com.sdos.driveme.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,14 +9,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.SDOS.driveme.DTO.LoginRequestDTO;
-import com.SDOS.driveme.DTO.RegisterRequestDTO;
-import com.SDOS.driveme.Exception.AuthenticationException;
-import com.SDOS.driveme.Exception.UserException;
-import com.SDOS.driveme.model.Driver;
-import com.SDOS.driveme.model.User;
-import com.SDOS.driveme.repository.DriverRepository;
-import com.SDOS.driveme.repository.UserRepository;
+import com.sdos.driveme.DTO.LoginRequestDTO;
+import com.sdos.driveme.DTO.RegisterRequestDTO;
+import com.sdos.driveme.Exception.AuthenticationException;
+import com.sdos.driveme.Exception.UserException;
+import com.sdos.driveme.model.Driver;
+import com.sdos.driveme.model.User;
+import com.sdos.driveme.repository.DriverRepository;
+import com.sdos.driveme.repository.UserRepository;
 
 @Service
 public class AuthenticationService {
@@ -199,14 +199,6 @@ public class AuthenticationService {
             if (!passwordEncoder.matches(input.getPassword(), driver.getPassword())) {
                 throw new AuthenticationException("Invalid password");
             }
-
-            // Authenticate using authenticationManager
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            input.getEmailOrPhone(),
-                            input.getPassword()
-                    )
-            );
 
             return driver;
         } catch (BadCredentialsException e) {
