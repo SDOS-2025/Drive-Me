@@ -81,14 +81,8 @@ public class Booking {
     @PastOrPresent(message = "Completion time cannot be in the future")
     private LocalDateTime completedAt;
     
-    @Column(name = "customer_rating")
-    private Integer customerRating;
-    
     @Column(name = "driver_rating")
     private Integer driverRating;
-    
-    @Column(name = "customer_feedback", length = 500)
-    private String customerFeedback;
     
     @Column(name = "driver_feedback", length = 500)
     private String driverFeedback;
@@ -149,14 +143,6 @@ public class Booking {
         }
         this.driverRating = rating;
         this.driverFeedback = feedback;
-    }
-    
-    public void rateCustomer(int rating, String feedback) {
-        if (rating < 1 || rating > 5) {
-            throw new IllegalArgumentException("Rating must be between 1 and 5");
-        }
-        this.customerRating = rating;
-        this.customerFeedback = feedback;
     }
 
     // Standard getters and setters
@@ -252,28 +238,12 @@ public class Booking {
         this.completedAt = completedAt;
     }
     
-    public Integer getCustomerRating() {
-        return customerRating;
-    }
-    
-    public void setCustomerRating(Integer customerRating) {
-        this.customerRating = customerRating;
-    }
-    
     public Integer getDriverRating() {
         return driverRating;
     }
     
     public void setDriverRating(Integer driverRating) {
         this.driverRating = driverRating;
-    }
-    
-    public String getCustomerFeedback() {
-        return customerFeedback;
-    }
-    
-    public void setCustomerFeedback(String customerFeedback) {
-        this.customerFeedback = customerFeedback;
     }
     
     public String getDriverFeedback() {
