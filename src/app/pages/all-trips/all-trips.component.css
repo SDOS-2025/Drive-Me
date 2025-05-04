@@ -12,6 +12,7 @@
   .main-content {
     margin-left: 300px; /* Same width as the sidebar */
     padding: 1rem;
+    width: calc(100% - 320px); /* Adjust width to account for sidebar */
   }
   
   
