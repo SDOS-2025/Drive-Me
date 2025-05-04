@@ -31,6 +31,7 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6' // Or jjwt-gson
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	testImplementation 'com.h2database:h2'
 }
 
 tasks.named('test') {
