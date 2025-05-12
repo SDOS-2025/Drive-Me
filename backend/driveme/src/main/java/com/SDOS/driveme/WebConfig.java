@@ -24,7 +24,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class WebConfig {
     private final List<AuthenticationProvider> authenticationProviders;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    
+
     public WebConfig(
         List<AuthenticationProvider> authenticationProviders,
         JwtAuthenticationFilter jwtAuthenticationFilter
@@ -32,25 +32,25 @@ public class WebConfig {
         this.authenticationProviders = authenticationProviders;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
-    
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList("*")); // More flexible than setAllowedOrigins
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
         configuration.setAllowedHeaders(Arrays.asList(
-            "Authorization", 
-            "Content-Type", 
-            "X-Requested-With", 
-            "Accept", 
-            "Origin", 
-            "Access-Control-Request-Method", 
+            "Authorization",
+            "Content-Type",
+            "X-Requested-With",
+            "Accept",
+            "Origin",
+            "Access-Control-Request-Method",
             "Access-Control-Request-Headers"
         ));
         configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Disposition"));
         configuration.setAllowCredentials(true); // Allow credentials with specific origins
         configuration.setMaxAge(3600L); // 1 hour cache for preflight requests
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -69,7 +69,7 @@ public class WebConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(ex -> ex
-                .authenticationEntryPoint((_, response, authException) -> {
+                .authenticationEntryPoint((result, response, authException) -> {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("application/json");
                     response.getWriter().write("{\"error\":\"" + authException.getMessage() + "\"}");
