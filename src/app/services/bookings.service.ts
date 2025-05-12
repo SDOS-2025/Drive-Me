@@ -35,7 +35,7 @@ export interface PaymentRequest {
   providedIn: 'root'
 })
 export class BookingService {
-  private apiUrl = 'http://localhost:8080'; // Your backend URL
+  private apiUrl = 'https://driveme-app-latest.onrender.com'; // Your backend URL
 
   constructor(private http: HttpClient) { }
   

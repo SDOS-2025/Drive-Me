@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class AdminService {
 
-    private apiUrl = 'http://localhost:8080' // Replace with your API URL
+    private apiUrl = 'https://driveme-app-latest.onrender.com' // Replace with your API URL
     constructor(private http: HttpClient) { }
 
     // Dashboard statistics

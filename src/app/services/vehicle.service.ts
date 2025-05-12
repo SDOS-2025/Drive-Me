@@ -15,7 +15,7 @@ export interface BackendVehicle {
   providedIn: 'root'
 })
 export class VehicleService {
-  private apiUrl = 'http://localhost:8080'; // Your backend URL
+  private apiUrl = 'https://driveme-app-latest.onrender.com'; // Your backend URL
 
   constructor(private http: HttpClient) { }
 
@@ -23,7 +23,7 @@ export class VehicleService {
   getUserVehicles(): Observable<BackendVehicle[]> {
     // Get token from localStorage
     const token = localStorage.getItem('token');
-    
+
     // Create headers with Bearer token
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ export class VehicleService {
   addVehicle(userId: number, vehicleData: any): Observable<any> {
     const token = localStorage.getItem('token');
     const headers = this.getAuthHeaders(token);
-    
+
     // Map frontend vehicle to backend format
     const backendVehicle = {
         model: vehicleData.model,

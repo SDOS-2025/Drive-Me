@@ -31,7 +31,7 @@ export interface BookingResponse {
     providedIn: 'root'
 })
 export class TripsService {
-    private apiUrl = 'http://localhost:8080'; // Adjust the base URL as needed
+    private apiUrl = 'https://driveme-app-latest.onrender.com'; // Adjust the base URL as needed
 
     constructor(private http: HttpClient) { }
 

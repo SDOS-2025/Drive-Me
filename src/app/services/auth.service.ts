@@ -21,14 +21,14 @@ export class AuthService {
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
   private refreshTokenTimeout: any;
-  private apiUrl = 'http://localhost:8080';
+  private apiUrl = 'https://driveme-app-latest.onrender.com';
 
   constructor(private router: Router) {
     // Try to load user from localStorage on init
     const savedUser = localStorage.getItem('currentUser');
     this.currentUserSubject = new BehaviorSubject<User | null>(savedUser ? JSON.parse(savedUser) : null);
     this.currentUser = this.currentUserSubject.asObservable();
-    
+
     // Start token refresh if user is logged in
     if (this.currentUserValue) {
       this.startRefreshTokenTimer();
@@ -85,16 +85,16 @@ export class AuthService {
         user.licenseNumber = data.licenseNumber;
         console.log('Driver login successful:', user);
       }
-      
+
       // Store user in localStorage and update subject
       localStorage.setItem("token", data.token);
       localStorage.setItem("refreshToken", data.refreshToken);
       localStorage.setItem('currentUser', JSON.stringify(user));
       this.currentUserSubject.next(user);
-      
+
       // Start token refresh timer
       this.startRefreshTokenTimer();
-      
+
       return user;
     });
   }
@@ -121,10 +121,10 @@ export class AuthService {
     })
     .then(data => {
       if (!data) return false;
-      
+
       // Update stored token
       localStorage.setItem('token', data.token);
-      
+
       // Update user in localStorage and BehaviorSubject
       const user = this.currentUserValue;
       if (user) {
@@ -132,10 +132,10 @@ export class AuthService {
         localStorage.setItem('currentUser', JSON.stringify(user));
         this.currentUserSubject.next(user);
       }
-      
+
       // Restart refresh timer
       this.startRefreshTokenTimer();
-      
+
       return true;
     })
     .catch(() => {
@@ -147,11 +147,11 @@ export class AuthService {
   private startRefreshTokenTimer() {
     // Clear any existing timer
     this.stopRefreshTokenTimer();
-    
+
     // Set up timer to refresh token 30 seconds before expiry (assuming 30-minute token)
     // Default expiry time is 30 minutes (1800000 ms), refresh 30 seconds before
-    const refreshIn = 25 * 60 * 1000; // 25 minutes = 1,500,000 ms 
-    
+    const refreshIn = 25 * 60 * 1000; // 25 minutes = 1,500,000 ms
+
     this.refreshTokenTimeout = setTimeout(() => {
       console.log('Refreshing token...');
       this.refreshToken();
@@ -165,10 +165,10 @@ export class AuthService {
   }
 
   async signup(userDetails: any, role: 'user' | 'driver'): Promise<User> {
-    const endpoint = role === 'driver' ? 
-      `${this.apiUrl}/auth/driver/signup` : 
+    const endpoint = role === 'driver' ?
+      `${this.apiUrl}/auth/driver/signup` :
       `${this.apiUrl}/auth/user/signup`;
-      
+
     const signupPayload: {
       fullName: string;
       email: string;
@@ -183,11 +183,11 @@ export class AuthService {
       aadharCard: userDetails.aadharCard,
       password: userDetails.password
     };
-    
+
     if (role === 'driver') {
       signupPayload['licenseNumber'] = userDetails.licenseNumber;
     }
-    
+
     return fetch(endpoint, {
       method: 'POST',
       body: JSON.stringify(signupPayload),
@@ -214,7 +214,7 @@ export class AuthService {
   logout(): void {
     // Stop refresh timer
     this.stopRefreshTokenTimer();
-    
+
     // Remove user from local storage
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');

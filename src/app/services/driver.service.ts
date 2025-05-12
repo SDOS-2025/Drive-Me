@@ -38,7 +38,7 @@ export interface DriverTrip {
   providedIn: 'root'
 })
 export class DriverService {
-  private apiUrl = 'http://localhost:8080'; // Your backend URL
+  private apiUrl = 'https://driveme-app-latest.onrender.com'; // Your backend URL
 
   constructor(private http: HttpClient) { }
 
